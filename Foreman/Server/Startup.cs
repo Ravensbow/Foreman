@@ -8,6 +8,8 @@ using Microsoft.Extensions.Hosting;
 using System.Linq;
 using Foreman.Server.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Foreman.Server
 {
@@ -26,8 +28,15 @@ namespace Foreman.Server
         {
 
             services.AddControllersWithViews();
-            services.AddDbContextFactory<ApplicationContext>(opt =>
+            services.AddDbContext<ApplicationContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("SqlServer")));
+            services.AddDefaultIdentity<Foreman.Shared.Data.Identity.UserProfile>(opts => opts.SignIn.RequireConfirmedAccount = true)
+                .AddEntityFrameworkStores<ApplicationContext>();
+            services.AddIdentityServer()
+                .AddApiAuthorization<Shared.Data.Identity.UserProfile, ApplicationContext>()
+                .AddDeveloperSigningCredential();
+            services.AddAuthentication()
+                .AddIdentityServerJwt();
             services.AddRazorPages();
         }
 
@@ -51,6 +60,10 @@ namespace Foreman.Server
             app.UseStaticFiles();
 
             app.UseRouting();
+
+            app.UseIdentityServer();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

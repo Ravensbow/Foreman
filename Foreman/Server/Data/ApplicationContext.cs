@@ -6,17 +6,22 @@ using System.Text;
 using System.Threading.Tasks;
 using Foreman.Shared.Data.Courses;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
+using Microsoft.Extensions.Options;
+using Duende.IdentityServer.EntityFramework.Options;
 
 namespace Foreman.Server.Data
 {
-    public class ApplicationContext : IdentityDbContext<Shared.Data.Identity.UserProfile>
+    public class ApplicationContext : ApiAuthorizationDbContext<Shared.Data.Identity.UserProfile>
     {
         public DbSet<Course> Courses { get; set; }
         public DbSet<CourseCategory> CourseCategories { get; set; }
         public DbSet<CourseModule> CourseModules { get; set; }
         public DbSet<CourseSection> CourseSections { get; set; }
 
-        public ApplicationContext()
+        public ApplicationContext(
+            DbContextOptions options,
+            IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
         }
 
