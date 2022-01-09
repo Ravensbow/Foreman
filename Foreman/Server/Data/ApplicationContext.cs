@@ -12,7 +12,7 @@ using Duende.IdentityServer.EntityFramework.Options;
 
 namespace Foreman.Server.Data
 {
-    public class ApplicationContext : ApiAuthorizationDbContext<Shared.Data.Identity.UserProfile>
+    public class ApplicationContext : KeyApiAuthorizationDbContext<Shared.Data.Identity.UserProfile,Shared.Data.Identity.Role,int>
     {
         public DbSet<Course> Courses { get; set; }
         public DbSet<CourseCategory> CourseCategories { get; set; }

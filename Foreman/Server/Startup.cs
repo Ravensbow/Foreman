@@ -10,6 +10,7 @@ using Foreman.Server.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Foreman.Shared.Data.Identity;
 
 namespace Foreman.Server
 {
@@ -30,10 +31,11 @@ namespace Foreman.Server
             services.AddControllersWithViews();
             services.AddDbContext<ApplicationContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("SqlServer")));
-            services.AddDefaultIdentity<Foreman.Shared.Data.Identity.UserProfile>(opts => opts.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<UserProfile>(opts => opts.SignIn.RequireConfirmedAccount = true)
+                .AddRoles<Role>()
                 .AddEntityFrameworkStores<ApplicationContext>();
             services.AddIdentityServer()
-                .AddApiAuthorization<Shared.Data.Identity.UserProfile, ApplicationContext>()
+                .AddApiAuthorization<UserProfile, ApplicationContext>()
                 .AddDeveloperSigningCredential();
             services.AddAuthentication()
                 .AddIdentityServerJwt();

@@ -14,25 +14,8 @@ namespace Foreman.Shared.Data.Identity
 
     }
 
-    public class UserRole : IdentityUserRole<int>
-    {
-
-    }
-
-    public class UserClaim : IdentityUserClaim<int>
-    {
-
-    }
-
-    public class UserLogin : IdentityUserLogin<int>
-    {
-
-    }
-
     public class Role : IdentityRole<int>
     {
 
     }
-
-    public class UserStore : UserStore<UserProfile, Role, ApplicationContext>
 }
