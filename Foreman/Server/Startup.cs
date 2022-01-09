@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Linq;
+using Foreman.Server.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Foreman.Server
 {
@@ -24,6 +26,8 @@ namespace Foreman.Server
         {
 
             services.AddControllersWithViews();
+            services.AddDbContextFactory<ApplicationContext>(opt =>
+                opt.UseSqlServer(Configuration.GetConnectionString("SqlServer")));
             services.AddRazorPages();
         }
 

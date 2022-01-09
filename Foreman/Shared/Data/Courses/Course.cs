@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Foreman.Shared.Data
+namespace Foreman.Shared.Data.Courses
 {
     public class Course
     {
@@ -17,9 +17,12 @@ namespace Foreman.Shared.Data
         public bool IsVisible { get; set; }
         public DateTime? StartDate { get; set; }
         public DateTime? EndDate { get; set; }
-        public DateTime? CreateDate { get; set; }
+        public DateTime? CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
 
         public CourseCategory Category { get; set; }
+        public ICollection<CourseModule> CourseModules { get; set; }
+        public ICollection<CourseSection> CourseSections{ get; set; }
+
     }
 }
