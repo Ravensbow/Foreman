@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
+using Microsoft.AspNetCore.Components.Web;
 
 namespace Foreman.Client
 {
@@ -21,6 +23,14 @@ namespace Foreman.Client
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
             builder.Services.AddMudServices();
+
+            builder.Services.AddHttpClient("Foreman.ServerAPI",client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress))
+                .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
+
+            builder.Services.AddScoped(builder => builder.GetRequiredService<IHttpClientFactory>()
+            .CreateClient("Foreman.ServerAPI"));
+
+            builder.Services.AddApiAuthorization();
 
             await builder.Build().RunAsync();
         }
