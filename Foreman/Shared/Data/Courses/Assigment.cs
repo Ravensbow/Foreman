@@ -14,6 +14,7 @@ namespace Foreman.Shared.Data.Courses
         public string Password { get; set; }
         public int CohortId { get; set; }
         public int RoleId { get; set; }
+
         public Course Course { get; set; }
         public ICollection<Identity.UserAssigment> UserAssigments { get; set; }
     }

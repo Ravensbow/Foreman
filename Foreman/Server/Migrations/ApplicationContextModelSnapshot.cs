@@ -163,6 +163,63 @@ namespace Foreman.Server.Migrations
                     b.ToTable("PersistedGrants", (string)null);
                 });
 
+            modelBuilder.Entity("Foreman.Shared.Data.Courses.Assigment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("CohortId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Password")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(1)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CourseId");
+
+                    b.ToTable("Assigment");
+                });
+
+            modelBuilder.Entity("Foreman.Shared.Data.Courses.CategoryAssigment", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("RoleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("CateogryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserProfileId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "RoleId", "CateogryId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("UserProfileId");
+
+                    b.ToTable("CategoryAssigment");
+                });
+
             modelBuilder.Entity("Foreman.Shared.Data.Courses.Course", b =>
                 {
                     b.Property<int>("Id")
@@ -209,6 +266,8 @@ namespace Foreman.Server.Migrations
 
                     b.HasIndex("CourseCategoryId");
 
+                    b.HasIndex("InstitutionId");
+
                     b.ToTable("Courses");
                 });
 
@@ -247,6 +306,8 @@ namespace Foreman.Server.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("InstitutionId");
+
                     b.HasIndex("ParentCategoryId");
 
                     b.ToTable("CourseCategories");
@@ -263,21 +324,24 @@ namespace Foreman.Server.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("CourseSectionId")
+                        .HasColumnType("int");
+
                     b.Property<int>("InstanceId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsVisible")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bit");
 
                     b.Property<int?>("PluginId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("SectionId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
+
+                    b.HasIndex("CourseSectionId");
 
                     b.ToTable("CourseModules");
                 });
@@ -297,16 +361,41 @@ namespace Foreman.Server.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsVisible")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("bit");
 
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CourseId");
 
                     b.ToTable("CourseSections");
+                });
+
+            modelBuilder.Entity("Foreman.Shared.Data.Identity.Institution", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OwnerId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OwnerId")
+                        .IsUnique()
+                        .HasFilter("[OwnerId] IS NOT NULL");
+
+                    b.ToTable("Institution");
                 });
 
             modelBuilder.Entity("Foreman.Shared.Data.Identity.Role", b =>
@@ -339,6 +428,44 @@ namespace Foreman.Server.Migrations
                     b.ToTable("AspNetRoles", (string)null);
                 });
 
+            modelBuilder.Entity("Foreman.Shared.Data.Identity.UserAssigment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("AssigmentEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("AssigmentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("AssigmentStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UserProfileId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AssigmentId");
+
+                    b.HasIndex("UserProfileId");
+
+                    b.ToTable("UserAssigment");
+                });
+
             modelBuilder.Entity("Foreman.Shared.Data.Identity.UserProfile", b =>
                 {
                     b.Property<int>("Id")
@@ -361,6 +488,9 @@ namespace Foreman.Server.Migrations
                     b.Property<bool>("EmailConfirmed")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("InstitutionId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("bit");
 
@@ -374,6 +504,9 @@ namespace Foreman.Server.Migrations
                     b.Property<string>("NormalizedUserName")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
+
+                    b.Property<int?>("OwnedInstitutionId")
+                        .HasColumnType("int");
 
                     b.Property<string>("PasswordHash")
                         .HasColumnType("nvarchar(max)");
@@ -395,6 +528,8 @@ namespace Foreman.Server.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("InstitutionId");
 
                     b.HasIndex("NormalizedEmail")
                         .HasDatabaseName("EmailIndex");
@@ -514,20 +649,58 @@ namespace Foreman.Server.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Foreman.Shared.Data.Courses.Assigment", b =>
+                {
+                    b.HasOne("Foreman.Shared.Data.Courses.Course", "Course")
+                        .WithMany("Assigments")
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("Foreman.Shared.Data.Courses.CategoryAssigment", b =>
+                {
+                    b.HasOne("Foreman.Shared.Data.Courses.CourseCategory", "Category")
+                        .WithMany("CategoryAssigments")
+                        .HasForeignKey("CategoryId");
+
+                    b.HasOne("Foreman.Shared.Data.Identity.UserProfile", "UserProfile")
+                        .WithMany("CategoryAssigments")
+                        .HasForeignKey("UserProfileId");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("UserProfile");
+                });
+
             modelBuilder.Entity("Foreman.Shared.Data.Courses.Course", b =>
                 {
                     b.HasOne("Foreman.Shared.Data.Courses.CourseCategory", "Category")
                         .WithMany("Courses")
                         .HasForeignKey("CourseCategoryId");
 
+                    b.HasOne("Foreman.Shared.Data.Identity.Institution", "Institution")
+                        .WithMany("Courses")
+                        .HasForeignKey("InstitutionId");
+
                     b.Navigation("Category");
+
+                    b.Navigation("Institution");
                 });
 
             modelBuilder.Entity("Foreman.Shared.Data.Courses.CourseCategory", b =>
                 {
+                    b.HasOne("Foreman.Shared.Data.Identity.Institution", "Institution")
+                        .WithMany("CourseCategories")
+                        .HasForeignKey("InstitutionId");
+
                     b.HasOne("Foreman.Shared.Data.Courses.CourseCategory", "ParentCategory")
                         .WithMany()
                         .HasForeignKey("ParentCategoryId");
+
+                    b.Navigation("Institution");
 
                     b.Navigation("ParentCategory");
                 });
@@ -540,7 +713,13 @@ namespace Foreman.Server.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Foreman.Shared.Data.Courses.CourseSection", "CourseSection")
+                        .WithMany("CourseModules")
+                        .HasForeignKey("CourseSectionId");
+
                     b.Navigation("Course");
+
+                    b.Navigation("CourseSection");
                 });
 
             modelBuilder.Entity("Foreman.Shared.Data.Courses.CourseSection", b =>
@@ -552,6 +731,41 @@ namespace Foreman.Server.Migrations
                         .IsRequired();
 
                     b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("Foreman.Shared.Data.Identity.Institution", b =>
+                {
+                    b.HasOne("Foreman.Shared.Data.Identity.UserProfile", "Owner")
+                        .WithOne("OwnedInstitution")
+                        .HasForeignKey("Foreman.Shared.Data.Identity.Institution", "OwnerId");
+
+                    b.Navigation("Owner");
+                });
+
+            modelBuilder.Entity("Foreman.Shared.Data.Identity.UserAssigment", b =>
+                {
+                    b.HasOne("Foreman.Shared.Data.Courses.Assigment", "Assigment")
+                        .WithMany("UserAssigments")
+                        .HasForeignKey("AssigmentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Foreman.Shared.Data.Identity.UserProfile", "UserProfile")
+                        .WithMany("UserAssigments")
+                        .HasForeignKey("UserProfileId");
+
+                    b.Navigation("Assigment");
+
+                    b.Navigation("UserProfile");
+                });
+
+            modelBuilder.Entity("Foreman.Shared.Data.Identity.UserProfile", b =>
+                {
+                    b.HasOne("Foreman.Shared.Data.Identity.Institution", "Institution")
+                        .WithMany("Members")
+                        .HasForeignKey("InstitutionId");
+
+                    b.Navigation("Institution");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
@@ -605,8 +819,15 @@ namespace Foreman.Server.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Foreman.Shared.Data.Courses.Assigment", b =>
+                {
+                    b.Navigation("UserAssigments");
+                });
+
             modelBuilder.Entity("Foreman.Shared.Data.Courses.Course", b =>
                 {
+                    b.Navigation("Assigments");
+
                     b.Navigation("CourseModules");
 
                     b.Navigation("CourseSections");
@@ -614,7 +835,32 @@ namespace Foreman.Server.Migrations
 
             modelBuilder.Entity("Foreman.Shared.Data.Courses.CourseCategory", b =>
                 {
+                    b.Navigation("CategoryAssigments");
+
                     b.Navigation("Courses");
+                });
+
+            modelBuilder.Entity("Foreman.Shared.Data.Courses.CourseSection", b =>
+                {
+                    b.Navigation("CourseModules");
+                });
+
+            modelBuilder.Entity("Foreman.Shared.Data.Identity.Institution", b =>
+                {
+                    b.Navigation("CourseCategories");
+
+                    b.Navigation("Courses");
+
+                    b.Navigation("Members");
+                });
+
+            modelBuilder.Entity("Foreman.Shared.Data.Identity.UserProfile", b =>
+                {
+                    b.Navigation("CategoryAssigments");
+
+                    b.Navigation("OwnedInstitution");
+
+                    b.Navigation("UserAssigments");
                 });
 #pragma warning restore 612, 618
         }

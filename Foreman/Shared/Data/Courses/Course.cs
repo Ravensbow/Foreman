@@ -20,9 +20,11 @@ namespace Foreman.Shared.Data.Courses
         public DateTime? CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
 
+        public Identity.Institution Institution { get; set; }
         public CourseCategory Category { get; set; }
         public ICollection<CourseModule> CourseModules { get; set; }
         public ICollection<CourseSection> CourseSections{ get; set; }
+        public ICollection<Assigment> Assigments{ get; set; }
 
     }
 }

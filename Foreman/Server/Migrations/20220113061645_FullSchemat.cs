@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Foreman.Server.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class FullSchemat : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -22,56 +22,6 @@ namespace Foreman.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "AspNetUsers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "CourseCategories",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    ParentCategoryId = table.Column<int>(type: "int", nullable: true),
-                    InstitutionId = table.Column<int>(type: "int", nullable: true),
-                    IsVisible = table.Column<bool>(type: "bit", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
-                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
-                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CourseCategories", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CourseCategories_CourseCategories_ParentCategoryId",
-                        column: x => x.ParentCategoryId,
-                        principalTable: "CourseCategories",
-                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -165,12 +115,6 @@ namespace Foreman.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUserClaims", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserClaims_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -185,12 +129,6 @@ namespace Foreman.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUserLogins", x => new { x.LoginProvider, x.ProviderKey });
-                    table.ForeignKey(
-                        name: "FK_AspNetUserLogins_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -209,12 +147,34 @@ namespace Foreman.Server.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_AspNetUserRoles_AspNetUsers_UserId",
-                        column: x => x.UserId,
-                        principalTable: "AspNetUsers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    InstitutionId = table.Column<int>(type: "int", nullable: true),
+                    OwnedInstitutionId = table.Column<int>(type: "int", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -235,6 +195,79 @@ namespace Foreman.Server.Migrations
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Institution",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    OwnerId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Institution", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Institution_AspNetUsers_OwnerId",
+                        column: x => x.OwnerId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CourseCategories",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ParentCategoryId = table.Column<int>(type: "int", nullable: true),
+                    InstitutionId = table.Column<int>(type: "int", nullable: true),
+                    IsVisible = table.Column<bool>(type: "bit", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CourseCategories", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CourseCategories_CourseCategories_ParentCategoryId",
+                        column: x => x.ParentCategoryId,
+                        principalTable: "CourseCategories",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_CourseCategories_Institution_InstitutionId",
+                        column: x => x.InstitutionId,
+                        principalTable: "Institution",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CategoryAssigment",
+                columns: table => new
+                {
+                    CateogryId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: true),
+                    UserProfileId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CategoryAssigment", x => new { x.UserId, x.RoleId, x.CateogryId });
+                    table.ForeignKey(
+                        name: "FK_CategoryAssigment_AspNetUsers_UserProfileId",
+                        column: x => x.UserProfileId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_CategoryAssigment_CourseCategories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "CourseCategories",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -262,25 +295,30 @@ namespace Foreman.Server.Migrations
                         column: x => x.CourseCategoryId,
                         principalTable: "CourseCategories",
                         principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Courses_Institution_InstitutionId",
+                        column: x => x.InstitutionId,
+                        principalTable: "Institution",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
-                name: "CourseModules",
+                name: "Assigment",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CourseId = table.Column<int>(type: "int", nullable: false),
-                    SectionId = table.Column<int>(type: "int", nullable: true),
-                    IsVisible = table.Column<bool>(type: "bit", nullable: false),
-                    PluginId = table.Column<int>(type: "int", nullable: true),
-                    InstanceId = table.Column<int>(type: "int", nullable: false)
+                    Type = table.Column<string>(type: "nvarchar(1)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CohortId = table.Column<int>(type: "int", nullable: false),
+                    RoleId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_CourseModules", x => x.Id);
+                    table.PrimaryKey("PK_Assigment", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_CourseModules_Courses_CourseId",
+                        name: "FK_Assigment_Courses_CourseId",
                         column: x => x.CourseId,
                         principalTable: "Courses",
                         principalColumn: "Id",
@@ -293,7 +331,7 @@ namespace Foreman.Server.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Name = table.Column<string>(type: "nvarchar(255)", maxLength: 255, nullable: true),
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsVisible = table.Column<bool>(type: "bit", nullable: false),
                     CourseId = table.Column<int>(type: "int", nullable: false)
@@ -307,6 +345,64 @@ namespace Foreman.Server.Migrations
                         principalTable: "Courses",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserAssigment",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    AssigmentId = table.Column<int>(type: "int", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AssigmentStart = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AssigmentEnd = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserProfileId = table.Column<int>(type: "int", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserAssigment", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserAssigment_AspNetUsers_UserProfileId",
+                        column: x => x.UserProfileId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_UserAssigment_Assigment_AssigmentId",
+                        column: x => x.AssigmentId,
+                        principalTable: "Assigment",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "CourseModules",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CourseId = table.Column<int>(type: "int", nullable: false),
+                    CourseSectionId = table.Column<int>(type: "int", nullable: true),
+                    IsVisible = table.Column<bool>(type: "bit", nullable: false),
+                    PluginId = table.Column<int>(type: "int", nullable: true),
+                    InstanceId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CourseModules", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CourseModules_Courses_CourseId",
+                        column: x => x.CourseId,
+                        principalTable: "Courses",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_CourseModules_CourseSections_CourseSectionId",
+                        column: x => x.CourseSectionId,
+                        principalTable: "CourseSections",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -342,11 +438,36 @@ namespace Foreman.Server.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_InstitutionId",
+                table: "AspNetUsers",
+                column: "InstitutionId");
+
+            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Assigment_CourseId",
+                table: "Assigment",
+                column: "CourseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CategoryAssigment_CategoryId",
+                table: "CategoryAssigment",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CategoryAssigment_UserProfileId",
+                table: "CategoryAssigment",
+                column: "UserProfileId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_CourseCategories_InstitutionId",
+                table: "CourseCategories",
+                column: "InstitutionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CourseCategories_ParentCategoryId",
@@ -359,9 +480,19 @@ namespace Foreman.Server.Migrations
                 column: "CourseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CourseModules_CourseSectionId",
+                table: "CourseModules",
+                column: "CourseSectionId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Courses_CourseCategoryId",
                 table: "Courses",
                 column: "CourseCategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Courses_InstitutionId",
+                table: "Courses",
+                column: "InstitutionId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CourseSections_CourseId",
@@ -378,6 +509,13 @@ namespace Foreman.Server.Migrations
                 name: "IX_DeviceCodes_Expiration",
                 table: "DeviceCodes",
                 column: "Expiration");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Institution_OwnerId",
+                table: "Institution",
+                column: "OwnerId",
+                unique: true,
+                filter: "[OwnerId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Keys_Use",
@@ -403,10 +541,55 @@ namespace Foreman.Server.Migrations
                 name: "IX_PersistedGrants_SubjectId_SessionId_Type",
                 table: "PersistedGrants",
                 columns: new[] { "SubjectId", "SessionId", "Type" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAssigment_AssigmentId",
+                table: "UserAssigment",
+                column: "AssigmentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserAssigment_UserProfileId",
+                table: "UserAssigment",
+                column: "UserProfileId");
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserClaims_AspNetUsers_UserId",
+                table: "AspNetUserClaims",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserLogins_AspNetUsers_UserId",
+                table: "AspNetUserLogins",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUserRoles_AspNetUsers_UserId",
+                table: "AspNetUserRoles",
+                column: "UserId",
+                principalTable: "AspNetUsers",
+                principalColumn: "Id",
+                onDelete: ReferentialAction.Cascade);
+
+            migrationBuilder.AddForeignKey(
+                name: "FK_AspNetUsers_Institution_InstitutionId",
+                table: "AspNetUsers",
+                column: "InstitutionId",
+                principalTable: "Institution",
+                principalColumn: "Id");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropForeignKey(
+                name: "FK_Institution_AspNetUsers_OwnerId",
+                table: "Institution");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -423,10 +606,10 @@ namespace Foreman.Server.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "CourseModules");
+                name: "CategoryAssigment");
 
             migrationBuilder.DropTable(
-                name: "CourseSections");
+                name: "CourseModules");
 
             migrationBuilder.DropTable(
                 name: "DeviceCodes");
@@ -438,16 +621,28 @@ namespace Foreman.Server.Migrations
                 name: "PersistedGrants");
 
             migrationBuilder.DropTable(
+                name: "UserAssigment");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "CourseSections");
+
+            migrationBuilder.DropTable(
+                name: "Assigment");
 
             migrationBuilder.DropTable(
                 name: "Courses");
 
             migrationBuilder.DropTable(
                 name: "CourseCategories");
+
+            migrationBuilder.DropTable(
+                name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Institution");
         }
     }
 }

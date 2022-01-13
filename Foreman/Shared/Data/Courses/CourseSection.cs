@@ -15,5 +15,6 @@ namespace Foreman.Shared.Data.Courses
         public int CourseId { get; set; }
 
         public Course Course { get; set; }
+        public ICollection<CourseModule> CourseModules { get; set; }
     }
 }

@@ -16,8 +16,10 @@ namespace Foreman.Shared.Data.Courses
         public string Description { get; set; }
         public DateTime? CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
-        public CourseCategory ParentCategory { get; set; }
 
+        public Identity.Institution Institution { get; set; }
+        public CourseCategory ParentCategory { get; set; }
         public ICollection<Course> Courses { get; set;}
+        public ICollection<CategoryAssigment> CategoryAssigments { get; set; }
     }
 }

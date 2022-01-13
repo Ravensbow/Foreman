@@ -15,6 +15,8 @@ namespace Foreman.Shared.Data.Identity
         public DateTime ModifiedDate { get; set; }
         public DateTime AssigmentStart { get; set; }
         public DateTime AssigmentEnd { get; set; }
+
         public Courses.Assigment Assigment { get; set; }
+        public UserProfile UserProfile { get; set; }
     }
 }
