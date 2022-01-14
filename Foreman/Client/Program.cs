@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using Microsoft.AspNetCore.Components.Web;
+using Foreman.Client.Services;
 
 namespace Foreman.Client
 {
@@ -21,6 +22,7 @@ namespace Foreman.Client
             builder.RootComponents.Add<App>("#app");
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+            builder.Services.AddHttpClient<AccountService>(x => x.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
 
             builder.Services.AddMudServices();
 

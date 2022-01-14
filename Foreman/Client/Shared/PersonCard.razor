@@ -1,13 +1,20 @@
 ﻿<MudCard Elevation="0" Square="true" Class="@Class" Style="@Style">
-    <MudCardHeader>
-        <CardHeaderAvatar>
-            <MudAvatar Image="images/avatar_jonny.jpg" />
-        </CardHeaderAvatar>
-        <CardHeaderContent>
-            <MudText Typo="Typo.body2">Jonny Larsson</MudText>
-            <MudText Typo="Typo.caption">IT Consultant</MudText>
-        </CardHeaderContent>
-    </MudCardHeader>
+    <AuthorizeView>
+        <Authorized>
+            <MudCardHeader>
+                <CardHeaderAvatar>
+                    <MudAvatar Image="images/avatar_jonny.jpg" />
+                </CardHeaderAvatar>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.body2">@context.User.Identity?.Name</MudText>
+                    <MudText Typo="Typo.caption">IT Consultant</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+        </Authorized>
+        <NotAuthorized>
+            NIE LOGUJEEEE
+        </NotAuthorized>
+    </AuthorizeView>
 </MudCard>
 
 @code {

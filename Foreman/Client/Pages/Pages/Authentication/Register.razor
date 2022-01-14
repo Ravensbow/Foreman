@@ -1,26 +1,40 @@
 ﻿@page "/pages/authentication/register"
 @layout LoginLayout
 
+@inject HttpClient Http
+@inject NavigationManager NavMenager
 
+<EditForm Model="registerModel" OnValidSubmit="RegisterUser">
+    <DataAnnotationsValidator />
+    <MudText Typo="Typo.h4" GutterBottom="true">Sign Up</MudText>
+    @if(!success)
+    {
+        <MudAlert Severity="Severity.Error">Registration Failed!</MudAlert>
+    }
+    <MudText>Already have an account? <MudLink Href="/pages/authentication/login">Sign In</MudLink></MudText>
 
+    <MudTextField @bind-Value="@registerModel.FirstName" T="string" Label="First Name" For="@(() => registerModel.FirstName)" Variant="Variant.Outlined" Class="my-4"></MudTextField>
 
-<MudText Typo="Typo.h4" GutterBottom="true">Sign Up</MudText>
-<MudText>Already have an account? <MudLink Href="/pages/authentication/login">Sign In</MudLink></MudText>
+    <MudTextField @bind-Value="@registerModel.LastName" T="string" Label="Last Name" For="@(() => registerModel.LastName)" Variant="Variant.Outlined" Class="my-4"></MudTextField>
 
-<MudTextField T="string" Label="Username" Variant="Variant.Outlined" Class="my-4"></MudTextField>
+    <MudTextField @bind-Value="@registerModel.Email" T="string" Label="E-mail" For="@(() => registerModel.Email)" Variant="Variant.Outlined"></MudTextField>
 
-<MudTextField T="string" Label="E-mail" Variant="Variant.Outlined"></MudTextField>
+    <MudTextField @bind-Value="@registerModel.Password" For="@(() => registerModel.Password)" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" Class="mt-4"/>
 
-<MudTextField @bind-Value="@Password" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" Class="mt-4"/>
+    <MudTextField @bind-Value="@registerModel.ConfirmPassword" For="@(() => registerModel.ConfirmPassword)" Label="Confirm Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" Class="mt-4"/>
 
-<MudCheckBox @bind-Checked="@AgreeToTerms" Label="I agree to the terms and privacy" Color="Color.Primary" Class="ml-n1 my-3"></MudCheckBox>
+    <MudCheckBox @bind-Checked="@AgreeToTerms" Label="I agree to the terms and privacy" Color="Color.Primary" Class="ml-n1 my-3"></MudCheckBox>
 
-<MudButton Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!AgreeToTerms)" Link="/pages/authentication/login" Size="Size.Large" FullWidth="true">Register</MudButton>
-
+    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!AgreeToTerms)" Size="Size.Large" FullWidth="true">Register</MudButton>
+</EditForm>
 @code {
-    string Password { get; set; }
-    public bool AgreeToTerms { get; set; }
+    [Inject]
+    public Services.AccountService AccountService { get; set; }
 
+    public bool AgreeToTerms { get; set; }
+    bool success = true;
+
+    Foreman.Shared.Models.Account.RegisterModel registerModel = new Foreman.Shared.Models.Account.RegisterModel();
     bool PasswordVisibility;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
@@ -39,5 +53,12 @@
             PasswordInputIcon = Icons.Material.Filled.Visibility;
             PasswordInput = InputType.Text;
         }
+    }
+
+    async Task RegisterUser()
+    {
+        success = await AccountService.Register(registerModel);
+        if (success)
+            NavMenager.NavigateTo("/personal/dashboard", true);
     }
 }
