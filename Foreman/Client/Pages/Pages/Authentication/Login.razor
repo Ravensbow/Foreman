@@ -9,10 +9,7 @@
     <DataAnnotationsValidator/>
     
     <MudText Typo="Typo.h4" GutterBottom="true">Sign In</MudText>
-    @if (!success)
-    {
-        <MudAlert Severity="Severity.Error">Login Failed! Incorrect Email or Password.</MudAlert>
-    }
+    <ErrorMessage ApiResponse="apiResponse"></ErrorMessage>
     <MudText>Don't have an account? <MudLink Href="/pages/authentication/register">Sign Up</MudLink></MudText>
 
     <MudTextField T="string" @bind-Value="@loginModel.Email" Label="E-mail" Variant="Variant.Outlined" Class="my-6" For="@(()=>loginModel.Email)"></MudTextField>
@@ -34,9 +31,10 @@
 
     Foreman.Shared.Models.Account.LoginModel loginModel = new Foreman.Shared.Models.Account.LoginModel();
     bool PasswordVisibility;
-    bool success = true;
+    public HttpResponseMessage apiResponse;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    string errorMessage;
 
     void TogglePasswordVisibility()
     {
@@ -56,9 +54,9 @@
 
     async Task LoginUser()
     {
-        
-        success = await AccountService.Login(loginModel);
-        if (success)
+
+        apiResponse = await AccountService.Login(loginModel);
+        if (apiResponse.IsSuccessStatusCode)
             NavMenager.NavigateTo("/personal/dashboard", true);
     }
 }

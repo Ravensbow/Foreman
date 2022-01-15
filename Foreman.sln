@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foreman.Client", "Foreman\Client\Foreman.Client.csproj", "{B7E2833C-ABB9-4AF4-8A5F-1001E91B731F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foreman.Client", "Foreman\Client\Foreman.Client.csproj", "{B7E2833C-ABB9-4AF4-8A5F-1001E91B731F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foreman.Server", "Foreman\Server\Foreman.Server.csproj", "{19DDBD28-78BF-4367-99AB-51AFF14F972A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foreman.Server", "Foreman\Server\Foreman.Server.csproj", "{19DDBD28-78BF-4367-99AB-51AFF14F972A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foreman.Shared", "Foreman\Shared\Foreman.Shared.csproj", "{EB7080F0-DACA-4746-8576-844E5FEE34DC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foreman.Shared", "Foreman\Shared\Foreman.Shared.csproj", "{EB7080F0-DACA-4746-8576-844E5FEE34DC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

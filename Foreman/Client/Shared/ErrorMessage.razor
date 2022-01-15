@@ -1,0 +1,22 @@
+﻿
+@if (ApiResponse != null && !ApiResponse.IsSuccessStatusCode)
+{
+    <MudAlert Severity="Severity.Error">Login Failed! @errorMessage </MudAlert>
+}
+@code {
+    [Parameter]
+    public HttpResponseMessage ApiResponse { get; set;}
+    string errorMessage;
+    string content;
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if(ApiResponse != null)
+        {
+            content = await ApiResponse.Content.ReadAsStringAsync();
+            errorMessage = (string)Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(content).detail;
+        }
+    }
+}
+ 

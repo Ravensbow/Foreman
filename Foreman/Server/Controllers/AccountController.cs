@@ -49,7 +49,7 @@ namespace Foreman.Server.Controllers
             }
             else
             {
-                return this.Problem("Invalid login attempt.");
+                return this.Problem("Invalid login attempt");
             }
         }
 
@@ -88,9 +88,29 @@ namespace Foreman.Server.Controllers
                 //    await _signInManager.SignInAsync(user, isPersistent: false);
                 //    return LocalRedirect(returnUrl);
                 //}
-                return Ok();
+                return Ok( new { code, userId});
             }
             return Problem("Cos nie tego");
+        }
+        [HttpGet]
+        public async Task<IActionResult> ConfirmEmail(int userid, string code)
+        {
+            var user = await _userManager.FindByIdAsync(userid.ToString());
+            if (user == null)
+            {
+                return NotFound($"Unable to load user with ID '{userid}'.");
+            }
+
+            code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
+            var result = await _userManager.ConfirmEmailAsync(user, code);
+            if (result.Succeeded)
+            {
+                return Ok();
+            }
+            else
+            {
+                return Problem("Error confirming your email.");
+            }
         }
         private UserProfile CreateUser()
         {

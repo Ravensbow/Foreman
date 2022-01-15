@@ -1,0 +1,28 @@
+﻿@page "/pages/authentication/confirm-register/{userid:int}/{code}"
+@layout LoginLayout
+@inject HttpClient Http
+@inject NavigationManager NavMenager
+
+<h1>Confirm register</h1>
+
+<p>
+    This app does not currently have a real email sender registered, see <a href="https://aka.ms/aspaccountconf">these docs</a> for how to configure a real email sender.
+    Normally this would be emailed: <MudButton OnClick="Confirm">Click here to confirm your account</MudButton>
+</p>
+
+@code {
+    [Inject]
+    public Services.AccountService AccountService { get; set; }
+    [Parameter]
+    public string Code { get; set; }
+    public int UserId { get; set; }
+
+    async Task Confirm()
+    {
+        var apiResponse = await AccountService.ConfirmEmail(Code, UserId);
+        if (apiResponse.IsSuccessStatusCode)
+        {
+          
+        }
+    }
+}

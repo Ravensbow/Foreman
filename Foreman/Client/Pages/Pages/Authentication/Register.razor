@@ -7,9 +7,9 @@
 <EditForm Model="registerModel" OnValidSubmit="RegisterUser">
     <DataAnnotationsValidator />
     <MudText Typo="Typo.h4" GutterBottom="true">Sign Up</MudText>
-    @if(!success)
+    @if( apiResponse != null && !apiResponse.IsSuccessStatusCode)
     {
-        <MudAlert Severity="Severity.Error">Registration Failed!</MudAlert>
+        <MudAlert Severity="Severity.Error">Registration Failed! @(!string.IsNullOrEmpty(apiResponse.ReasonPhrase)?apiResponse.ReasonPhrase:"")</MudAlert>
     }
     <MudText>Already have an account? <MudLink Href="/pages/authentication/login">Sign In</MudLink></MudText>
 
@@ -32,7 +32,7 @@
     public Services.AccountService AccountService { get; set; }
 
     public bool AgreeToTerms { get; set; }
-    bool success = true;
+    HttpResponseMessage apiResponse;
 
     Foreman.Shared.Models.Account.RegisterModel registerModel = new Foreman.Shared.Models.Account.RegisterModel();
     bool PasswordVisibility;
@@ -57,8 +57,8 @@
 
     async Task RegisterUser()
     {
-        success = await AccountService.Register(registerModel);
-        if (success)
-            NavMenager.NavigateTo("/personal/dashboard", true);
+        apiResponse = await AccountService.Register(registerModel);
+        if (apiResponse.IsSuccessStatusCode)
+            NavMenager.NavigateTo("/pages/authentication/confirm-register/elo", true);
     }
 }

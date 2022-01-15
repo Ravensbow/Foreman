@@ -13,23 +13,23 @@ namespace Foreman.Client.Services
         {
             _httpClient = httpClient;
         }
-        public async Task<bool> Login(LoginModel loginModel)
+        public async Task<HttpResponseMessage> Login(LoginModel loginModel)
         {
             HttpContent c = new StringContent(JsonConvert.SerializeObject(loginModel), Encoding.UTF8, "application/json");
             var apiResponse = await _httpClient.PostAsync($"Account/Login", c);
-            if(apiResponse.IsSuccessStatusCode)
-                return true;
-            else
-                return false;
+            return apiResponse;
         }
-        public async Task<bool> Register(RegisterModel registerModel)
+        public async Task<HttpResponseMessage> Register(RegisterModel registerModel)
         {
             HttpContent c = new StringContent(JsonConvert.SerializeObject(registerModel), Encoding.UTF8, "application/json");
             var apiResponse = await _httpClient.PostAsync($"Account/Register", c);
-            if (apiResponse.IsSuccessStatusCode)
-                return true;
-            else
-                return false;
+            return apiResponse;
+        }
+
+        public async Task <HttpResponseMessage> ConfirmEmail(string code, int userid)
+        {
+            var apiResponse = await _httpClient.GetAsync($"Account/Register/"+userid+"/"+code);
+            return apiResponse;
         }
     }
 }
