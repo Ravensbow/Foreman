@@ -1,5 +1,6 @@
 ﻿using Foreman.Shared.Data.Identity;
 using Foreman.Shared.Models.Account;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -111,6 +112,10 @@ namespace Foreman.Server.Controllers
             {
                 return Problem("Error confirming your email.");
             }
+        }
+        public string IsAuth()
+        {
+            return User.Identity?.IsAuthenticated.ToString();
         }
         private UserProfile CreateUser()
         {

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Foreman.Shared.Data.Courses;
+using Foreman.Shared.Data.Plugin;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.ApiAuthorization.IdentityServer;
 using Microsoft.Extensions.Options;
@@ -19,9 +20,10 @@ namespace Foreman.Server.Data
         public DbSet<CourseCategory> CourseCategories { get; set; }
         public DbSet<CourseModule> CourseModules { get; set; }
         public DbSet<CourseSection> CourseSections { get; set; }
+        public DbSet<Plugin> Plugins { get; set; }
 
         public ApplicationContext(
-            DbContextOptions options,
+            DbContextOptions<ApplicationContext> options,
             IOptions<OperationalStoreOptions> operationalStoreOptions) : base(options, operationalStoreOptions)
         {
         }
@@ -39,7 +41,8 @@ namespace Foreman.Server.Data
             UserProfileFluentApi(modelBuilder);
             InstitutionFluentApi(modelBuilder);
             UserAssigmentFluentApi(modelBuilder);
-
+            //Plugins
+            PluginFluentApi(modelBuilder);
             base.OnModelCreating(modelBuilder);
         }
 
@@ -149,9 +152,12 @@ namespace Foreman.Server.Data
         {
             modelBuilder.Entity<UserAssigment>().HasOne(ua => ua.UserProfile)
                 .WithMany(up => up.UserAssigments);
-        } 
+        }
         #endregion
-
+        protected void PluginFluentApi(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Plugin>().HasKey(p => p.Id);            
+        }
 
     }
 }

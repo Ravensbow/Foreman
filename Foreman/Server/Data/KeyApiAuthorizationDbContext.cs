@@ -30,7 +30,7 @@ namespace Foreman.Server.Data
         /// <param name="options">The <see cref="DbContextOptions"/>.</param>
         /// <param name="operationalStoreOptions">The <see cref="IOptions{OperationalStoreOptions}"/>.</param>
         public KeyApiAuthorizationDbContext(
-            DbContextOptions options,
+            DbContextOptions<ApplicationContext> options,
             IOptions<OperationalStoreOptions> operationalStoreOptions)
             : base(options)
         {
@@ -72,7 +72,7 @@ namespace Foreman.Server.Data
         /// <param name="options">The <see cref="DbContextOptions"/>.</param>
         /// <param name="operationalStoreOptions">The <see cref="IOptions{OperationalStoreOptions}"/>.</param>
         public ApiAuthorizationDbContext(
-            DbContextOptions options,
+            DbContextOptions<ApplicationContext> options,
             IOptions<OperationalStoreOptions> operationalStoreOptions)
             : base(options, operationalStoreOptions)
         {

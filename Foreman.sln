@@ -9,6 +9,14 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foreman.Server", "Foreman\S
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Foreman.Shared", "Foreman\Shared\Foreman.Shared.csproj", "{EB7080F0-DACA-4746-8576-844E5FEE34DC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Foreman.PluginManager", "Foreman.PluginManager\Foreman.PluginManager.csproj", "{9D30FA9F-3D12-4C94-BDE2-219354B62CB5}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "..\..\source\repos\TestController\Test.csproj", "{72BDBBE6-29D7-48A4-A703-5879CE52664F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MigrationGenerator", "MigrationGenerator\MigrationGenerator.csproj", "{AEE3213E-38AE-4301-AA8C-9F18B25C3117}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestRazor", "TestRazor\TestRazor.csproj", "{D2B203BA-7953-4CBC-9585-B2E04D97659F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +35,22 @@ Global
 		{EB7080F0-DACA-4746-8576-844E5FEE34DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB7080F0-DACA-4746-8576-844E5FEE34DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB7080F0-DACA-4746-8576-844E5FEE34DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D30FA9F-3D12-4C94-BDE2-219354B62CB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D30FA9F-3D12-4C94-BDE2-219354B62CB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D30FA9F-3D12-4C94-BDE2-219354B62CB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D30FA9F-3D12-4C94-BDE2-219354B62CB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72BDBBE6-29D7-48A4-A703-5879CE52664F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72BDBBE6-29D7-48A4-A703-5879CE52664F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72BDBBE6-29D7-48A4-A703-5879CE52664F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72BDBBE6-29D7-48A4-A703-5879CE52664F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEE3213E-38AE-4301-AA8C-9F18B25C3117}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEE3213E-38AE-4301-AA8C-9F18B25C3117}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEE3213E-38AE-4301-AA8C-9F18B25C3117}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEE3213E-38AE-4301-AA8C-9F18B25C3117}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2B203BA-7953-4CBC-9585-B2E04D97659F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2B203BA-7953-4CBC-9585-B2E04D97659F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2B203BA-7953-4CBC-9585-B2E04D97659F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2B203BA-7953-4CBC-9585-B2E04D97659F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

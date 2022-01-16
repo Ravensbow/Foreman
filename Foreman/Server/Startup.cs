@@ -11,6 +11,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Foreman.Shared.Data.Identity;
+using System.Reflection;
+using Microsoft.AspNetCore.Mvc.ApplicationParts;
+using System;
+using Foreman.Server.Utility;
 
 namespace Foreman.Server
 {
@@ -35,11 +39,17 @@ namespace Foreman.Server
                 .AddRoles<Role>()
                 .AddEntityFrameworkStores<ApplicationContext>();
             services.AddIdentityServer()
-                .AddApiAuthorization<UserProfile, ApplicationContext>()
-                .AddDeveloperSigningCredential();
+                .AddApiAuthorization<UserProfile, ApplicationContext>(options => {
+                    options.IdentityResources["openid"].UserClaims.Add("name");
+                    options.ApiResources.Single().UserClaims.Add("name");
+                    options.IdentityResources["openid"].UserClaims.Add("role");
+                    options.ApiResources.Single().UserClaims.Add("role");
+                })
+                /*.AddDeveloperSigningCredential()*/;
+            
             services.AddAuthentication()
                 .AddIdentityServerJwt();
-            services.AddRazorPages();
+            services.LoadPlugins(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
