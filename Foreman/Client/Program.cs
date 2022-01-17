@@ -38,20 +38,16 @@ namespace Foreman.Client
                     .GetService<PluginService>();
 
             var temp = await ps.GetPluginNames();
-            List<Tuple<byte[],byte[]>>assemblyDatas = new List<Tuple<byte[], byte[]>>();
+            List<byte[]>assemblyDatas = new List<byte[]>();
             foreach (var name in temp)
             {
-                Tuple<byte[], byte[]> assemblyData = await ps.GetPluginByName(name);
+                byte[] assemblyData = await ps.GetPluginByName(name);
                 assemblyDatas.Add(assemblyData);
             }
 
             builder.Services.AddSingleton<IComponentService>( _ =>
             {
                 var service = new ComponentService();
-                //foreach (var component in assemblyDatas)
-                //{
-                //    Assembly.Load(component);
-                //}
                 service.LoadComponents(assemblyDatas);
                 return service;
             });

@@ -12,6 +12,11 @@ namespace TestController
 {
     public class Test : IPlugin
     {
+        public string GetPluginDescription()
+        {
+            throw new NotImplementedException();
+        }
+
         public string GetPluginName() => "Test";
 
         public string GetPluginVersion() => "2022011501";

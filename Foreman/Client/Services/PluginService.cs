@@ -13,10 +13,10 @@ namespace Foreman.Client.Services
         {
             _httpClient = httpClient;
         }
-        public async Task<Tuple<byte[], byte[]>> GetPluginByName(string name)
+        public async Task<byte[]> GetPluginByName(string name)
         {
-            var dlls = await _httpClient.GetFromJsonAsync<Tuple<byte[],byte[]>>($"Plugin/GetByName/" + name);
-            return dlls;
+            var dll = await _httpClient.GetFromJsonAsync<byte[]>($"Plugin/GetByName/" + name);
+            return dll;
         }
         public async Task<string[]> GetPluginNames()
         {

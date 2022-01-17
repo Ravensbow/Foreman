@@ -19,21 +19,12 @@ namespace Foreman.Server.Controllers
             db = ac;
         }
         [HttpGet("GetByName/{name}")]
-        public Tuple<byte[],byte[]> GetByName(string name)
+        public byte[] GetByName(string name)
         {
-            string pathRazor = AppDomain.CurrentDomain.BaseDirectory+$"Plugins\\{name}\\{name}Razor.dll";
             string path = AppDomain.CurrentDomain.BaseDirectory+$"Plugins\\{name}\\{name}.dll";
-            //return System.IO.File.Open(path,FileMode.Open);
-            //var assembly = Assembly.LoadFile(path);
             var dll = System.IO.File.ReadAllBytes(path);
-            var dllRazor = System.IO.File.ReadAllBytes(pathRazor);
-            
-            return new Tuple<byte[],byte[]>(dll, dllRazor);
-            //var hash = new Hash(assembly);
-            //var dllAsArray = (byte[])hash.GetType()
-            //    .GetMethod("GetRawData", BindingFlags.Instance | BindingFlags.NonPublic)
-            //    .Invoke(hash, new object[0]);
-            //return dllAsArray;
+
+            return dll;
         }
         [HttpGet("PluginNames")]
         public string[] PluginNames()

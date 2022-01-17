@@ -6,6 +6,7 @@ namespace Foreman.PluginManager
     public interface IPlugin
     {
         public string GetPluginName();
+        public string GetPluginDescription();
         public string GetPluginVersion();
         void Initialize(IServiceCollection services, IConfiguration configuration);
         void Migrate(IServiceCollection services);
