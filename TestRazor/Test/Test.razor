@@ -1,15 +1,15 @@
 ﻿@inject HttpClient http
 <div>
     Siema to sa Texty:
-    @foreach(var t in DisplayedTexts)
+    @*@foreach(var t in DisplayedTexts)
     {
         <p>@t</p>
-    }
+    }*@
 </div>
 @code{
-    List<TestController.DisplayedText> DisplayedTexts;
+    //List<TestController.DisplayedText> DisplayedTexts;
     protected override async Task OnInitializedAsync()
     {
-        DisplayedTexts = await http.GetFromJsonAsync<List<TestController.DisplayedText>>("test/all") ?? new List<TestController.DisplayedText>();
+        //DisplayedTexts = await http.GetFromJsonAsync<List<TestController.DisplayedText>>("test/all") ?? new List<TestController.DisplayedText>();
     }
 }

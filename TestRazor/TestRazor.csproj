@@ -16,7 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\source\repos\TestController\Test.csproj" />
+    <ProjectReference Include="..\TestController\Test.csproj" />
   </ItemGroup>
 
 </Project>

@@ -11,10 +11,10 @@ namespace Foreman.Client.Utilites
     {
         public IEnumerable<Type> Components { get; private set; }
 
-        public void LoadComponents(IEnumerable<byte[]> ass)
+        public void LoadComponents(IEnumerable<Tuple<byte[], byte[]>> dlls)
         {
             var components = new List<Type>();
-            var assemblies = LoadAssemblies(ass);
+            var assemblies = LoadAssemblies(dlls);
 
             foreach (var asm in assemblies)
             {
@@ -36,10 +36,10 @@ namespace Foreman.Client.Utilites
                 .SingleOrDefault(x => x.Page == name);
         }
 
-        private IEnumerable<Assembly> LoadAssemblies(IEnumerable<byte[]> ass)
+        private IEnumerable<Assembly> LoadAssemblies(IEnumerable<Tuple<byte[], byte[]>> ass)
         {
             //var temp = Directory.GetDirectories(path);
-            return ass.Select(dll => Assembly.Load(dll)).ToList();
+            return ass.Select(dll => Assembly.Load(dll.Item1)).Union(ass.Select(dll2 => Assembly.Load(dll2.Item2))).ToList();
         }
 
         private IEnumerable<Type> GetTypesWithInterface(Assembly asm)

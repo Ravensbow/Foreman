@@ -38,10 +38,10 @@ namespace Foreman.Client
                     .GetService<PluginService>();
 
             var temp = await ps.GetPluginNames();
-            List<byte[]>assemblyDatas = new List<byte[]>();
+            List<Tuple<byte[],byte[]>>assemblyDatas = new List<Tuple<byte[], byte[]>>();
             foreach (var name in temp)
             {
-                byte[] assemblyData = await ps.GetPluginByName(name);
+                Tuple<byte[], byte[]> assemblyData = await ps.GetPluginByName(name);
                 assemblyDatas.Add(assemblyData);
             }
 

@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
@@ -12,10 +13,10 @@ namespace Foreman.Client.Services
         {
             _httpClient = httpClient;
         }
-        public async Task<byte[]> GetPluginByName(string name)
+        public async Task<Tuple<byte[], byte[]>> GetPluginByName(string name)
         {
-            var temp = await _httpClient.GetByteArrayAsync($"Plugin/GetByName/" + name);
-            return temp;
+            var dlls = await _httpClient.GetFromJsonAsync<Tuple<byte[],byte[]>>($"Plugin/GetByName/" + name);
+            return dlls;
         }
         public async Task<string[]> GetPluginNames()
         {
