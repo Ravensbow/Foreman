@@ -1,0 +1,43 @@
+﻿<MudText Typo="Typo.h3">Dodaj moduł DisplayedText</MudText>
+@inject HttpClient http
+
+<EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+<DataAnnotationsValidator/>
+<MudGrid>
+    <MudItem xs="12" sm="7">
+        <MudCard>
+            <MudCardContent>
+                <MudTextField Label="Nazwa" HelperText="Nazwa wyswietlana jako nagłówek modułu"
+                              @bind-Value="model.Name" For="@(() => model.Name)"/>
+                <MudTextField Label="Tekst" HelperText="Zawartość"
+                              @bind-Value="model.Content" For="@(() => model.Content)" Required/>
+                <input type="hidden" @bind-value="model.CourseId"/>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Dodaj</MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int CourseId { get; set; }
+
+    Data.Text model = new Data.Text();
+
+    protected override void OnInitialized()
+    {
+        model.CourseId = CourseId;
+    }
+
+    public async Task OnValidSubmit()
+    {
+        var response = await http.PostAsJsonAsync<Data.Text>("/displayedtext/displayed/add",model);
+        if (response.IsSuccessStatusCode)
+            Console.WriteLine("Success");
+        else
+            Console.WriteLine("Error");
+    }
+}

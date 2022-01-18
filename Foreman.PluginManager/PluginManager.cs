@@ -18,4 +18,14 @@ namespace Foreman.PluginManager
         string Page { get; }
         Type Component { get; }
     }
+
+    public interface IPluginInstance
+    {
+        int Id { get; set; }
+        int CourseId { get; set; }
+        string? Name { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime? ModifiedDate { get; set; }
+        public int? UserCreatorId { get; set; }
+    }
 }

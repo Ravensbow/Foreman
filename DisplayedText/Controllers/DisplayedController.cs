@@ -27,10 +27,11 @@ namespace DisplayedText.Controllers
             return $"Plugin Controller v 1.0 {_service.Test()}";
         }
 
-        [HttpGet("Add/{text}")]
-        public IActionResult Add(string text)
+        [HttpPost("Add")]
+        public IActionResult Add(Text text)
         {
-            _context.Add(new Text { Content = text });
+            text.CreatedDate = DateTime.Now;
+            _context.Add(text);
             _context.SaveChanges();
             return Ok();
         }
