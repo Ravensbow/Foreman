@@ -15,6 +15,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using System;
 using Foreman.Server.Utility;
+using Foreman.Server.Authorization;
 
 namespace Foreman.Server
 {
@@ -44,11 +45,14 @@ namespace Foreman.Server
                     options.ApiResources.Single().UserClaims.Add("name");
                     options.IdentityResources["openid"].UserClaims.Add("role");
                     options.ApiResources.Single().UserClaims.Add("role");
+                    options.IdentityResources["openid"].UserClaims.Add("Institution");
+                    options.ApiResources.Single().UserClaims.Add("Institution");
                 })
                 /*.AddDeveloperSigningCredential()*/;
             
             services.AddAuthentication()
                 .AddIdentityServerJwt();
+            services.AddSingleton<IAuthorizationHandler, InstitutionMemberRequirementHandler>();
             services.LoadPlugins(Configuration);
         }
 

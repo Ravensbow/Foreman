@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
@@ -70,6 +71,8 @@ namespace Foreman.Server.Controllers
 
                 var userId = await _userManager.GetUserIdAsync(user);
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var institutionClaim = new Claim("Institution", "1");
+                await _userManager.AddClaimAsync(user, institutionClaim);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                 var callbackUrl = Url.Page(
                     "/Account/ConfirmEmail",
@@ -79,16 +82,6 @@ namespace Foreman.Server.Controllers
 
                 await _emailSender.SendEmailAsync(registerModel.Email, "Confirm your email",
                     $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
-                //if (_userManager.Options.SignIn.RequireConfirmedAccount)
-                //{
-                //    return RedirectToPage("RegisterConfirmation", new { email = registerModel.Email, returnUrl = returnUrl });
-                //}
-                //else
-                //{
-                //    await _signInManager.SignInAsync(user, isPersistent: false);
-                //    return LocalRedirect(returnUrl);
-                //}
                 return Ok( new { code, userId});
             }
             return Problem("Cos nie tego");

@@ -23,13 +23,20 @@ namespace Foreman.Server.Controllers
         {
             string path = AppDomain.CurrentDomain.BaseDirectory+$"Plugins\\{name}\\{name}.dll";
             var dll = System.IO.File.ReadAllBytes(path);
-
+            var test = User.HasClaim("Institution", "1");
             return dll;
         }
         [HttpGet("PluginNames")]
         public string[] PluginNames()
         {
             return db.Plugins.Select(x=>x.Name).ToArray();
+        }
+        [HttpPost("AddModule")]
+        public IActionResult AddInstance(Shared.Data.Courses.CourseModule cm)
+        {
+            db.CourseModules.Add(cm);
+            db.SaveChanges();
+            return Ok();
         }
     }
 }

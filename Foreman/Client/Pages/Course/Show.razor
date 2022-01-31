@@ -1,0 +1,38 @@
+﻿@page "/course/show/{courseId:int}"
+@using Foreman.Shared.Data.Courses
+@inject HttpClient Http
+
+@if (course == null)
+{
+    <span>Loading...</span>
+}
+else
+{
+    <h3>@course.FullName</h3>
+
+    @foreach (var sec in course.CourseSections ?? new List<CourseSection>())
+    {
+        <h4>@sec.Name</h4>
+        <span>@sec.Description</span>
+        @foreach (var module in sec.CourseModules ?? new List<CourseModule>())
+        {
+            <h5>Moduł</h5>
+        }
+    }
+}
+
+
+@code {
+    [Parameter]
+    public int CourseId { get; set; }
+    Foreman.Shared.Data.Courses.Course course;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await Http.GetAsync("/course/GetCourseById/"+CourseId);
+        if (result.IsSuccessStatusCode)
+        {
+            course = Newtonsoft.Json.JsonConvert.DeserializeObject<Course>(await result.Content.ReadAsStringAsync());
+        }
+    }
+}

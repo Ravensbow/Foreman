@@ -1,7 +1,12 @@
 ﻿@page "/plugin/{componentName}/add/{courseId:int}"
 @inject IComponentService ComponentService
+<EditForm OnValidSubmit="AddModule">
+    <DataAnnotationsValidator/>
 
-@dynamicComponent()
+    @dynamicComponent()
+    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large" FullWidth="true">Add</MudButton>
+</EditForm>
+
 
 @code{
     [Parameter]
@@ -23,4 +28,9 @@
 
         builder.CloseComponent();
     };
+
+    public async Task AddModule()
+    {
+        
+    }
 }

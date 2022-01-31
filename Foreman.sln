@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestRazor", "TestRazor\Test
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "TestController\Test.csproj", "{153D7ED3-723F-408D-8DA9-17DCD71C1531}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DisplayedText", "DisplayedText\DisplayedText.csproj", "{17A703D5-740B-49C6-ACB1-CE3E3A264031}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DisplayedText", "DisplayedText\DisplayedText.csproj", "{17A703D5-740B-49C6-ACB1-CE3E3A264031}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

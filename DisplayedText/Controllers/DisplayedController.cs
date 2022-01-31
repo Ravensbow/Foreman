@@ -33,13 +33,18 @@ namespace DisplayedText.Controllers
             text.CreatedDate = DateTime.Now;
             _context.Add(text);
             _context.SaveChanges();
-            return Ok();
+            return Ok(text.Id);
         }
 
         [HttpGet("All")]
         public Text[] All()
         {
             return _context.Texts.ToArray();
+        }
+        [HttpGet("{id}")]
+        public Text? Get(int id)
+        {
+            return _context.Texts.Find(id);
         }
     }
 }
