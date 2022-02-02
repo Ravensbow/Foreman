@@ -6,19 +6,26 @@ using System.Text;
 using System.Threading.Tasks;
 using DisplayedText.Services;
 using DisplayedText.Data;
+using Foreman.Shared.Services;
+//using Foreman.Shared.Filters;
+
 namespace DisplayedText.Controllers
 {
     [ApiController]
     [Route("displayedtext/[controller]")]
-    public class DisplayedController : ControllerBase
+    public class ManagementController : ControllerBase
     {
         private DisplayedTextContext _context;
         private DisplayedTextService _service;
+        private ICourseService _courseService;
 
-        public DisplayedController(DisplayedTextContext c, DisplayedTextService s)
+        public ICourseService CourseService { get { return _courseService; } }
+
+        public ManagementController(DisplayedTextContext c, DisplayedTextService s, ICourseService courseService)
         {
             _context = c;
             _service = s;
+            _courseService = courseService;
         }
 
         [HttpGet("Version")]
@@ -28,6 +35,8 @@ namespace DisplayedText.Controllers
         }
 
         [HttpPost("Add")]
+        //[TypeFilter(typeof(IsCourseManager), Arguments = new object[] { typeof(Text) })]
+        //[IsCourseManager(typeof(Text))]
         public IActionResult Add(Text text)
         {
             text.CreatedDate = DateTime.Now;
@@ -45,6 +54,12 @@ namespace DisplayedText.Controllers
         public Text? Get(int id)
         {
             return _context.Texts.Find(id);
+        }
+        [HttpGet("GetCategory/{id}")]
+        public IActionResult GetCategory(int id)
+        {
+            var categoryId = _courseService.GetCategoryId(id);
+            return Ok(categoryId);
         }
     }
 }

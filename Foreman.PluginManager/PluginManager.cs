@@ -19,7 +19,7 @@ namespace Foreman.PluginManager
         Type Component { get; }
     }
 
-    public interface IPluginInstance
+    public interface IModuleInstance
     {
         int Id { get; set; }
         int CourseId { get; set; }

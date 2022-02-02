@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DisplayedText.Data
 {
-    public class Text : Foreman.PluginManager.IPluginInstance
+    public class Text : Foreman.PluginManager.IModuleInstance
     {
         public int Id { get; set; }
         [Required]

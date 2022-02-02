@@ -1,0 +1,36 @@
+﻿@inject HttpClient http
+
+<EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
+    <DataAnnotationsValidator/>
+    @ChildContent
+    <input type="hidden" @bind="Model.CourseId"/>
+    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Add</MudButton>
+</EditForm>
+
+@code{
+    [Parameter]
+    public Foreman.PluginManager.IModuleInstance Model { get; set; }
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [CascadingParameter]
+    protected string componentName { get; set; }
+
+    [CascadingParameter]
+    protected int courseId { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Model.CourseId = courseId;
+    }
+
+    public async Task OnValidSubmit()
+    {
+        var postdata = new StringContent(System.Text.Json.JsonSerializer.Serialize(Model), System.Text.Encoding.UTF8, "application/json");
+        var response = await http.PostAsync("/"+componentName+"/Management/Add", postdata);
+        if(!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine(await response.Content.ReadAsStringAsync());
+        }
+    }
+}

@@ -16,6 +16,8 @@ using Microsoft.AspNetCore.Mvc.ApplicationParts;
 using System;
 using Foreman.Server.Utility;
 using Foreman.Server.Authorization;
+using Foreman.Shared.Services;
+using Foreman.Server.Services;
 
 namespace Foreman.Server
 {
@@ -53,6 +55,7 @@ namespace Foreman.Server
             services.AddAuthentication()
                 .AddIdentityServerJwt();
             services.AddSingleton<IAuthorizationHandler, InstitutionMemberRequirementHandler>();
+            services.AddScoped<ICourseService, CourseService>();
             services.LoadPlugins(Configuration);
         }
 
