@@ -8,10 +8,10 @@ namespace Foreman.Client.Services
 {
     public class PluginService
     {
-        private readonly HttpClient _httpClient;
-        public PluginService(HttpClient httpClient)
+        private HttpClient _httpClient;
+        public PluginService(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClientFactory.CreateClient("Foreman.ServerAPI.Public");
         }
         public async Task<byte[]> GetPluginByName(string name)
         {

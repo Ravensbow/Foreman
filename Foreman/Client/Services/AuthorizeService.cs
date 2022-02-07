@@ -7,7 +7,7 @@ namespace Foreman.Client.Services
     public class AuthorizeService
     {
 
-        private readonly HttpClient _httpClient;
+        private HttpClient _httpClient;
 
         public AuthorizeService(IHttpClientFactory httpClientFactory)
         {

@@ -1,7 +1,7 @@
 ﻿
 @if (ApiResponse != null && !ApiResponse.IsSuccessStatusCode)
 {
-    <MudAlert Severity="Severity.Error">Login Failed! @errorMessage </MudAlert>
+    <MudAlert Severity="Severity.Error"> @errorMessage </MudAlert>
 }
 @code {
     [Parameter]
@@ -12,7 +12,7 @@
 
     protected override async Task OnParametersSetAsync()
     {
-        if(ApiResponse != null)
+        if(ApiResponse != null && !ApiResponse.IsSuccessStatusCode)
         {
             content = await ApiResponse.Content.ReadAsStringAsync();
             errorMessage = (string)Newtonsoft.Json.JsonConvert.DeserializeObject<dynamic>(content).detail;

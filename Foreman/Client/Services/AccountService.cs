@@ -8,10 +8,10 @@ namespace Foreman.Client.Services
 {
     public class AccountService
     {
-        private readonly HttpClient _httpClient;
-        public AccountService(HttpClient httpClient)
+        private HttpClient _httpClient;
+        public AccountService(IHttpClientFactory httpClientFactory)
         {
-            _httpClient = httpClient;
+            _httpClient = httpClientFactory.CreateClient("Foreman.ServerAPI.Public");
         }
         public async Task<HttpResponseMessage> Login(LoginModel loginModel)
         {

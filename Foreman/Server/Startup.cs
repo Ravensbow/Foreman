@@ -49,6 +49,8 @@ namespace Foreman.Server
                     options.ApiResources.Single().UserClaims.Add("role");
                     options.IdentityResources["openid"].UserClaims.Add("Institution");
                     options.ApiResources.Single().UserClaims.Add("Institution");
+                    options.IdentityResources["openid"].UserClaims.Add("CourseManager");
+                    options.ApiResources.Single().UserClaims.Add("CourseManager");
                 })
                 /*.AddDeveloperSigningCredential()*/;
             

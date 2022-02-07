@@ -2,6 +2,8 @@
 using Foreman.Shared.Data.Courses;
 using Foreman.Server.Data;
 using Microsoft.AspNetCore.Authorization;
+using System.Linq;
+using System;
 
 namespace Foreman.Server.Controllers
 {
@@ -15,12 +17,42 @@ namespace Foreman.Server.Controllers
             _context = ap;
         }
         [HttpGet("GetCourseById/{id}")]
-        public ActionResult GetCourseById(int id)
+        public IActionResult GetCourseById(int id)
         {
             var course = _context.Courses.Find(id);
             if(course.InstitutionId != null && !User.HasClaim("Institution",course.InstitutionId.ToString()))
                 return Forbid();
             return Ok(course);
+        }
+        [HttpGet("GetCategorys/{id?}")]
+        public IActionResult GetCategorys(int? id)
+        {
+            try
+            {
+                string[] institutions = User.Claims.Where(c => c.Type == "Institution").Select(c => c.Value).ToArray();
+                if (id == null)
+                {
+                    
+                    return Ok(_context.CourseCategories.Where(x =>
+                            x.ParentCategoryId == null
+                            && x.IsVisible == true
+                            && (x.InstitutionId == null || institutions.Contains(x.InstitutionId.Value.ToString())))
+                        .ToList());
+                }
+                else
+                {
+                    return Ok(_context.CourseCategories.Where(x =>
+                            x.ParentCategoryId == id.Value
+                            && x.IsVisible == true
+                            && (x.InstitutionId == null || institutions.Contains(x.InstitutionId.Value.ToString())))
+                        .ToList()
+                        .OrderBy(x=>(x.InstitutionId==null)?0:1).ThenBy(x=>x.Name));
+                }
+            }
+            catch(Exception ex)
+            {
+                return Problem(ex.Message);
+            }
         }
     }
 }

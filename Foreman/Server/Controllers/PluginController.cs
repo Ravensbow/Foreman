@@ -6,11 +6,13 @@ using System.Linq;
 using System;
 using System.Security.Policy;
 using System.IO;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Foreman.Server.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [AllowAnonymous]
     public class PluginController : ControllerBase
     {
         private ApplicationContext db;

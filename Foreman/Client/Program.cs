@@ -31,8 +31,11 @@ namespace Foreman.Client
                 .AddHttpMessageHandler<BaseAddressAuthorizationMessageHandler>();
             builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>()
                 .CreateClient("Foreman.ServerAPI"));
-            builder.Services.AddHttpClient<AccountService>(x => x.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));      
-            builder.Services.AddHttpClient<PluginService>(x => x.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
+
+            builder.Services.AddHttpClient("Foreman.ServerAPI.Public", client => client.BaseAddress = new Uri(builder.HostEnvironment.BaseAddress));
+
+            builder.Services.AddSingleton<AccountService>();      
+            builder.Services.AddSingleton<PluginService>();
             builder.Services.AddSingleton<AuthorizeService>();
 
             builder.Services.AddApiAuthorization();
@@ -49,7 +52,14 @@ namespace Foreman.Client
                             //var r = test.GetFromJsonAsync<bool>($"Authorize/CanEditCourse?courseId={id}");
                             AuthorizeService  authService = builder.Services.BuildServiceProvider()
                                 .GetService<AuthorizeService>();
-                            await authService.CanEditCourse(id);
+                            try
+                            {
+                                return await authService.CanEditCourse(id);
+                            }
+                            catch (AccessTokenNotAvailableException ex)
+                            {
+                                ex.Redirect();
+                            }
                         }
                         return false;
                     })
