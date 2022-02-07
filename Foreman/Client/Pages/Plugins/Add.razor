@@ -1,6 +1,6 @@
 ﻿@page "/plugin/{componentName}/add/{courseId:int}"
 @inject IComponentService ComponentService
-
+@attribute [Authorize(Policy = "CanEditCourse")]
 <CascadingValue Value="courseId">
     <CascadingValue Value="componentName">
         @dynamicComponent()

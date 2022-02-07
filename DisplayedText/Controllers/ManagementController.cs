@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DisplayedText.Services;
 using DisplayedText.Data;
 using Foreman.Shared.Services;
+using Microsoft.AspNetCore.Authorization;
 //using Foreman.Shared.Filters;
 
 namespace DisplayedText.Controllers
@@ -18,14 +19,17 @@ namespace DisplayedText.Controllers
         private DisplayedTextContext _context;
         private DisplayedTextService _service;
         private ICourseService _courseService;
+        private IAuthorizeService _authorizeService;
 
         public ICourseService CourseService { get { return _courseService; } }
+        public IAuthorizeService AuthorizeService { get { return _authorizeService; } }
 
-        public ManagementController(DisplayedTextContext c, DisplayedTextService s, ICourseService courseService)
+        public ManagementController(DisplayedTextContext c, DisplayedTextService s, ICourseService courseService, IAuthorizeService authorizeService)
         {
             _context = c;
             _service = s;
             _courseService = courseService;
+            _authorizeService = authorizeService;
         }
 
         [HttpGet("Version")]
@@ -35,10 +39,11 @@ namespace DisplayedText.Controllers
         }
 
         [HttpPost("Add")]
-        //[TypeFilter(typeof(IsCourseManager), Arguments = new object[] { typeof(Text) })]
-        //[IsCourseManager(typeof(Text))]
+        [Authorize]
         public IActionResult Add(Text text)
         {
+            if (AuthorizeService.CanEditCourse(text.CourseId))
+                return Forbid("Brak uprawnień do edycji tego kursu");
             text.CreatedDate = DateTime.Now;
             _context.Add(text);
             _context.SaveChanges();

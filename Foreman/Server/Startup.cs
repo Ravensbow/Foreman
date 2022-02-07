@@ -54,8 +54,10 @@ namespace Foreman.Server
             
             services.AddAuthentication()
                 .AddIdentityServerJwt();
+            services.AddHttpContextAccessor();
             services.AddSingleton<IAuthorizationHandler, InstitutionMemberRequirementHandler>();
             services.AddScoped<ICourseService, CourseService>();
+            services.AddScoped<IAuthorizeService, AuthorizeService>();
             services.LoadPlugins(Configuration);
         }
 

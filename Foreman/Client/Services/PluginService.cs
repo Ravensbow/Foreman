@@ -15,7 +15,6 @@ namespace Foreman.Client.Services
         }
         public async Task<byte[]> GetPluginByName(string name)
         {
-            var temp = _httpClient.DefaultRequestHeaders.Authorization;
             var dll = await _httpClient.GetFromJsonAsync<byte[]>($"Plugin/GetByName/" + name);
             return dll;
         }

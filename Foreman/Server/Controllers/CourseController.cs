@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Foreman.Shared.Data.Courses;
 using Foreman.Server.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Foreman.Server.Controllers
 {
