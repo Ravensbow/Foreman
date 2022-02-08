@@ -1,0 +1,20 @@
+﻿@page "/category/add"
+@inject HttpClient httpClient
+
+<EditForm Model="categoryModel" OnValidSubmit="HandleAdd">
+    <MudText Typo="Typo.h4">Add new course category</MudText>
+    <MudField @bind-Value="categoryModel.Name" Label="Name" Class="mt-4"></MudField>
+    <MudField @bind-Value="categoryModel.Description" Label="Name" Class="mt-4"></MudField>
+    <MudCheckBox @bind-Checked="categoryModel.IsVisible" Label="Visibility" Class="mt-4"></MudCheckBox>
+    <MudAutocomplete Label="Parent category" T="string" AdornmentIcon="@Icons.Material.Filled.Search"/>
+  
+</EditForm>
+
+@code{
+    Foreman.Shared.Models.Category.CategoryModel categoryModel = new Foreman.Shared.Models.Category.CategoryModel();
+
+    public async Task HandleAdd()
+    {
+        
+    }
+}

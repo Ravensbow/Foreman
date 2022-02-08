@@ -18,13 +18,16 @@ namespace Foreman.Server.Controllers
     {
         private ApplicationContext db;
         private IAuthorizeService _authorizeService;
+        private IPluginService _pluginService;
 
         public IAuthorizeService AuthorizeService { get { return _authorizeService; } }
+        public IPluginService PluginService { get { return _pluginService; } }
 
-        public PluginController(ApplicationContext ac, IAuthorizeService authorizeService)
+        public PluginController(ApplicationContext ac, IAuthorizeService authorizeService, IPluginService pluginService)
         {
             db = ac;
             _authorizeService = authorizeService;   
+            _pluginService = pluginService;
         }
         [HttpGet("GetByName/{name}")]
         public byte[] GetByName(string name)
@@ -48,5 +51,11 @@ namespace Foreman.Server.Controllers
             db.SaveChanges();
             return Ok();
         }
+        [HttpGet("PluginNameById/{id}")]
+        public IActionResult PluginNameById(int id)
+        {
+            return Ok(PluginService.GetPluginName(id));
+        }
+
     }
 }

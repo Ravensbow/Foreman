@@ -23,5 +23,10 @@ namespace Foreman.Server.Services
         {
             return db.Plugins.SingleOrDefault(x=> x.Name == name)?.Id; 
         }
+
+        public string GetPluginName(int id)
+        {
+            return db.Plugins.Find(id).Name;
+        }
     }
 }

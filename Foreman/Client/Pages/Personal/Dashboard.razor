@@ -73,6 +73,7 @@
         httpResponseMessages.Add(result);
         if (result.IsSuccessStatusCode)
         {
+            var temp = await result.Content.ReadAsStringAsync();
             CategoryList = await result.Content.ReadFromJsonAsync<List<Foreman.Shared.Data.Courses.CourseCategory>>();
         }
     }

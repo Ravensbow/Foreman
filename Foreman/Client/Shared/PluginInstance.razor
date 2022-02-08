@@ -1,16 +1,34 @@
 ﻿@inject IComponentService ComponentService
+@inject IHttpClientFactory http
 
 @dynamicComponent()
 
 @code {
     [Parameter]
-    public string ComponentName { get; set; }
+    public int PluginId { get; set; }
     [Parameter]
     public int InstanceId { get; set; }
 
+    string componentName;
+    HttpClient? httpClient;
+
+    protected override async Task OnInitializedAsync()
+    {
+        httpClient = http.CreateClient("Foreman.ServerAPI");
+        var response = await httpClient.GetAsync($"Plugin/PluginNameById/{PluginId}");
+        if (!response.IsSuccessStatusCode)
+        {
+            //TODO: Komunikat
+            return;
+        }
+        componentName = await response.Content.ReadFromJsonAsync<string>();
+
+    }
+
     RenderFragment dynamicComponent() => builder =>
     {
-        var component = ComponentService.GetComponentByName(ComponentName);
+        System.Diagnostics.Debug.WriteLine("Elo elo:" + componentName);
+        var component = ComponentService.GetComponentByName("displayedtext" + "instance");
         builder.OpenComponent(0,component.Component);
 
         for (int i = 0; i < component.Parameters.Count; i++)

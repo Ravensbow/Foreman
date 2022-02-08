@@ -9,19 +9,15 @@
 else
 {
     <h3>@course.FullName</h3>
-
+    @foreach (var module in course.CourseModules ?? new List<CourseModule>())
+    {
+        <PluginInstance PluginId="module.PluginId.Value" InstanceId="module.InstanceId"></PluginInstance>
+    }
     @foreach (var sec in course.CourseSections ?? new List<CourseSection>())
     {
         <h4>@sec.Name</h4>
         <span>@sec.Description</span>
-        @foreach (var module in sec.CourseModules ?? new List<CourseModule>())
-        {
-            <h5>Moduł</h5>
-        }
-    }
-    @foreach (var module in course.CourseModules ?? new List<CourseModule>())
-    {
-        <h5>Moduł</h5>
+        
     }
 }
 

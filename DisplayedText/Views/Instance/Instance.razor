@@ -1,12 +1,28 @@
-﻿@inject HttpClient http
-<h3>Instance</h3>
+﻿@inject IHttpClientFactory http
+
+<MudContainer MaxWidth="MaxWidth.Small">
+    <MudText Typo="Typo.h3">@instance?.Name</MudText>
+    <MudText Typo="Typo.body2">@instance?.Content</MudText>
+</MudContainer>
 
 @code {
     [Parameter]
     public int InstanceId { get; set; }
 
+    HttpClient? httpClient;
+    Data.Text? instance;
+
     protected override async Task OnInitializedAsync()
     {
-        
+        httpClient = http.CreateClient("Foreman.ServerAPI");
+
+        var result = await httpClient.GetAsync($"displayedtext/management/{InstanceId}");
+
+        if (!result.IsSuccessStatusCode)
+        {
+            //TODO: Komunikat
+            return;
+        }
+        instance = await result.Content.ReadFromJsonAsync<Data.Text>();
     }
 }

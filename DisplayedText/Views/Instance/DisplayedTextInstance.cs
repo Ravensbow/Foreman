@@ -10,9 +10,9 @@ namespace DisplayedText.Views.Instance
     {
         public IDictionary<string, string> Parameters => new Dictionary<string, string>();
 
-        public string Name => "displayedtext";
+        public string Name => "displayedtextinstance";
 
-        public string Page => "displayedtext";
+        public string Page => "displayedtextinstance";
 
         public Type Component => typeof(Views.Instance.Instance);
     }
