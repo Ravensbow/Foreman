@@ -1,4 +1,5 @@
-﻿@inject HttpClient http
+﻿@inject System.Net.Http.IHttpClientFactory httpFacotry
+@inject NavigationManager navigator
 
 <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
     <DataAnnotationsValidator/>
@@ -19,18 +20,30 @@
     [CascadingParameter]
     protected int courseId { get; set; }
 
+    private HttpClient http;
+
     protected override void OnInitialized()
     {
         Model.CourseId = courseId;
+        http = httpFacotry.CreateClient("Foreman.ServerAPI");
     }
 
     public async Task OnValidSubmit()
     {
-        var postdata = new StringContent(System.Text.Json.JsonSerializer.Serialize(Model), System.Text.Encoding.UTF8, "application/json");
+        //string json = System.Text.Json.JsonSerializer.Serialize(Model);
+        string json = Newtonsoft.Json.JsonConvert.SerializeObject(Model);
+        var postdata = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+        postdata.Headers.ContentType = new  System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
         var response = await http.PostAsync("/"+componentName+"/Management/Add", postdata);
-        if(!response.IsSuccessStatusCode)
+        if(response.IsSuccessStatusCode)
         {
-            Console.WriteLine(await response.Content.ReadAsStringAsync());
+            int id = await response.Content.ReadFromJsonAsync<int>();
+            navigator.NavigateTo($"/course/show/{courseId}");
+        }
+        else
+        {
+            //TODO: Dodac komunikat
+            Console.WriteLine("Error");
         }
     }
 }

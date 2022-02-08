@@ -35,7 +35,10 @@ namespace Foreman.Server
         public void ConfigureServices(IServiceCollection services)
         {
 
-            services.AddControllersWithViews();
+            services.AddControllersWithViews()
+                .AddJsonOptions(o=>
+                    o.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve
+                );
             services.AddDbContext<ApplicationContext>(opt =>
                 opt.UseSqlServer(Configuration.GetConnectionString("SqlServer")));
             services.AddDefaultIdentity<UserProfile>(opts => opts.SignIn.RequireConfirmedAccount = true)
@@ -60,6 +63,7 @@ namespace Foreman.Server
             services.AddSingleton<IAuthorizationHandler, InstitutionMemberRequirementHandler>();
             services.AddScoped<ICourseService, CourseService>();
             services.AddScoped<IAuthorizeService, AuthorizeService>();
+            services.AddScoped<IPluginService, PluginService>();
             services.LoadPlugins(Configuration);
         }
 

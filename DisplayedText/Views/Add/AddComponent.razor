@@ -1,10 +1,10 @@
 ﻿@inject HttpClient http
-<Foreman.PluginManager.Components.SettingsPage Model="model">
+<Foreman.PluginManager.Components.AddPage Model="model">
     <MudTextField Label="Nazwa" HelperText="Nazwa wyswietlana jako nagłówek modułu"
     @bind-Value="model.Name" For="@(() => model.Name)"/>
     <MudTextField Label="Tekst" HelperText="Zawartość"
         @bind-Value="model.Content" For="@(() => model.Content)"/>
-</Foreman.PluginManager.Components.SettingsPage>
+</Foreman.PluginManager.Components.AddPage>
 
 @code{
     public Data.Text model = new Data.Text();

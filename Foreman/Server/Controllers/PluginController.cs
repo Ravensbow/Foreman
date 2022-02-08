@@ -7,6 +7,7 @@ using System;
 using System.Security.Policy;
 using System.IO;
 using Microsoft.AspNetCore.Authorization;
+using Foreman.Shared.Services;
 
 namespace Foreman.Server.Controllers
 {
@@ -16,9 +17,14 @@ namespace Foreman.Server.Controllers
     public class PluginController : ControllerBase
     {
         private ApplicationContext db;
-        public PluginController(ApplicationContext ac)
+        private IAuthorizeService _authorizeService;
+
+        public IAuthorizeService AuthorizeService { get { return _authorizeService; } }
+
+        public PluginController(ApplicationContext ac, IAuthorizeService authorizeService)
         {
             db = ac;
+            _authorizeService = authorizeService;   
         }
         [HttpGet("GetByName/{name}")]
         public byte[] GetByName(string name)
@@ -36,6 +42,8 @@ namespace Foreman.Server.Controllers
         [HttpPost("AddModule")]
         public IActionResult AddInstance(Shared.Data.Courses.CourseModule cm)
         {
+            if (AuthorizeService.CanEditCourse(cm.CourseId))
+                return Forbid("Brak uprawnień do edycji tego kursu");
             db.CourseModules.Add(cm);
             db.SaveChanges();
             return Ok();

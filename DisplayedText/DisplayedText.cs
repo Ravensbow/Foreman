@@ -11,11 +11,11 @@ namespace DisplayedText
 {
     public class DisplayedText : Foreman.PluginManager.IPlugin
     {
-        public string GetPluginName() => "DisplayedText";
+        public string GetPluginName() => Config.pluginName;
 
-        public string GetPluginDescription() => "Wyswietla zwykly tekst";
+        public string GetPluginDescription() => Config.pluginDescription;
 
-        public string GetPluginVersion() => "2022011501";
+        public string GetPluginVersion() => Config.version;
 
         public void Initialize(IServiceCollection services, IConfiguration configuration)
         {
