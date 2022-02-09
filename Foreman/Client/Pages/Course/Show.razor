@@ -1,6 +1,7 @@
 ﻿@page "/course/show/{courseId:int}"
 @using Foreman.Shared.Data.Courses
 @inject HttpClient Http
+@inject Services.AppStateService AppState
 
 @if (course == null)
 {
@@ -8,17 +9,61 @@
 }
 else
 {
-    <h3>@course.FullName</h3>
-    @foreach (var module in course.CourseModules ?? new List<CourseModule>())
-    {
+    @*<h3>@course.FullName</h3>
+        @foreach (var module in course.CourseModules ?? new List<CourseModule>())
+        {
         <PluginInstance PluginId="module.PluginId.Value" InstanceId="module.InstanceId"></PluginInstance>
-    }
-    @foreach (var sec in course.CourseSections ?? new List<CourseSection>())
-    {
+        }
+        @foreach (var sec in course.CourseSections ?? new List<CourseSection>())
+        {
         <h4>@sec.Name</h4>
         <span>@sec.Description</span>
-        
-    }
+
+        }*@
+    <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">@course.FullName</MudText>
+    <MudGrid>
+        <MudItem xs="12" sm="12" md="12">
+            <MudCard Style="height:100%;">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Aktywności</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent Class="px-0">
+                    <MudList Clickable="false">
+                        @foreach (var module in course.CourseModules.Where(x => x.CourseSectionId == null))
+                        {
+                            <MudListItem>
+                                <PluginInstance PluginId="module.PluginId.Value" InstanceId="module.InstanceId"></PluginInstance>
+                            </MudListItem>
+                        }
+                    </MudList>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        @foreach (var sec in course.CourseSections ?? new List<CourseSection>())
+        {
+            <MudItem xs="12" sm="12" md="12">
+                <MudCard Style="height:100%;">
+                    <MudCardHeader>
+                        <CardHeaderContent>
+                            <MudText Typo="Typo.h6">@sec.Name</MudText>
+                        </CardHeaderContent>
+                    </MudCardHeader>
+                    <MudCardContent Class="px-0">
+                        <MudList Clickable="false">
+                            @foreach (var module in sec.CourseModules)
+                            {
+                                <MudListItem>
+                                    <PluginInstance PluginId="module.PluginId.Value" InstanceId="module.InstanceId"></PluginInstance>
+                                </MudListItem>
+                            }
+                        </MudList>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
 }
 
 
@@ -29,10 +74,12 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var result = await Http.GetAsync("/course/GetCourseById/"+CourseId);
+        var result = await Http.GetAsync("/course/GetCourseById/" + CourseId);
         if (result.IsSuccessStatusCode)
         {
             course = Newtonsoft.Json.JsonConvert.DeserializeObject<Course>(await result.Content.ReadAsStringAsync());
+            await AppState.SetBreadcrumbs(new List<BreadcrumbItem> { new BreadcrumbItem(course.FullName, href: $"/course/show/{course.Id}")});
         }
+        
     }
 }

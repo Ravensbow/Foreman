@@ -27,13 +27,13 @@ namespace Foreman.Client.Utilites
         public IPluginRazor GetComponentByName(string name)
         {
             return Components.Select(x => (IPluginRazor)Activator.CreateInstance(x))
-                .SingleOrDefault(x => x.Name == name);
+                .SingleOrDefault(x => x.Name.ToLower() == name.ToLower());
         }
 
         public IPluginRazor GetComponentByPage(string name)
         {
             return Components.Select(x => (IPluginRazor)Activator.CreateInstance(x))
-                .SingleOrDefault(x => x.Page == name);
+                .SingleOrDefault(x => x.Page.ToLower() == name.ToLower());
         }
 
         private IEnumerable<Assembly> LoadAssemblies(IEnumerable<byte[]> assemblys)

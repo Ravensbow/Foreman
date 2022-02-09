@@ -37,6 +37,7 @@ namespace Foreman.Client
             builder.Services.AddSingleton<AccountService>();      
             builder.Services.AddSingleton<PluginService>();
             builder.Services.AddSingleton<AuthorizeService>();
+            builder.Services.AddSingleton<AppStateService>();
 
             builder.Services.AddApiAuthorization();
             builder.Services.AddAuthorizationCore(options =>

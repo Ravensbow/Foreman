@@ -1,5 +1,7 @@
 ﻿@inherits LayoutComponentBase
 
+@inject Services.AppStateService AppState
+@implements IDisposable
 
 <MudThemeProvider Theme="_theme" />
 <MudDialogProvider />
@@ -48,7 +50,7 @@
         <MudHidden Breakpoint="Breakpoint.SmAndDown">
             <MudToolBar DisableGutters="true">
                 <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" OnClick="@((e) => DrawerToggle())" Class="ml-3" />
-                <MudBreadcrumbs Items="_items"></MudBreadcrumbs>
+                <MudBreadcrumbs Items="AppState.Breadcrumbs"></MudBreadcrumbs>
                 <MudSpacer />
                 <MudButton Variant="Variant.Text" Link="https://mudblazor.com/" Style="color:#594AE2;">MudBlazor</MudButton>
                 <MudButton Variant="Variant.Text" Link="https://github.com/Garderoben/Foremans" Style="color:#424242;" Class="mr-3">Source Code</MudButton>
@@ -73,7 +75,13 @@
 
     protected override void OnInitialized()
     {
+        AppState.OnChange += StateHasChanged;
         StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        AppState.OnChange -= StateHasChanged;
     }
 
     private List<BreadcrumbItem> _items = new List<BreadcrumbItem>

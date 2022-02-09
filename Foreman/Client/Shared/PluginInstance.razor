@@ -1,7 +1,11 @@
 ﻿@inject IComponentService ComponentService
 @inject IHttpClientFactory http
 
-@dynamicComponent()
+@if(pluginInstance!=null)
+{
+    @pluginInstance
+}
+
 
 @code {
     [Parameter]
@@ -10,7 +14,8 @@
     public int InstanceId { get; set; }
 
     string componentName;
-    HttpClient? httpClient;
+    HttpClient httpClient;
+    RenderFragment pluginInstance;
 
     protected override async Task OnInitializedAsync()
     {
@@ -21,14 +26,14 @@
             //TODO: Komunikat
             return;
         }
-        componentName = await response.Content.ReadFromJsonAsync<string>();
+        componentName = await response.Content.ReadAsStringAsync();
+        pluginInstance = dynamicComponent();
 
     }
 
     RenderFragment dynamicComponent() => builder =>
     {
-        System.Diagnostics.Debug.WriteLine("Elo elo:" + componentName);
-        var component = ComponentService.GetComponentByName("displayedtext" + "instance");
+        var component = ComponentService.GetComponentByName(componentName + "instance");
         builder.OpenComponent(0,component.Component);
 
         for (int i = 0; i < component.Parameters.Count; i++)

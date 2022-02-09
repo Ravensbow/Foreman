@@ -23,7 +23,7 @@ namespace Foreman.Server.Controllers
         [HttpGet("GetCourseById/{id}")]
         public IActionResult GetCourseById(int id)
         {
-            var course = _context.Courses.Include(x => x.CourseModules).SingleOrDefault(x=>x.Id==id);
+            var course = _context.Courses.Include(x => x.CourseModules).Include(x=>x.CourseSections).ThenInclude(s=>s.CourseModules).SingleOrDefault(x=>x.Id==id);
             if(course.InstitutionId != null && !User.HasClaim("Institution",course.InstitutionId.ToString()))
                 return Forbid();
             return Ok(course);
