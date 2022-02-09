@@ -1,6 +1,5 @@
 ﻿using System.Net.Http;
 using Newtonsoft.Json;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Foreman.Shared.Models.Category;
@@ -18,6 +17,13 @@ namespace Foreman.Client.Services
         {
             _httpClient = httpClientFactory.CreateClient("Foreman.ServerAPI");
         }
+        
+        public async Task<HttpResponseMessage> GetCategory(int categoryId)
+        {
+            var apiResult = await _httpClient.GetAsync($"Course/GetCategory/{categoryId}");
+            return apiResult;
+        }
+
         public async Task<HttpResponseMessage> CreateCategory(CategoryModel categoryModel)
         {
             var apiResult = await _httpClient.PostAsJsonAsync<CategoryModel>($"Course/CreateCategory", categoryModel);

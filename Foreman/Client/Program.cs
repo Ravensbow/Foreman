@@ -38,6 +38,8 @@ namespace Foreman.Client
             builder.Services.AddSingleton<PluginService>();
             builder.Services.AddSingleton<AuthorizeService>();
             builder.Services.AddSingleton<AppStateService>();
+            builder.Services.AddSingleton<CourseService>();
+            builder.Services.AddSingleton<InstitutionService>();
 
             builder.Services.AddApiAuthorization();
             builder.Services.AddAuthorizationCore(options =>

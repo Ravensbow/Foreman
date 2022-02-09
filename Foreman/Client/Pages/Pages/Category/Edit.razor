@@ -1,13 +1,11 @@
-﻿@page "/category/add"
-@using Microsoft.AspNetCore.Http
-@using System.Security.Claims
+﻿@page "/category/edit/{categoryId:int}"
 @inject HttpClient httpClient
 @inject NavigationManager NavMenager
 
-<EditForm Model="categoryModel" OnValidSubmit="HandleAdd">
+<EditForm Model="categoryModel" OnValidSubmit="HandleEdit">
     <DataAnnotationsValidator/>
 
-    <MudText Typo="Typo.h4">New category</MudText>
+    <MudText Typo="Typo.h4">Edit category - @categoryModel.Name</MudText>
     <MudTextField @bind-Value="categoryModel.Name" Label="Name" Class="mt-4" For="@(() => categoryModel.Name)"></MudTextField>
     <MudTextField T="string" Lines="5"  @bind-Value="categoryModel.Description" Label="Description" Class="mt-4" For="@(() => categoryModel.Description)"></MudTextField>
     <MudCheckBox @bind-Checked="categoryModel.IsVisible" Label="Visibility" Class="mt-4"></MudCheckBox>
@@ -23,16 +21,15 @@
         </MudSelect>
     }
     <MudItem>
-            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Class="mt-4" EndIcon="@Icons.Filled.Check" Color="Color.Primary" Size="Size.Large">Add</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Class="mt-4" EndIcon="@Icons.Filled.Check" Color="Color.Primary" Size="Size.Large">Save changes</MudButton>
     </MudItem>
 </EditForm>
 
 @code{
     [Inject]
     Services.CourseService CourseService { get; set; }
-
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationStateTask { get; set; }
+    [Parameter]
+    public int CategoryId { get; set; }
 
     Foreman.Shared.Models.Category.CategoryModel categoryModel = new Foreman.Shared.Models.Category.CategoryModel();
     public List<Foreman.Shared.Data.Courses.CourseCategory> ParentCategoryList { get; set; }
@@ -40,6 +37,7 @@
     protected override async Task OnInitializedAsync()
     {
         ParentCategoryList = await GetCategories();
+        categoryModel = await GetEditedCategory();
         await base.OnInitializedAsync();
     }
 
@@ -55,9 +53,31 @@
         return new List<Foreman.Shared.Data.Courses.CourseCategory>();
     }
 
-    public async Task HandleAdd()
+    public async Task<Foreman.Shared.Models.Category.CategoryModel> GetEditedCategory()
     {
-        var apiResult = await CourseService.CreateCategory(categoryModel);
+        var apiResult = await CourseService.GetCategory(CategoryId);
+
+        if(apiResult.IsSuccessStatusCode)
+        {
+            var temp = await apiResult.Content.ReadFromJsonAsync<Foreman.Shared.Data.Courses.CourseCategory>();
+            return new Foreman.Shared.Models.Category.CategoryModel()
+                {
+                    Id = temp.Id,
+                    Name = temp.Name,
+                    Description = temp.Description,
+                    IsVisible = temp.IsVisible,
+                    InstitutionId = temp.InstitutionId,
+                    ParentCategoryId = temp.ParentCategoryId
+
+                };
+        }
+
+        return new Foreman.Shared.Models.Category.CategoryModel();
+    }
+
+    public async Task HandleEdit()
+    {
+        var apiResult = await CourseService.EditCategory(categoryModel);
         if (apiResult.IsSuccessStatusCode)
             NavMenager.NavigateTo("/personal/dashboard");
     }

@@ -23,11 +23,32 @@ namespace Foreman.Server.Controllers
         [HttpGet("GetCourseById/{id}")]
         public IActionResult GetCourseById(int id)
         {
-            var course = _context.Courses.Include(x => x.CourseModules).Include(x=>x.CourseSections).ThenInclude(s=>s.CourseModules).SingleOrDefault(x=>x.Id==id);
-            if(course.InstitutionId != null && !User.HasClaim("Institution",course.InstitutionId.ToString()))
+            var course = _context.Courses.Include(x => x.CourseModules).Include(x => x.CourseSections).ThenInclude(s => s.CourseModules).SingleOrDefault(x => x.Id == id);
+            if (course.InstitutionId != null && !User.HasClaim("Institution", course.InstitutionId.ToString()))
                 return Forbid();
             return Ok(course);
         }
+
+        [HttpGet("GetCategory")]
+        public IActionResult GetCategoryById(int categoryId)
+        {
+            try
+            {
+                string[] institutions = User.Claims.Where(c => c.Type == "Institution").Select(c => c.Value).ToArray();
+
+                var category = _context.CourseCategories
+                .Single(x => x.Id == categoryId && x.InstitutionId == null || institutions.Contains(x.InstitutionId.Value.ToString()));
+
+
+                return Ok(category);
+
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
         [HttpGet("GetCategorys/{id?}")]
         public IActionResult GetCategorys(int? id)
         {
@@ -72,6 +93,10 @@ namespace Foreman.Server.Controllers
         {
             try
             {
+                string[] insitutions = User.Claims.Where(c => c.Type == "Institution").Select(c => c.Value).ToArray();
+                if (model.InstitutionId != null && !insitutions.Contains(model.InstitutionId.Value.ToString()))
+                    return Problem("Cannot create a category for institution that user is not a part of.");
+
                 CourseCategory newRecord = new CourseCategory()
                 {
                     InstitutionId = model.InstitutionId,
@@ -96,6 +121,11 @@ namespace Foreman.Server.Controllers
         {
             try
             {
+                string[] insitutions = User.Claims.Where(c => c.Type == "Institution").Select(c => c.Value).ToArray();
+                if (model.InstitutionId != null && !insitutions.Contains(model.InstitutionId.Value.ToString()))
+                    return Problem("Cannot edit a category for institution that user is not a part of.");
+
+
                 var updRecord = _context.CourseCategories.Where(c => c.Id == model.Id).Single();
 
                 updRecord.Name = model.Name;
@@ -123,6 +153,11 @@ namespace Foreman.Server.Controllers
             try
             {
                 var dRecord = _context.CourseCategories.Where(x => x.Id == categoryId).Single();
+
+                string[] insitutions = User.Claims.Where(c => c.Type == "Institution").Select(c => c.Value).ToArray();
+                if (!insitutions.Contains(dRecord.InstitutionId.Value.ToString()))
+                    return Problem("Cannot create a category for institution that user is not a part of.");
+
                 _context.CourseCategories.Remove(dRecord);
                 return Ok();
             }
@@ -135,9 +170,19 @@ namespace Foreman.Server.Controllers
         [HttpPost("SearchCategory")]
         public IActionResult SearchCategory(string search)
         {
-            var categories = _context.CourseCategories
-                .Where(x => x.IsVisible == true && x.Name.Contains(search))
-                .ToList();
+            var categories = _context.CourseCategories;
+            if (string.IsNullOrEmpty(search))
+            {
+                    categories
+                    .Where(x => x.IsVisible == true)
+                    .ToList();
+            }
+            else
+            {
+                categories
+                    .Where(x => x.IsVisible == true && x.Name == search)
+                    .ToList();
+            }
             return Ok(categories);
 
         }

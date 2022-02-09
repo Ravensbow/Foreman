@@ -3,6 +3,7 @@
 
 
 <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">Dashboard</MudText>
+
 @foreach (var item in httpResponseMessages)
 {
     <ErrorMessage ApiResponse="item"></ErrorMessage>
@@ -25,7 +26,7 @@
                     </CardHeaderActions>
                 </MudCardHeader>
                 <MudCardMedia Image="https://mudblazor.com/_content/MudBlazor.Docs/images/pilars.jpg" Height="250" />
-                <MudCardContent>
+                <MudCardContent Style="height:120px !important;">
                     <MudText Typo="Typo.body2">@item.Description</MudText>
                 </MudCardContent>
                 <MudCardActions Class="justify-end">

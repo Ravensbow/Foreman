@@ -16,6 +16,7 @@ namespace Foreman.Server.Data
 {
     public class ApplicationContext : KeyApiAuthorizationDbContext<Shared.Data.Identity.UserProfile,Shared.Data.Identity.Role,int>
     {
+        public DbSet<Institution> Institutions { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<CourseCategory> CourseCategories { get; set; }
         public DbSet<CourseModule> CourseModules { get; set; }
