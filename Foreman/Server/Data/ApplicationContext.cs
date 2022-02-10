@@ -16,6 +16,7 @@ namespace Foreman.Server.Data
 {
     public class ApplicationContext : KeyApiAuthorizationDbContext<Shared.Data.Identity.UserProfile,Shared.Data.Identity.Role,int>
     {
+        public DbSet<ForemanFile> Files { get; set; }
         public DbSet<Institution> Institutions { get; set; }
         public DbSet<Course> Courses { get; set; }
         public DbSet<CourseCategory> CourseCategories { get; set; }
@@ -44,10 +45,27 @@ namespace Foreman.Server.Data
             UserAssigmentFluentApi(modelBuilder);
             //Plugins
             PluginFluentApi(modelBuilder);
+            //ForemanFile
+            FileFluentApi(modelBuilder);
             base.OnModelCreating(modelBuilder);
         }
 
         #region Course FluentApi
+
+        protected void FileFluentApi(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<ForemanFile>().HasKey(f => f.Id);
+            modelBuilder.Entity<ForemanFile>().Property(f => f.ContentHash)
+                .HasColumnType("VARCHAR(255)");
+            modelBuilder.Entity<ForemanFile>().Property(f => f.PathNameHash)
+                .HasColumnType("VARCHAR(255)");
+            modelBuilder.Entity<ForemanFile>().Property(f => f.Component)
+                .HasColumnType("VARCHAR(255)");
+            modelBuilder.Entity<ForemanFile>().Property(f => f.MimeType)
+                .HasColumnType("VARCHAR(100)");
+
+        }
+
         protected void CourseFluentApi(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Course>().HasMany(c => c.CourseModules)
