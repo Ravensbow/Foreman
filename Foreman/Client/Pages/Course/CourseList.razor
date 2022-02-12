@@ -1,0 +1,79 @@
+﻿@inject IHttpClientFactory httpClientFactory
+@inject NavigationManager navManager
+
+@if (Courses.Count > 0)
+{
+    <MudGrid>
+        <MudItem xs="12" sm="12" md="12">
+            <MudCard Style="height:100%;">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Kursy</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent Class="px-0">
+                    <MudList Clickable="false">
+                        @foreach (var item in Courses)
+                        {
+                            <MudListItem Class="mud-list-item-clickable" OnClick="@((e) => navManager.NavigateTo($"/course/show/{item.Id}"))">
+                                <div class="d-flex flex-row">
+                                    <MudAvatar Class="mud-elevation-25">
+                                        <MudIcon Icon="@Icons.Filled.School" Class="mx-4" />
+                                    </MudAvatar>
+                                    <div class="ml-6">
+                                        <MudText Typo="Typo.subtitle1">@item.FullName</MudText>
+                                        <MudText Typo="Typo.body2">@item.Description</MudText>
+                                    </div>
+                                    @if (true == true)
+                                    {
+                                        <MudMenu Size="Size.Small" Icon="@Icons.Material.Filled.Settings" Class="mud-avatar mud-avatar-small ml-auto mud-elevation-25" Style="align-self: start;">
+                                            <MudMenuItem Link="@($"/course/edit/{item.Id}")">Edit</MudMenuItem>
+                                        </MudMenu>
+                                    }
+                                </div>
+                            </MudListItem>
+                        }
+                        <MudListItem>
+                            @if (true)
+                            {
+                                <div class="d-flex flex-row justify-center">
+                                    <MudFab Link="@($"/course/add/{CategoryId}")" Color="Color.Primary" StartIcon="@Icons.Filled.Add" Label="Add" />
+                                </div>
+                            }
+                        </MudListItem>
+                    </MudList>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    [Parameter]
+    public int CategoryId { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    HttpClient httpClient;
+    List<Foreman.Shared.Data.Courses.Course> Courses = new List<Foreman.Shared.Data.Courses.Course>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        httpClient = httpClientFactory.CreateClient("Foreman.ServerAPI");
+
+        var result = await httpClient.GetAsync($"/course/GetCourses/{CategoryId}");
+        if (!result.IsSuccessStatusCode)
+        {
+            //TODO Obsluga bledu
+            return;
+        }
+        var temp = await result.Content.ReadAsStringAsync();
+        Courses = await result.Content.ReadFromJsonAsync<List<Foreman.Shared.Data.Courses.Course>>();
+    }
+    private bool CheckIsManager(int id)
+    {
+        var authState = authenticationStateTask.GetAwaiter().GetResult();
+        return authState.User.HasClaim("CourseManager", id.ToString());
+    }
+}

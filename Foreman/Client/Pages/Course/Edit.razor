@@ -1,0 +1,44 @@
+﻿@page "/course/edit/{courseId:int}"
+@attribute [Authorize(Policy = "CanEditCourse")]
+@inject NavigationManager navManager
+@inject Services.CourseService courseService
+@inject Services.AppStateService AppState
+
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="12" sm="7">
+        <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+            <MudPaper Class="pa-4">
+                <DataAnnotationsValidator />
+                <AddEditPartial Course="model"></AddEditPartial>
+            </MudPaper>
+            <MudPaper Class="pa-4 mt-4">
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Edit</MudButton>
+            </MudPaper>
+        </EditForm>
+    </MudItem>
+</MudGrid>
+@code {
+    [Parameter]
+    public int CourseId { get; set; }
+
+    Foreman.Shared.Data.Courses.Course model = new Foreman.Shared.Data.Courses.Course();
+
+    protected override async Task OnInitializedAsync()
+    {
+
+            var result = await courseService.GetCourse(CourseId);
+
+            if(!result.IsSuccessStatusCode)
+            {
+                //TODO Obsuga bledu
+            }
+
+            model = Newtonsoft.Json.JsonConvert.DeserializeObject<Foreman.Shared.Data.Courses.Course>(await result.Content.ReadAsStringAsync());
+            await AppState.SetBreadcrumbsByCourseCategory(CourseId, true, new List<BreadcrumbItem> { new BreadcrumbItem("Edit course", $"/course/edit/{CourseId}")});
+    }
+
+    private void OnValidSubmit(EditContext context)
+    {
+        navManager.NavigateTo($"/course/show/{CourseId}");
+    }
+}

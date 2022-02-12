@@ -24,6 +24,12 @@ namespace Foreman.Client.Services
             return apiResult;
         }
 
+        public async Task<HttpResponseMessage> GetCourse(int courseId)
+        {
+            var apiResult = await _httpClient.GetAsync($"Course/GetCourseById/{courseId}");
+            return apiResult;
+        }
+
         public async Task<HttpResponseMessage> CreateCategory(CategoryModel categoryModel)
         {
             var apiResult = await _httpClient.PostAsJsonAsync<CategoryModel>($"Course/CreateCategory", categoryModel);
@@ -41,8 +47,10 @@ namespace Foreman.Client.Services
         }
         public async Task<HttpResponseMessage> SearchCategory(string search)
         {
-            var apiResult = await _httpClient.PostAsJsonAsync<string>($"Course/SearchCategory", search);
+            var apiResult = await _httpClient.GetAsync($"Course/SearchCategory{(string.IsNullOrEmpty(search)?"":"/"+search)}");
+            var temp = await apiResult.Content.ReadAsStringAsync();
             return apiResult;
         }
+        
     }
 }    

@@ -1,0 +1,25 @@
+﻿@page "/category/show/{categoryId:int?}"
+@inject Services.AppStateService AppState
+
+<CategoryList CategoryId="categoryId"></CategoryList>
+@if(categoryId.HasValue)
+{
+    <Foreman.Client.Pages.Course.CourseList CategoryId="categoryId.Value"></Foreman.Client.Pages.Course.CourseList>
+}
+
+@code {
+    [Parameter]
+    public int? categoryId { get; set; }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if(categoryId.HasValue)
+        {
+            await AppState.SetBreadcrumbsByCourseCategory(categoryId.Value, false);
+        }
+        else
+        {
+            await AppState.SetBreadcrumbs(new List<BreadcrumbItem> { new BreadcrumbItem("All categories", "/category/show")});
+        }
+    }
+}

@@ -1,0 +1,30 @@
+﻿@inject Services.CourseService courseService
+
+<MudTextField Label="Short name" @bind-Value="Course.ShortName" For="@(() => Course.ShortName)" />
+<MudTextField Label="Full name" @bind-Value="Course.FullName" For="@(() => Course.FullName)" />
+<MudAutocomplete Label="Category"  @bind-Value="Course.Category" T="Foreman.Shared.Data.Courses.CourseCategory"
+             SearchFunc="@SearchAsync" Immediate="true" CoerceValue="false" ResetValueOnEmptyText="true"
+             AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+             ToStringFunc="@(e=> e==null?null : e.Name)"
+             For="@(() => Course.Category)"/>
+<MudTextField Label="Description" @bind-Value="Course.Description" For="@(() => Course.Description)" InputType="InputType.Password" />
+<MudCheckBox Label="Visible" @bind-Checked="Course.IsVisible" Color="Color.Secondary" For="@(() => Course.IsVisible)"></MudCheckBox>
+<MudDatePicker Label="Start date" @bind-Date="Course.StartDate" For="@(() => Course.StartDate)"/>
+<MudDatePicker Label="End date" @bind-Date="Course.EndDate" For="@(() => Course.EndDate)"/>
+
+@code {
+    [Parameter]
+    public Foreman.Shared.Data.Courses.Course Course { get; set; }
+
+    private async Task<IEnumerable<Foreman.Shared.Data.Courses.CourseCategory>> SearchAsync(string value)
+    {
+        var result = await courseService.SearchCategory(value);
+
+        if(!result.IsSuccessStatusCode)
+        {
+            //TODO: Obsługa błedu
+        }
+        var temp = await result.Content.ReadAsStringAsync();
+        return await result.Content.ReadFromJsonAsync<List<Foreman.Shared.Data.Courses.CourseCategory>>();
+    }
+}

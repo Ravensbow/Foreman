@@ -42,23 +42,23 @@ namespace DisplayedText.Controllers
             return $"Plugin Controller v 1.0 {_service.Test()}";
         }
 
-        [HttpPost("Add")]
-        public IActionResult Add(Text text)
+        [HttpPost("Add/{sectionId:int?}")]
+        public IActionResult Add(Text model, [FromRoute]int? sectionId)
         {  
-            if (!AuthorizeService.CanEditCourse(text.CourseId))
+            if (!AuthorizeService.CanEditCourse(model.CourseId))
                 return Forbid("Brak uprawnień do edycji tego kursu");
-
+            System.Diagnostics.Debug.WriteLine("SEKCJA: "+sectionId);
             int? pluginId = PluginService.GetPluginId(Config.pluginName);
             if (pluginId == null)
                 return NotFound();
 
-            text.CreatedDate = DateTime.Now;
-            _context.Add(text);
+            model.CreatedDate = DateTime.Now;
+            _context.Add(model);
             _context.SaveChanges();
 
-            var courseModule = new CourseModule { CourseId = text.CourseId, InstanceId = text.Id, IsVisible = true, PluginId = pluginId};
+            var courseModule = new CourseModule { CourseId = model.CourseId, InstanceId = model.Id, IsVisible = true, PluginId = pluginId, CourseSectionId = sectionId};
             PluginService.AddPluginInstance(courseModule);
-
+            
             return Ok(courseModule.Id);
         }
 

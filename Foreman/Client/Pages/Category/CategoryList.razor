@@ -1,0 +1,62 @@
+﻿@inject IHttpClientFactory httpClientFactory
+
+<MudGrid Spacing="5" Justify="Justify.FlexStart">
+    @foreach (var item in Categorys)
+    {
+        <MudItem md="6" lg="3" Style="width:100%;">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h5">@item.Name</MudText>
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                        @if (CheckIsManager(item.Id) == true)
+                        {
+                            <MudMenu Size="Size.Small" Icon="@Icons.Material.Filled.Settings" Color="Color.Primary">
+                                <MudMenuItem>Profile</MudMenuItem>
+                                <MudMenuItem>My account</MudMenuItem>
+                                <MudMenuItem>Logout</MudMenuItem>
+                            </MudMenu>
+                        }
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudCardMedia Image="https://mudblazor.com/_content/MudBlazor.Docs/images/pilars.jpg" Height="250" />
+                <MudCardContent Style="height:120px !important;">
+                    <MudText Typo="Typo.body2">@item.Description</MudText>
+                </MudCardContent>
+                <MudCardActions Class="justify-end">
+                    <MudButton FullWidth="true" Link="@($"/category/show/{item.Id}")" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Color="Color.Primary" Size="Size.Large">Show</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    }
+</MudGrid>
+@code {
+    [Parameter]
+    public int? CategoryId { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    HttpClient httpClient;
+    List<Foreman.Shared.Data.Courses.CourseCategory> Categorys = new List<Foreman.Shared.Data.Courses.CourseCategory>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        httpClient = httpClientFactory.CreateClient("Foreman.ServerAPI");
+
+        var result = await httpClient.GetAsync($"/course/GetCategorys/{CategoryId}");
+        if (!result.IsSuccessStatusCode)
+        {
+            //TODO Obsluga bledu
+            return;
+        }
+        var temp = await result.Content.ReadAsStringAsync();
+        Categorys = await result.Content.ReadFromJsonAsync<List<Foreman.Shared.Data.Courses.CourseCategory>>();
+    }
+    private bool CheckIsManager(int id)
+    {
+        var authState = authenticationStateTask.GetAwaiter().GetResult();
+        return authState.User.HasClaim("CategoryManager", id.ToString());
+    }
+}

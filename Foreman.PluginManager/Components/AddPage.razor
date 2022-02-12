@@ -20,6 +20,9 @@
     [CascadingParameter]
     protected int courseId { get; set; }
 
+    [CascadingParameter]
+    protected int? sectionId { get; set; }
+
     private HttpClient http;
 
     protected override void OnInitialized()
@@ -34,7 +37,7 @@
         string json = Newtonsoft.Json.JsonConvert.SerializeObject(Model);
         var postdata = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
         postdata.Headers.ContentType = new  System.Net.Http.Headers.MediaTypeHeaderValue("application/json");
-        var response = await http.PostAsync("/"+componentName+"/Management/Add", postdata);
+        var response = await http.PostAsync("/"+componentName+"/Management/Add/"+sectionId, postdata);
         if(response.IsSuccessStatusCode)
         {
             int id = await response.Content.ReadFromJsonAsync<int>();

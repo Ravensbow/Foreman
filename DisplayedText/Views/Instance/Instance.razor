@@ -1,19 +1,18 @@
 ﻿@inject IHttpClientFactory http
 
-<div class="d-flex flex-row">
-    <MudAvatar Class="mud-elevation-25">
-        <MudIcon Icon="@Icons.Filled.TextFields" Class="mx-4" />
-    </MudAvatar>
-    <div class="ml-6">
+@if(instance != null)
+{
+    <Foreman.PluginManager.Components.InstanceComponent CourseId="instance.CourseId" MenuOptions="menu">
         <MudText Typo="Typo.subtitle1">@instance?.Name</MudText>
         <MudText Typo="Typo.body2">@instance?.Content</MudText>
-    </div>
-    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Filled.Settings" Color="Color.Default" Class="mud-avatar mud-avatar-small ml-auto mud-elevation-25" />
-</div>
+    </Foreman.PluginManager.Components.InstanceComponent>
+}
+
 @code {
     [Parameter]
     public int InstanceId { get; set; }
 
+    List<Tuple<string, string>> menu = new List<Tuple<string, string>> { new Tuple<string, string>("Edit", ""), new Tuple<string, string>("Delete", "") };
     HttpClient? httpClient;
     Data.Text? instance;
 

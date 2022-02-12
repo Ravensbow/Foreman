@@ -14,9 +14,18 @@ namespace Foreman.Server.Services
             db = ap;
         }
 
+        public bool CanAddCourse(int? categoryId)
+        {
+            if (categoryId.HasValue)
+                return httpContext.User.HasClaim("CategoryManager", categoryId.Value.ToString());
+            else
+                return httpContext.User.IsInRole("Admin");
+        }
+
         public bool CanEditCourse(int courseId)
         {
-            return httpContext.User.HasClaim("CourseManager", courseId.ToString());
+            int? categoryId = db.Courses.Find(courseId)?.CourseCategoryId;
+            return (httpContext.User.HasClaim("CourseManager", courseId.ToString()) || (categoryId.HasValue && httpContext.User.HasClaim("CategoryManager", categoryId.ToString())));
         }
 
         public bool CanViewCategory(int categoryId)

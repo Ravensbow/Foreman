@@ -1,87 +1,15 @@
 ﻿@page "/personal/dashboard"
 @inject IHttpClientFactory httpClientFactory
-
+@inject Services.AppStateService AppState
 
 <MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">Dashboard</MudText>
 
-@foreach (var item in httpResponseMessages)
-{
-    <ErrorMessage ApiResponse="item"></ErrorMessage>
-}
-<MudGrid Spacing="5" Justify="Justify.Center">
-
-    @foreach (var item in CategoryList)
-    {
-        <MudItem md="6" lg="3" Style="width:100%;">
-            <MudCard>
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h5">@item.Name</MudText>
-                    </CardHeaderContent>
-                    <CardHeaderActions>
-                        @if (CheckIsManager(item.Id) == true)
-                        {
-                            <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
-                        }
-                    </CardHeaderActions>
-                </MudCardHeader>
-                <MudCardMedia Image="https://mudblazor.com/_content/MudBlazor.Docs/images/pilars.jpg" Height="250" />
-                <MudCardContent Style="height:120px !important;">
-                    <MudText Typo="Typo.body2">@item.Description</MudText>
-                </MudCardContent>
-                <MudCardActions Class="justify-end">
-                    <MudButton Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Color="Color.Primary" Size="Size.Large">Show</MudButton>
-                </MudCardActions>
-            </MudCard>
-            @*<MudCard>
-                <MudCardMedia Image="https://mudblazor.com/_content/MudBlazor.Docs/images/pilars.jpg" Height="200" />
-                <MudCardHeader>
-                    <CardHeaderActions>
-                        @if (CheckIsManager(item.Id) == true)
-                        {
-                            <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Default" />
-                        }
-                    </CardHeaderActions>
-                </MudCardHeader>
-                <MudCardContent>
-                    <MudText Typo="Typo.h5">@item.Name</MudText>
-                    <MudText Typo="Typo.body2">@item.Description</MudText>
-                </MudCardContent>
-                <MudCardActions>
-                    <MudButton Variant="Variant.Text" Color="Color.Primary">Share</MudButton>
-                    <MudButton Variant="Variant.Text" Color="Color.Primary">Show</MudButton>
-                </MudCardActions>
-            </MudCard>*@
-        </MudItem>
-    }
-
-</MudGrid>
+<Foreman.Client.Pages.Category.CategoryList CategoryId="null"></Foreman.Client.Pages.Category.CategoryList>
 
 @code
 {
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationStateTask { get; set; }
-
-    HttpClient httpClient;
-    List<Foreman.Shared.Data.Courses.CourseCategory> CategoryList = new List<Foreman.Shared.Data.Courses.CourseCategory>();
-    List<HttpResponseMessage> httpResponseMessages = new List<HttpResponseMessage>();
     protected override async Task OnInitializedAsync()
     {
-
-        httpClient = httpClientFactory.CreateClient("Foreman.ServerAPI");
-
-        var result = await httpClient.GetAsync("/course/GetCategorys");
-        httpResponseMessages.Add(result);
-        if (result.IsSuccessStatusCode)
-        {
-            var temp = await result.Content.ReadAsStringAsync();
-            CategoryList = await result.Content.ReadFromJsonAsync<List<Foreman.Shared.Data.Courses.CourseCategory>>();
-        }
+        await AppState.SetBreadcrumbs(new List<BreadcrumbItem> { new BreadcrumbItem("Dashboard", "personal/dashboard") });
     }
-    private bool CheckIsManager(int id)
-    {
-        var authState = authenticationStateTask.GetAwaiter().GetResult();
-        return authState.User.HasClaim("CategoryManager", id.ToString());
-    }
-
 }

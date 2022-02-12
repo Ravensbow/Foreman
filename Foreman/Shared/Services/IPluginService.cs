@@ -11,5 +11,6 @@ namespace Foreman.Shared.Services
         int AddPluginInstance(Data.Courses.CourseModule cm);
         int? GetPluginId(string name);
         string GetPluginName(int id);
+        Foreman.Shared.Data.Plugin.Plugin[] GetAll();
     }
 }

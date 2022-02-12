@@ -1,9 +1,11 @@
-﻿@page "/plugin/{componentName}/add/{courseId:int}"
+﻿@page "/plugin/{componentName}/add/{courseId:int}/{sectionId:int?}"
 @inject IComponentService ComponentService
 @attribute [Authorize(Policy = "CanEditCourse")]
 <CascadingValue Value="courseId">
     <CascadingValue Value="componentName">
-        @dynamicComponent()
+        <CascadingValue Value = "sectionId">
+            @dynamicComponent()
+        </CascadingValue>    
     </CascadingValue>    
 </CascadingValue>
 
@@ -12,7 +14,8 @@
     public string componentName { get; set; }
     [Parameter]
     public int courseId { get; set; }
-
+    [Parameter]
+    public int? sectionId { get; set; }
 
     RenderFragment dynamicComponent() => builder =>
     {

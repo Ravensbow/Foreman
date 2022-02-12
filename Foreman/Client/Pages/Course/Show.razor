@@ -2,6 +2,7 @@
 @using Foreman.Shared.Data.Courses
 @inject HttpClient Http
 @inject Services.AppStateService AppState
+@inject IDialogService Dialog
 
 @if (course == null)
 {
@@ -37,6 +38,11 @@ else
                                 <PluginInstance PluginId="module.PluginId.Value" InstanceId="module.InstanceId"></PluginInstance>
                             </MudListItem>
                         }
+                        <MudListItem>
+                            <div class="d-flex flex-row justify-center">
+                                <MudFab @onclick="@((e)=>OpenAddDialog(null))" Color="Color.Primary" StartIcon="@Icons.Filled.Add" Label="Add" />
+                            </div>
+                        </MudListItem>
                     </MudList>
                 </MudCardContent>
             </MudCard>
@@ -58,6 +64,11 @@ else
                                     <PluginInstance PluginId="module.PluginId.Value" InstanceId="module.InstanceId"></PluginInstance>
                                 </MudListItem>
                             }
+                            <MudListItem>
+                                <div class="d-flex flex-row justify-center">
+                                    <MudFab @onclick="@((e)=>OpenAddDialog(sec.Id))" Color="Color.Primary" StartIcon="@Icons.Filled.Add" Label="Add" />
+                                </div>
+                            </MudListItem>
                         </MudList>
                     </MudCardContent>
                 </MudCard>
@@ -78,8 +89,15 @@ else
         if (result.IsSuccessStatusCode)
         {
             course = Newtonsoft.Json.JsonConvert.DeserializeObject<Course>(await result.Content.ReadAsStringAsync());
-            await AppState.SetBreadcrumbs(new List<BreadcrumbItem> { new BreadcrumbItem(course.FullName, href: $"/course/show/{course.Id}")});
         }
-        
+        await AppState.SetBreadcrumbsByCourseCategory(course.Id, true);
+    }
+    private void OpenAddDialog(int? sectionId)
+    {
+        var parameters = new DialogParameters();
+        parameters.Add("CourseId", CourseId);
+        parameters.Add("SectionId", sectionId);
+        var options = new DialogOptions { CloseOnEscapeKey = true, DisableBackdropClick = true, MaxWidth = MaxWidth.ExtraLarge, FullWidth = true };
+        Dialog.Show<AddModuleDialog>("Add module", parameters, options);
     }
 }

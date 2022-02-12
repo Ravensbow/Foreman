@@ -1,0 +1,51 @@
+﻿@page "/course/add/{categoryId:int?}"
+@attribute [Authorize(Policy = "CanAddCourse")]
+@inject NavigationManager navManager
+@inject Services.CourseService courseService
+@inject Services.AppStateService AppState
+
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="12" sm="7">
+        <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+            <MudPaper Class="pa-4">
+                <DataAnnotationsValidator />
+                <AddEditPartial Course="model"></AddEditPartial>
+            </MudPaper>
+            <MudPaper Class="pa-4 mt-4">
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Add</MudButton>
+            </MudPaper>
+        </EditForm>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter]
+    public int? CategoryId { get; set; }
+
+    Foreman.Shared.Data.Courses.Course model = new Foreman.Shared.Data.Courses.Course();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (CategoryId.HasValue)
+        {
+            var result = await courseService.GetCategory(CategoryId.Value);
+
+            if (!result.IsSuccessStatusCode)
+            {
+                //TODO Obsuga bledu
+            }
+
+            model.Category = await result.Content.ReadFromJsonAsync<Foreman.Shared.Data.Courses.CourseCategory>();
+            await AppState.SetBreadcrumbsByCourseCategory(CategoryId.Value, false, new List<BreadcrumbItem> { new BreadcrumbItem("Add course", $"/course/add/{CategoryId.Value}") });
+        }
+        else
+        {
+            await AppState.SetBreadcrumbs(new List<BreadcrumbItem> { new BreadcrumbItem("All categories", "/category/show"), new BreadcrumbItem("Add course", "/course/add") });
+        }
+    }
+
+    private void OnValidSubmit(EditContext context)
+    {
+        navManager.NavigateTo($"/category/show/{CategoryId}");
+    }
+}

@@ -53,11 +53,34 @@ namespace Foreman.Client
                             var id = Convert.ToInt32(value);
                             //var test = builder.Services.BuildServiceProvider().GetService<IHttpClientFactory>().CreateClient("Foreman.ServerAPI");
                             //var r = test.GetFromJsonAsync<bool>($"Authorize/CanEditCourse?courseId={id}");
-                            AuthorizeService  authService = builder.Services.BuildServiceProvider()
+                            AuthorizeService authService = builder.Services.BuildServiceProvider()
                                 .GetService<AuthorizeService>();
                             try
                             {
                                 return await authService.CanEditCourse(id);
+                            }
+                            catch (AccessTokenNotAvailableException ex)
+                            {
+                                ex.Redirect();
+                            }
+                        }
+                        return false;
+                    })
+                );
+                options.AddPolicy("CanAddCourse", policy =>
+                    policy.RequireAssertion(async context =>
+                    {
+                        if (context.Resource is RouteData rd)
+                        {
+                            var routeValue = rd.RouteValues.TryGetValue("categoryId", out var value);
+                            int? id = value==null? null : Convert.ToInt32(value);
+                            //var test = builder.Services.BuildServiceProvider().GetService<IHttpClientFactory>().CreateClient("Foreman.ServerAPI");
+                            //var r = test.GetFromJsonAsync<bool>($"Authorize/CanEditCourse?courseId={id}");
+                            AuthorizeService authService = builder.Services.BuildServiceProvider()
+                                .GetService<AuthorizeService>();
+                            try
+                            {
+                                return await authService.CanAddCourse(id);
                             }
                             catch (AccessTokenNotAvailableException ex)
                             {

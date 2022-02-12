@@ -1,0 +1,41 @@
+﻿@inject IHttpClientFactory http
+
+<div class="d-flex flex-row">
+    <MudAvatar Class="mud-elevation-25">
+        <MudIcon Icon="@Icons.Filled.TextFields" Class="mx-4" />
+    </MudAvatar>
+    <div class="ml-6">
+        @ChildContent
+    </div>
+    @if (isCourseManager == true)
+    {
+        <MudMenu Size="Size.Small" Icon="@Icons.Material.Filled.Settings" Class="mud-avatar mud-avatar-small ml-auto mud-elevation-25" Style="align-self: start;">
+            @foreach(var item in MenuOptions)
+            {
+                <MudMenuItem>@item.Item1</MudMenuItem>
+            }
+        </MudMenu>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int CourseId { get; set; }
+    [Parameter]
+    public List<Tuple<string,string>> MenuOptions { get; set; }
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    HttpClient? httpClient;
+    bool? isCourseManager;
+
+    protected override async Task OnInitializedAsync()
+    {
+        httpClient = http.CreateClient("Foreman.ServerAPI");
+        var authState = await authenticationStateTask;
+        isCourseManager = authState.User.HasClaim("CourseManager", CourseId.ToString());
+        StateHasChanged();
+    }
+}

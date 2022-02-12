@@ -1,5 +1,6 @@
 ﻿using Foreman.Server.Data;
 using Foreman.Shared.Data.Courses;
+using Foreman.Shared.Data.Plugin;
 using Foreman.Shared.Services;
 using System.Linq;
 
@@ -17,6 +18,11 @@ namespace Foreman.Server.Services
             db.CourseModules.Add(cm);  
             db.SaveChanges();
             return cm.Id;
+        }
+
+        public Plugin[] GetAll()
+        {
+            return db.Plugins.ToArray();
         }
 
         public int? GetPluginId(string name)

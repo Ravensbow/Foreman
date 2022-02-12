@@ -28,5 +28,9 @@ namespace Foreman.Client.Services
         {
             return await _httpClient.GetFromJsonAsync<bool>($"Authorize/CanEditCourse?courseId={courseId}");
         }
+        public async Task<bool> CanAddCourse(int? categoryId)
+        {
+            return await _httpClient.GetFromJsonAsync<bool>($"Authorize/CanAddCourse?categoryId={categoryId}");
+        }
     }
 }

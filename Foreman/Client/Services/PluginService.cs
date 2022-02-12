@@ -22,5 +22,9 @@ namespace Foreman.Client.Services
         {
             return await _httpClient.GetFromJsonAsync<string[]>($"Plugin/PluginNames");
         }
+        public async Task<Foreman.Shared.Data.Plugin.Plugin[]> GetPlugins()
+        {
+            return await _httpClient.GetFromJsonAsync<Foreman.Shared.Data.Plugin.Plugin[]>($"Plugin/GetPlugins");
+        }
     }
 }

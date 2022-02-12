@@ -42,6 +42,11 @@ namespace Foreman.Server.Controllers
         {
             return db.Plugins.Select(x=>x.Name).ToArray();
         }
+        [HttpGet("GetPlugins")]
+        public IActionResult GetPlugins()
+        {
+            return Ok(PluginService.GetAll());
+        }
         [HttpPost("AddModule")]
         public IActionResult AddInstance(Shared.Data.Courses.CourseModule cm)
         {
