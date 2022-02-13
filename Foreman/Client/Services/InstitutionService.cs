@@ -6,7 +6,7 @@ using Foreman.Shared.Models.Category;
 using Microsoft.AspNetCore.Mvc;
 using System.Net.Http.Json;
 using System.Collections.Generic;
-
+using Foreman.Shared.Data.Identity;
 
 namespace Foreman.Client.Services
 {
@@ -21,6 +21,12 @@ namespace Foreman.Client.Services
         public async Task<HttpResponseMessage> GetInstitutionForManager(int userId)
         {
             var apiResult = await _httpClient.PostAsJsonAsync<int>($"Institution/GetInstitutionForManager", userId);
+            return apiResult;
+        }
+
+        public async Task<HttpResponseMessage> CreateInstitution(Institution model)
+        {
+            var apiResult = await _httpClient.PostAsync("Institution/CreateInstitution", new StringContent(JsonConvert.SerializeObject(model), System.Text.Encoding.UTF8, "application/json"));
             return apiResult;
         }
     }

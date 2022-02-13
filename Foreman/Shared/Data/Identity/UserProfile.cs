@@ -17,6 +17,7 @@ namespace Foreman.Shared.Data.Identity
         public Institution OwnedInstitution { get; set; }
         public ICollection<UserAssigment> UserAssigments { get; set; }
         public ICollection<Courses.CategoryAssigment> CategoryAssigments { get; set; }
+        public ICollection<InstitutionRequest> InstitutionRequests { get; set; }
     }
 
     public class Role : IdentityRole<int>
