@@ -63,6 +63,10 @@ namespace Foreman.Server.Data
                 .HasColumnType("VARCHAR(255)");
             modelBuilder.Entity<ForemanFile>().Property(f => f.MimeType)
                 .HasColumnType("VARCHAR(100)");
+            modelBuilder.Entity<ForemanFile>().HasIndex(f => f.PathNameHash)
+                .IsUnique();
+            modelBuilder.Entity<ForemanFile>().HasIndex(f => f.ContentHash);
+            modelBuilder.Entity<ForemanFile>().HasIndex(f => new { f.ContextId, f.Component, f.ItemId });
 
         }
 
