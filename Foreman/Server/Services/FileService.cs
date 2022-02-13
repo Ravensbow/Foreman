@@ -7,6 +7,9 @@ using System;
 using System.IO;
 using System.Linq;
 using Foreman.Server.Utility;
+using System.Threading.Tasks;
+using Foreman.Shared.Data.Courses;
+using Foreman.Shared.Models.Category;
 
 namespace Foreman.Server.Services
 {
@@ -32,9 +35,9 @@ namespace Foreman.Server.Services
                 var model = _context.Files.Where(f => f.Id == dbFileId).Single();
                 _context.Files.Remove(model);
 
-                if(!_context.Files.Where(f => f.ContentHash == model.ContentHash).Any() && File.Exists(Path.Combine(StoragePath,model.ContentHash)))
+                if(!_context.Files.Where(f => f.ContentHash == model.ContentHash).Any())
                 {
-                    File.Delete(Path.Combine(StoragePath, model.ContentHash));
+                    this.DeleteFileFromStorage(Path.Combine(StoragePath, model.ContentHash));
                 }
 
                 return Result.Ok();
@@ -46,14 +49,66 @@ namespace Foreman.Server.Services
 
         }
 
-        public Result StoreFile(IFormFile file)
+        public Result StoreFile(IForemanFileModel file)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (file.FileData != null)
+                {
+                    var byteArr = file.FileData;
+                    var hasBytes = this.HashFunction(byteArr);
+
+                    if (!File.Exists(Path.Combine(StoragePath, hasBytes.ToString())))
+                    {
+                        File.WriteAllBytes(Path.Combine(StoragePath, hasBytes.ToString()), byteArr);
+                    }
+                    _context.Files.Add(new ForemanFile()
+                    {
+                        MimeType = file.MimeType,
+                        PathNameHash = HashToString(HashFunction($"/{file.ContextId}/{file.Component}/{file.Filename}")),
+                        ContentHash = HashToString(byteArr),
+                        CreateTime = DateTime.Now,
+                        Filename = file.Filename,
+                        Component = file.Component,
+                        ItemId = file.ItemId,
+                        UserId = file.UserId,
+                        ContextId = file.ContextId
+                    });
+                }
+
+                return Result.Ok();
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail(ex.Message);
+            }
+
         }
 
         public Result<byte[]> GetFile(string fileHash)
         {
-            throw new NotImplementedException();
+            var filePath = Path.Combine(StoragePath, fileHash);
+            byte[] file = this.GetFileFromStorage(filePath);
+
+            if (file == null)
+               return Result.Fail<byte[]>("File does not exist.");
+            if (CheckIfFileIsCorrupted(fileHash, file))
+                return Result.Fail<byte[]>("File is corrupted");
+
+            return Result.Ok<byte[]>(file);
+        }
+
+        public Result<byte[]> GetFile(int logicalDbFileId)
+        {
+            try
+            {
+                var record = _context.Files.Single(x => x.Id == logicalDbFileId);
+                return this.GetFile(record.ContentHash);
+            }
+            catch (Exception ex)
+            {
+                return Result.Fail<byte[]>(ex.Message);
+            }
         }
 
         public bool CheckIfStorageDirectoryExists()
@@ -79,10 +134,32 @@ namespace Foreman.Server.Services
 
         }
 
-        private byte[] HasFunction(byte[] source)
+        private byte[] HashFunction(byte[] source)
         {
             var hash = SHA1.Create();
             return hash.ComputeHash(source);
+        }
+
+        private byte[] GetFileFromStorage(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                return File.ReadAllBytes(filePath);
+            }
+            return null;
+        }
+
+        private void DeleteFileFromStorage(string filePath)
+        {
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+        }
+
+        private bool CheckIfFileIsCorrupted(string fileHash, byte[] file)
+        {
+            return string.Equals(HashToString(HashFunction(file)), fileHash);
         }
     }
 }
