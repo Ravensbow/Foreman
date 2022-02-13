@@ -12,6 +12,7 @@
                 <AddEditPartial Course="model"></AddEditPartial>
             </MudPaper>
             <MudPaper Class="pa-4 mt-4">
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto mr-5" Link="@($"/category/show/{CategoryId}")">Cancel</MudButton>
                 <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Add</MudButton>
             </MudPaper>
         </EditForm>
@@ -44,8 +45,16 @@
         }
     }
 
-    private void OnValidSubmit(EditContext context)
+    private async Task OnValidSubmit(EditContext context)
     {
-        navManager.NavigateTo($"/category/show/{CategoryId}");
+        var result = await courseService.CreateCourse(model);
+        if(!result.IsSuccessStatusCode)
+        {
+            //TODO Obsluga bledu
+            return;
+        }
+        int newcourseId = Convert.ToInt32(await result.Content.ReadAsStringAsync());
+
+        navManager.NavigateTo($"/category/show/{newcourseId}");
     }
 }

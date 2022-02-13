@@ -1,12 +1,22 @@
 ﻿@inject System.Net.Http.IHttpClientFactory httpFacotry
 @inject NavigationManager navigator
 
-<EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
-    <DataAnnotationsValidator/>
-    @ChildContent
-    <input type="hidden" @bind="Model.CourseId"/>
-    <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Add</MudButton>
-</EditForm>
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="12" sm="7">
+        <EditForm Model="@Model" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <MudPaper Class="pa-4">
+                <DataAnnotationsValidator />
+                @ChildContent
+                <input type="hidden" @bind="Model.CourseId" />
+            </MudPaper>
+            <MudPaper Class="pa-4 mt-4">
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto mr-5" Link="@($"/course/show/{Model.CourseId}")">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Add</MudButton>
+            </MudPaper>       
+        </EditForm>
+    </MudItem>
+</MudGrid>
 
 @code{
     [Parameter]

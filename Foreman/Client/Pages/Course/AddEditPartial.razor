@@ -7,10 +7,12 @@
              AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
              ToStringFunc="@(e=> e==null?null : e.Name)"
              For="@(() => Course.Category)"/>
-<MudTextField Label="Description" @bind-Value="Course.Description" For="@(() => Course.Description)" InputType="InputType.Password" />
+<MudTextField Label="Description" @bind-Value="Course.Description" For="@(() => Course.Description)" />
 <MudCheckBox Label="Visible" @bind-Checked="Course.IsVisible" Color="Color.Secondary" For="@(() => Course.IsVisible)"></MudCheckBox>
 <MudDatePicker Label="Start date" @bind-Date="Course.StartDate" For="@(() => Course.StartDate)"/>
 <MudDatePicker Label="End date" @bind-Date="Course.EndDate" For="@(() => Course.EndDate)"/>
+<input type="hidden" @bind-value="Course.CourseCategoryId"/>
+<input type="hidden" @bind-value="Course.InstitutionId"/>
 
 @code {
     [Parameter]
@@ -24,7 +26,6 @@
         {
             //TODO: Obsługa błedu
         }
-        var temp = await result.Content.ReadAsStringAsync();
-        return await result.Content.ReadFromJsonAsync<List<Foreman.Shared.Data.Courses.CourseCategory>>();
+        return Newtonsoft.Json.JsonConvert.DeserializeObject<List<Foreman.Shared.Data.Courses.CourseCategory>>(await result.Content.ReadAsStringAsync());
     }
 }

@@ -12,5 +12,7 @@ namespace Foreman.Shared.Services
         bool CanEditCourse(int courseId);
         bool CanAddCourse(int? categoryId);
         bool CanViewCategory(int categoryId);
+        bool CanCreateCategory(int? categoryId);
+        bool CanEditCategory(int categoryId);
     }
 }

@@ -1,6 +1,8 @@
 ﻿@page "/category/show/{categoryId:int?}"
 @inject Services.AppStateService AppState
+@inject Services.CourseService CourseService
 
+<MudText Typo="Typo.h5" Color="Color.Primary" Class="mb-4">@category?.Name</MudText>
 <CategoryList CategoryId="categoryId"></CategoryList>
 @if(categoryId.HasValue)
 {
@@ -11,14 +13,25 @@
     [Parameter]
     public int? categoryId { get; set; }
 
+    Foreman.Shared.Data.Courses.CourseCategory category;
+
     protected override async Task OnParametersSetAsync()
     {
         if(categoryId.HasValue)
         {
             await AppState.SetBreadcrumbsByCourseCategory(categoryId.Value, false);
+            var result = await CourseService.GetCategory(categoryId.Value);
+            if(!result.IsSuccessStatusCode)
+            {
+                //TODO Obsluga bledu
+                return;
+            }
+            category = await result.Content.ReadFromJsonAsync<Foreman.Shared.Data.Courses.CourseCategory>();
+
         }
         else
         {
+            category = new Foreman.Shared.Data.Courses.CourseCategory { Name = "All categories" };
             await AppState.SetBreadcrumbs(new List<BreadcrumbItem> { new BreadcrumbItem("All categories", "/category/show")});
         }
     }

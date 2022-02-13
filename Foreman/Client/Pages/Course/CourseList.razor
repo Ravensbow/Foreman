@@ -68,8 +68,7 @@
             //TODO Obsluga bledu
             return;
         }
-        var temp = await result.Content.ReadAsStringAsync();
-        Courses = await result.Content.ReadFromJsonAsync<List<Foreman.Shared.Data.Courses.Course>>();
+        Courses = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Foreman.Shared.Data.Courses.Course>>(await result.Content.ReadAsStringAsync());
     }
     private bool CheckIsManager(int id)
     {

@@ -22,6 +22,37 @@ namespace Foreman.Server.Services
                 return httpContext.User.IsInRole("Admin");
         }
 
+        public bool CanCreateCategory(int? categoryId)
+        {
+            if (categoryId.HasValue)
+            {
+                //Jesli jest InstitutionManager to moze tworzyc Kategorie w danej instytucji
+                int? institutionId = db.CourseCategories.Find(categoryId.Value)?.InstitutionId;
+                if (!institutionId.HasValue)
+                    return httpContext.User.IsInRole("Admin");
+                return httpContext.User.IsInRole("Admin") || (httpContext.User.HasClaim("Institution", institutionId.Value.ToString()) && httpContext.User.HasClaim("InstitutionManager", institutionId.Value.ToString()));
+            }
+            else
+                return httpContext.User.IsInRole("Admin");
+        }
+        public bool CanEditCategory(int categoryId)
+        {
+            int? institutionId = db.CourseCategories.Find(categoryId)?.InstitutionId;
+            if (!institutionId.HasValue)
+                return httpContext.User.IsInRole("Admin");
+            return 
+                httpContext.User.IsInRole("Admin") || 
+                (
+                    httpContext.User.HasClaim("Institution", institutionId.Value.ToString()) 
+                    && 
+                    (
+                        httpContext.User.HasClaim("InstitutionManager", institutionId.Value.ToString()) 
+                        || 
+                        httpContext.User.HasClaim("CategoryManager", categoryId.ToString())
+                     )
+                );
+        }
+
         public bool CanEditCourse(int courseId)
         {
             int? categoryId = db.Courses.Find(courseId)?.CourseCategoryId;

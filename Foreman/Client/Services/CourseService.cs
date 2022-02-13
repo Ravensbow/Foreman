@@ -30,6 +30,19 @@ namespace Foreman.Client.Services
             return apiResult;
         }
 
+        public async Task<HttpResponseMessage> CreateCourse(Foreman.Shared.Data.Courses.Course model)
+        {
+            var apiResult = await _httpClient.PostAsync("Course/CreateCourse", new StringContent(JsonConvert.SerializeObject(model), System.Text.Encoding.UTF8, "application/json"));
+            return apiResult;
+        }
+
+        public async Task<HttpResponseMessage> UpdateCourse(Foreman.Shared.Data.Courses.Course model)
+        {
+            var apiResult = await _httpClient.PostAsync("Course/UpdateCourse", new StringContent(JsonConvert.SerializeObject(model, settings: 
+                new JsonSerializerSettings { ReferenceLoopHandling = ReferenceLoopHandling.Ignore, PreserveReferencesHandling = PreserveReferencesHandling.None }), System.Text.Encoding.UTF8, "application/json"));
+            return apiResult;
+        }
+
         public async Task<HttpResponseMessage> CreateCategory(CategoryModel categoryModel)
         {
             var apiResult = await _httpClient.PostAsJsonAsync<CategoryModel>($"Course/CreateCategory", categoryModel);

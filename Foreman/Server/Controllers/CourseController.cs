@@ -10,6 +10,7 @@ using Foreman.Shared.Models;
 using Foreman.Shared.Models.Category;
 using MudBlazor;
 using System.Collections.Generic;
+using System.Security.Claims;
 
 namespace Foreman.Server.Controllers
 {
@@ -18,9 +19,11 @@ namespace Foreman.Server.Controllers
     public class CourseController : ControllerBase
     {
         private readonly ApplicationContext _context;
-        public CourseController(ApplicationContext ap)
+        private readonly Foreman.Shared.Services.IAuthorizeService authorizeService;
+        public CourseController(ApplicationContext ap, Foreman.Shared.Services.IAuthorizeService authorizeService)
         {
             _context = ap;
+            this.authorizeService = authorizeService;
         }
         [HttpGet("GetCourseById/{id}")]
         public IActionResult GetCourseById(int id)
@@ -113,6 +116,59 @@ namespace Foreman.Server.Controllers
             }
         }
 
+        [HttpPost("CreateCourse")]
+        public IActionResult CreateCourse(Course model)
+        {
+
+            try
+            {
+                model.CourseCategoryId = model.Category.Id;
+                model.InstitutionId = model.Category.InstitutionId;
+                model.Category = null;
+                if(!authorizeService.CanAddCourse(model.CourseCategoryId))
+                {
+                    return Forbid();
+                }
+
+                _context.Courses.Add(model);
+                _context.SaveChanges();
+                var claims = new List<Claim>
+                {
+                    new Claim("CourseManager", model.Id.ToString())
+                };
+                User.AddIdentity(new ClaimsIdentity(claims));
+                return Ok(model.Id);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+            
+        }
+        [HttpPost("UpdateCourse")]
+        public IActionResult UpdateCourse(Course model)
+        {
+
+            try
+            {
+                model.CourseCategoryId = model.Category.Id;
+                model.InstitutionId = model.Category.InstitutionId;
+                if (!authorizeService.CanAddCourse(model.CourseCategoryId))
+                {
+                    return Forbid();
+                }
+
+                var updated = DataTool.Update<Course>(model, _context);
+
+                return Ok(model.Id);
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+
+        }
+
         [HttpGet("GetBreadcrumbs/{id}/{isCourse}")]
         public IActionResult GetBreadcrumbs(int id, bool isCourse)
         {
@@ -156,24 +212,14 @@ namespace Foreman.Server.Controllers
         }
 
         [HttpPost("CreateCategory")]
-        public IActionResult CreateCategory(CategoryModel model)
+        public IActionResult CreateCategory(CourseCategory model)
         {
             try
             {
-                string[] insitutions = User.Claims.Where(c => c.Type == "Institution").Select(c => c.Value).ToArray();
-                if (model.InstitutionId != null && !insitutions.Contains(model.InstitutionId.Value.ToString()))
-                    return Problem("Cannot create a category for institution that user is not a part of.");
-
-                CourseCategory newRecord = new CourseCategory()
-                {
-                    InstitutionId = model.InstitutionId,
-                    ParentCategoryId = model.ParentCategoryId,
-                    Name = model.Name,
-                    Description = model.Description,
-                    IsVisible = model.IsVisible,
-                    CreatedDate = DateTime.Now
-                };
-                _context.CourseCategories.Add(newRecord);
+                if(!authorizeService.CanCreateCategory(model.ParentCategoryId))
+                    return Forbid();
+                
+                _context.CourseCategories.Add(model);
                 _context.SaveChanges();
                 return Ok();
             }
@@ -258,7 +304,7 @@ namespace Foreman.Server.Controllers
             return Ok(JsonConvert.SerializeObject(categories, new JsonSerializerSettings
             {
                 ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-                PreserveReferencesHandling = PreserveReferencesHandling.None
+                PreserveReferencesHandling = PreserveReferencesHandling.Objects
             }));
 
         }

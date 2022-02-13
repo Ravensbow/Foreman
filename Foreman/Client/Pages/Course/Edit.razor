@@ -12,7 +12,8 @@
                 <AddEditPartial Course="model"></AddEditPartial>
             </MudPaper>
             <MudPaper Class="pa-4 mt-4">
-                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Edit</MudButton>
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto mr-5" Link="@($"/course/show/{CourseId}")">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Save</MudButton>
             </MudPaper>
         </EditForm>
     </MudItem>
@@ -37,8 +38,14 @@
             await AppState.SetBreadcrumbsByCourseCategory(CourseId, true, new List<BreadcrumbItem> { new BreadcrumbItem("Edit course", $"/course/edit/{CourseId}")});
     }
 
-    private void OnValidSubmit(EditContext context)
+    private async Task OnValidSubmit(EditContext context)
     {
+        var result = await courseService.UpdateCourse(model);
+        if(!result.IsSuccessStatusCode)
+        {
+            //TODO Obsluga bledu
+            return;
+        }
         navManager.NavigateTo($"/course/show/{CourseId}");
     }
 }
