@@ -44,6 +44,9 @@
     <None Update="Plugins\DisplayedText\DisplayedText.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Plugins\FilePlugin\FilePlugin.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 

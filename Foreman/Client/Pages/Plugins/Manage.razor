@@ -1,0 +1,153 @@
+﻿@page "/plugins/manage"
+@inject IHttpClientFactory httpClientFactory
+
+<MudGrid>
+    <MudItem xs="12" sm="12" md="12">
+        <MudCard Style="height:100%;">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Plugin overview</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent Class="px-0">
+                <MudList Clickable="false">
+                    @foreach (var item in Plugins)
+                    {
+                        <MudListItem>
+                            <div class="d-flex flex-row">
+                                <MudAvatar Class="mud-elevation-25">
+                                    <MudIcon Icon="@Icons.Filled.School" Class="mx-4" />
+                                </MudAvatar>
+                                <div class="ml-6">
+                                    <MudText Typo="Typo.subtitle1">@item.Name<MudText Class="ml-3" Typo="Typo.overline">@item.Version</MudText></MudText>
+                                    <MudText Typo="Typo.body2">Tu powinien być opis ale nie ma pola w bazie</MudText>
+                                </div>
+                                @if (true == true)
+                                {
+                                    <MudMenu Size="Size.Small" Icon="@Icons.Material.Filled.Settings" Class="mud-avatar mud-avatar-small ml-auto mud-elevation-25" Style="align-self: start;">
+                                        <MudMenuItem>Delete</MudMenuItem>
+                                    </MudMenu>
+                                }
+                            </div>
+                        </MudListItem>
+                    }
+                    <MudListItem>
+                        @if (true)
+                        {
+                            @inject ISnackbar Snackbar
+                            <style>
+                                .drag-drop-zone {
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    transition: all .4s;
+                                    min-height: 400px;
+                                }
+
+                                .drag-drop-input {
+                                    position: absolute;
+                                    width: 100%;
+                                    height: 90%;
+                                    opacity: 0;
+                                    cursor: pointer;
+                                    z-index: 2;
+                                }
+
+                                .drag-enter {
+                                    box-shadow: var(--mud-elevation-10);
+                                }
+
+                                .list {
+                                    padding: 2em;
+                                    min-width: 100%;
+                                }
+                            </style>
+
+                            <MudText Align="Align.Start" Typo="Typo.h6">Install plugin</MudText>
+                            <MudPaper @ondragenter="@(()=>_dragEnterStyle="drag-enter")"
+                                  @ondragleave="@(()=>_dragEnterStyle=null)"
+                                  @ondragend="@(()=>_dragEnterStyle=null)"
+                                  Class=@("drag-drop-zone "+ _dragEnterStyle +" mud-theme-default")>
+
+                                <InputFile OnChange="OnInputFileChanged" class="drag-drop-input" />
+
+                                @if (fileNames.Count() == 0)
+                                {
+                                    <MudText Typo="Typo.h3">Drag and drop files here or click</MudText>
+                                }
+                                else
+                                {
+                                    <MudList Style="padding:2em;width:100%;" Dense="true">
+                                        @foreach (var file in fileNames)
+                                        {
+                                            <MudListItem @key="@file">
+                                                <MudChip Color="Color.Dark"
+                                             Style="width:60px; overflow:hidden;"
+                                             Text="@(file.Split(".").Last())" />
+                                                @file
+                                            </MudListItem>
+                                        }
+                                    </MudList>
+                                }
+                            </MudPaper>
+
+                            <MudGrid Justify="Justify.Center" Class="mt-5" Spacing="4">
+                                <MudItem>
+                                    <MudButton OnClick="Upload" Disabled="@(!fileNames.Any())" Color="Color.Primary" Variant="Variant.Filled">Install</MudButton>
+                                </MudItem>
+                                <MudItem>
+                                    <MudButton OnClick="@fileNames.Clear" Disabled="@(!fileNames.Any())" Color="Color.Error" Variant="Variant.Filled">Clear</MudButton>
+                                </MudItem>
+                            </MudGrid>
+                        }
+                    </MudListItem>
+                </MudList>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+@code {
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    HttpClient httpClient;
+    List<Foreman.Shared.Data.Plugin.Plugin> Plugins = new List<Foreman.Shared.Data.Plugin.Plugin>();
+
+    protected override async Task OnParametersSetAsync()
+    {
+        httpClient = httpClientFactory.CreateClient("Foreman.ServerAPI");
+
+        var result = await httpClient.GetAsync($"/Plugin/GetPlugins");
+        if (!result.IsSuccessStatusCode)
+        {
+            //TODO Obsluga bledu
+            return;
+        }
+        Plugins = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Foreman.Shared.Data.Plugin.Plugin>>(await result.Content.ReadAsStringAsync());
+    }
+    private bool CheckIsManager(int id)
+    {
+        var authState = authenticationStateTask.GetAwaiter().GetResult();
+        return authState.User.HasClaim("CourseManager", id.ToString());
+    }
+
+    string _dragEnterStyle;
+    IList<string> fileNames = new List<string>();
+    void OnInputFileChanged(InputFileChangeEventArgs e)
+    {
+        var files = e.GetMultipleFiles();
+        fileNames = files.Select(f => f.Name).ToList();
+    }
+    void Upload()
+    {
+        //Upload the files here
+        Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
+        Snackbar.Add("TODO: Upload your files!", Severity.Normal);
+    }
+
+    async Task DeletePlugin(int id)
+    {
+        return;
+    }
+}

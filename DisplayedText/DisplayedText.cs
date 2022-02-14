@@ -33,5 +33,17 @@ namespace DisplayedText
                 db.Database.ExecuteSqlRaw(test);
             }
         }
+
+        public List<string?> GetPluginDbTables(IServiceCollection services)
+        {
+            using (Data.DisplayedTextContext db = services.BuildServiceProvider()
+                    .GetService<Data.DisplayedTextContext>())
+            {
+                return db.Model.GetEntityTypes()
+                .Select(t => t.GetTableName())
+                .Distinct()
+                .ToList();
+            }
+        }
     }
 }

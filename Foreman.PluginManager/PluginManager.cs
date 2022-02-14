@@ -8,6 +8,7 @@ namespace Foreman.PluginManager
         public string GetPluginName();
         public string GetPluginDescription();
         public string GetPluginVersion();
+        public List<string?> GetPluginDbTables(IServiceCollection services);
         void Initialize(IServiceCollection services, IConfiguration configuration);
         void Migrate(IServiceCollection services);
     }

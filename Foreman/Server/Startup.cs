@@ -67,6 +67,7 @@ namespace Foreman.Server
             services.AddScoped<IAuthorizeService, AuthorizeService>();
             services.AddScoped<IPluginService, PluginService>();
             services.LoadPlugins(Configuration);
+            services.AddSingleton(services);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

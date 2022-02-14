@@ -33,5 +33,17 @@ namespace FilePlugin
                 db.Database.ExecuteSqlRaw(test);
             }
         }
+
+        public List<string?> GetPluginDbTables(IServiceCollection services)
+        {
+            using (Data.FilePluginContext db = services.BuildServiceProvider()
+                    .GetService<Data.FilePluginContext>())
+            {
+                return db.Model.GetEntityTypes()
+                .Select(t => t.GetTableName())
+                .Distinct()
+                .ToList();
+            }
+        }
     }
 }
