@@ -1,0 +1,38 @@
+﻿@page "/institution/add"
+@attribute [Authorize(Policy="CanAddInstitution")]
+@inject NavigationManager navManager
+@inject Services.AppStateService AppState
+@inject Foreman.Client.Services.InstitutionService institutionService
+
+<MudGrid Justify="Justify.Center">
+    <MudItem xs="12" sm="7">
+        <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
+            <MudPaper Class="pa-4">
+                <DataAnnotationsValidator />
+                <AddEditPartial Institution="model"></AddEditPartial>
+            </MudPaper>
+            <MudPaper Class="pa-4 mt-4">
+                <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto mr-5" Link="@($"/institution/institutionList")">Cancel</MudButton>
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Add</MudButton>
+            </MudPaper>
+        </EditForm>
+    </MudItem>
+</MudGrid>
+
+@code {
+
+    Foreman.Shared.Data.Identity.Institution model = new Foreman.Shared.Data.Identity.Institution();
+
+    private async Task OnValidSubmit(EditContext context)
+    {
+        var result = await institutionService.CreateInstitution(model);
+        if(!result.IsSuccessStatusCode)
+        {
+            //TODO Obsluga bledu
+            return;
+        }
+
+        navManager.NavigateTo($"/institution/institutionList");
+    }
+
+}

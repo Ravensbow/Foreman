@@ -1,6 +1,7 @@
 ﻿using Foreman.Shared.Services;
 using Foreman.Server.Data;
 using Microsoft.AspNetCore.Http;
+using System.Linq;
 
 namespace Foreman.Server.Services
 {
@@ -73,6 +74,42 @@ namespace Foreman.Server.Services
             if (!institution.HasValue || httpContext.User.HasClaim("Institution", institution.Value.ToString()))
                 return true;
             return false;
+        }
+
+        public bool CanAddInstitution()
+        {
+            // To chyba tylko admin moze w sumie
+            return httpContext.User.IsInRole("Admin");
+        }
+
+        public bool CanDeleteInstitution(int institutionid)
+        {
+            var institution = db.Institutions.Find(institutionid);
+
+            if (institution == null)
+                return false;
+
+            return httpContext.User.IsInRole("Admin")
+                ||
+                (
+                    httpContext.User.HasClaim("Institution", institutionid.ToString())
+                    && httpContext.User.HasClaim("InstitutionManager", institutionid.ToString())
+                );
+        }
+
+        public bool CanEditInstitution(int institutionId)
+        {
+            var institution = db.Institutions.Find(institutionId);
+
+            if (institution == null)
+                return false;
+
+            return httpContext.User.IsInRole("Admin")
+                ||
+                (
+                    httpContext.User.HasClaim("Institution", institutionId.ToString())
+                    && httpContext.User.HasClaim("InstitutionManager", institutionId.ToString())
+                );
         }
     }
 }

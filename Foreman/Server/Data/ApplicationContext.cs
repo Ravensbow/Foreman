@@ -23,6 +23,7 @@ namespace Foreman.Server.Data
         public DbSet<CourseModule> CourseModules { get; set; }
         public DbSet<CourseSection> CourseSections { get; set; }
         public DbSet<Plugin> Plugins { get; set; }
+        public DbSet<InstitutionRequest> InstitutionRequests { get; set; }
 
         public ApplicationContext(
             DbContextOptions<ApplicationContext> options,
@@ -43,6 +44,7 @@ namespace Foreman.Server.Data
             UserProfileFluentApi(modelBuilder);
             InstitutionFluentApi(modelBuilder);
             UserAssigmentFluentApi(modelBuilder);
+            InstitutionRequestFluentApi(modelBuilder);
             //Plugins
             PluginFluentApi(modelBuilder);
             //ForemanFile
@@ -171,6 +173,16 @@ namespace Foreman.Server.Data
                 .WithOne(up => up.OwnedInstitution)
                 .HasForeignKey<Institution>(i => i.OwnerId);
         }
+
+        protected void InstitutionRequestFluentApi(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<InstitutionRequest>().HasKey(ir => new { ir.UserId, ir.InstitutionId });
+            modelBuilder.Entity<InstitutionRequest>().HasOne(ir => ir.Institution)
+                .WithMany(i => i.InstitutionRequests);
+            modelBuilder.Entity<InstitutionRequest>().HasOne(ir => ir.User)
+                .WithMany(u => u.InstitutionRequests);
+        }
+
         protected void UserAssigmentFluentApi(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<UserAssigment>().HasOne(ua => ua.UserProfile)
