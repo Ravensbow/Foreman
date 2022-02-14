@@ -24,15 +24,113 @@ namespace Foreman.Server.Controllers
 
         }
 
-        [HttpGet("{userId}")]
+        [HttpGet("{userId:int}")]
         public IActionResult GetInstitutionForManager(int userId)
         {
             try
             {
-                var item = _context.Institutions.Single(i => i.OwnerId == userId);
-                return Ok(item);
+                var item = _context.Institutions
+                    .Include(i => i.Members)
+                    .Single(i => i.OwnerId == userId);
+
+                return Ok(JsonConvert.SerializeObject(item, new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects
+                }));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [HttpGet("{institutionId:int}")]
+        public IActionResult GetInstitution(int institutionId)
+        {
+            try
+            {
+                if (!_authorizeService.CanAddInstitution())
+                    return Forbid();
+                var item = _context.Institutions
+                    .Include(i => i.Members)
+                    .Single(i => i.Id == institutionId);
+                return Ok(JsonConvert.SerializeObject(item, new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects
+                }));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [HttpGet("{institutionId:int}")]
+        public IActionResult GetRequests(int institutionid)
+        {
+            try
+            {
+                if (!_authorizeService.CanEditInstitution(institutionid))
+                    return Forbid();
+
+                var itemList = _context.InstitutionRequests.Include(ir => ir.User)
+                .OrderBy(ir => ir.RequestDate)
+                .ToList();
+
+                return Ok(JsonConvert.SerializeObject(itemList, new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
+                    PreserveReferencesHandling = PreserveReferencesHandling.Objects
+                }));
             }
             catch(Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult AcceptRequest(int userId, int institutionId)
+        {
+            try
+            {
+                if (!_authorizeService.CanEditInstitution(institutionId))
+                    return Forbid();
+                var user = _context.Users.Where(u => u.Id == userId).Single();
+                var request = _context.InstitutionRequests.Where(ir => ir.UserId == userId && ir.InstitutionId == institutionId).Single();
+
+                user.InstitutionId = institutionId;
+                request.IsAccepted = true;
+
+                DataTool.Update(user, _context);
+                DataTool.Update(request, _context);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult RefuseRequest(int userId, int institutionId)
+        {
+            try
+            {
+                if (!_authorizeService.CanEditInstitution(institutionId))
+                    return Forbid();
+                var request = _context.InstitutionRequests.Where(ir => ir.UserId == userId && ir.InstitutionId == institutionId).Single();
+
+                request.IsAccepted = false;
+
+                DataTool.Update(request, _context);
+
+                return Ok();
+            }
+            catch (Exception ex)
             {
                 return Problem(ex.Message);
             }

@@ -1,0 +1,94 @@
+﻿@using Foreman.Shared.Data.Identity
+@inject Foreman.Client.Services.InstitutionService institutionService
+@inject NavigationManager navManager
+@inject ISnackbar Snackbar
+
+@if (Requests.Any())
+{
+    <MudTable Items="@Requests" Filter="new Func<UserProfile,bool>(FilterFunc1)">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Pending requests</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Username</MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Username">@context.Email</MudTd>
+        <MudTd>
+            <MudIconButton Disabled="buttonsDisabled" OnClick="@(async () => await HandleRefuse(context))" ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" Size="Size.Medium" Icon="@Icons.Filled.DoNotDisturb"></MudIconButton>
+            <MudButton Disabled="buttonsDisabled" OnClick="@(() => navManager.NavigateTo($"/institution/manage/userdetails/{context.InstitutionId}/{context.UserId}"))" ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium">Details</MudButton>
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+}
+
+
+@code {
+    [Parameter]
+    public int? InstitutionId { get; set; }
+
+    [Parameter]
+    public Institution? Institution { get; set; }
+
+    [Parameter]
+    public List<Foreman.Shared.Data.Identity.UserProfile>? DataList { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    HttpClient httpClient;
+    List<Foreman.Shared.Data.Identity.UserProfile> Requests = new List<Foreman.Shared.Data.Identity.UserProfile>();
+    string searchString = "";
+    bool buttonsDisabled = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (!InstitutionId.HasValue && Institution == null && DataList == null)
+            throw new ArgumentNullException();
+        if (DataList != null)
+        {
+            Requests = DataList;
+            return;
+        }
+        if (Institution != null)
+        {
+            Requests = Institution.Members.ToList();
+            return;
+        }
+        if (InstitutionId.HasValue)
+        {
+            var result = await institutionService.GetInstitution((int)InstitutionId);
+            if (!result.IsSuccessStatusCode)
+            {
+                //TODO Obsluga bledu
+                return;
+            }
+            Requests = Newtonsoft.Json.JsonConvert.DeserializeObject<Institution>(await result.Content.ReadAsStringAsync()).Members.ToList();
+        }
+    }
+    private async Task HandleKick(UserProfile item)
+    {
+        
+    }
+
+    private bool CheckIsOwner(int id)
+    {
+        var authState = authenticationStateTask.GetAwaiter().GetResult();
+        return authState.User.HasClaim("InstitutionManager", id.ToString()) && authState.User.HasClaim("Institution", id.ToString());
+    }
+    private bool FilterFunc1(UserProfile item) => FilterFunc(item, searchString);
+    private bool FilterFunc(UserProfile item, string search)
+    {
+        if (string.IsNullOrEmpty(search))
+            return true;
+        if (item.UserName.Contains(search))
+            return true;
+        return false;
+    }
+}

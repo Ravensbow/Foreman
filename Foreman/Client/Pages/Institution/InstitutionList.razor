@@ -1,5 +1,69 @@
-﻿<h3>InstitutionList</h3>
+﻿@page "/institution/institutionList"
+@attribute [Authorize(Policy = "CanAddInstitution")]
+@inject NavigationManager navManager
+@inject IHttpClientFactory httpClientFactory
+
+    <MudGrid>
+        <MudItem xs="12" sm="12" md="12">
+            <MudCard Style="height:100%;">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">Institutions</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent Class="px-0">
+                    <MudList Clickable="false">
+                    @if (Institutions.Any())
+                    {
+                        foreach (var item in Institutions)
+                        {
+                            <MudListItem Class="mud-list-item-clickable" OnClick="@((e) => navManager.NavigateTo($"/institution/show/{item.Id}"))">
+                                <div class="d-flex flex-row">
+                                    <MudAvatar Class="mud-elevation-25">
+                                        <MudIcon Icon="@Icons.Filled.School" Class="mx-4" />
+                                    </MudAvatar>
+                                    <div class="ml-6">
+                                        <MudText Typo="Typo.subtitle1">@item.Name</MudText>
+                                        <MudText Typo="Typo.body2">@item.Description</MudText>
+                                    </div>
+                                    @if (true == true)
+                                    {
+                                        <MudMenu Size="Size.Small" Icon="@Icons.Material.Filled.Settings" Class="mud-avatar mud-avatar-small ml-auto mud-elevation-25" Style="align-self: start;">
+                                            <MudMenuItem Link="@($"/institution/edit/{item.Id}")">Edit</MudMenuItem>
+                                        </MudMenu>
+                                    }
+                                </div>
+                            </MudListItem>
+                        }   
+                    }
+                        <MudListItem>
+                            @if (true)
+                            {
+                                <div class="d-flex flex-row justify-center">
+                                    <MudFab Link="@($"/institution/add")" Color="Color.Primary" StartIcon="@Icons.Filled.Add" Label="Add" />
+                                </div>
+                            }
+                        </MudListItem>
+                    </MudList>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
 
 @code {
+    HttpClient httpClient;
+    List<Foreman.Shared.Data.Identity.Institution> Institutions = new List<Foreman.Shared.Data.Identity.Institution>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        httpClient = httpClientFactory.CreateClient("Foreman.ServerAPI");
+        var result = await httpClient.GetAsync($"/Institution/GetInstitutions");
+        if (!result.IsSuccessStatusCode)
+        {
+            navManager.NavigateTo("/personal/dashboard");
+            return;
+        }
+        Institutions = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Foreman.Shared.Data.Identity.Institution>>(await result.Content.ReadAsStringAsync());
+    }
 
 }

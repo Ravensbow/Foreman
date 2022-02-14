@@ -1,0 +1,66 @@
+﻿@page "/institution/show/{InstitutionId:int}"
+@using Foreman.Shared.Data.Identity
+@inject Foreman.Client.Services.InstitutionService institutionService
+
+@if (institution == null)
+{
+    <span>Loading...</span>
+}
+else
+{
+
+}
+
+    <MudGrid>
+        <MudItem xs="12">
+            <MudCard Style="height:100%;">
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudText Typo="Typo.h6">@institution.Name</MudText>
+                    </CardHeaderContent>
+                </MudCardHeader>
+                <MudCardContent Class="px-0">
+                    <MudGrid>
+                    @if (!string.IsNullOrEmpty(institution.Description))
+                    {
+                        <MudItem xs="12">
+                            <MudItem Class="" xs="6">
+                                <MudText>Descrption:</MudText>
+                            </MudItem>
+                        <MudItem xs="6">
+                            <MudText>@institution.Description</MudText>
+                        </MudItem>
+                    </MudItem>
+
+                    }
+                    <MudItem xs="12">
+                            <MudItem Class="" xs="6">
+                                <MudText>Owner (Id):</MudText>
+                            </MudItem>
+                        <MudItem xs="6">
+                            <MudText>@institution.Owner.UserName (@institution.OwnerId)</MudText>
+                        </MudItem>
+                    </MudItem>
+
+                    </MudGrid>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+@code {
+    [Parameter]
+    public int InstitutionId { get; set; }
+
+    Institution institution = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var result = await institutionService.GetInstitution()
+        if (result.IsSuccessStatusCode)
+        {
+            institution = Newtonsoft.Json.JsonConvert.DeserializeObject<Institution>(await result.Content.ReadAsStringAsync());
+        }
+
+    }
+}

@@ -1,0 +1,106 @@
+﻿@inject IHttpClientFactory httpClientFactory
+@inject NavigationManager navManager
+@inject ISnackbar Snackbar
+
+@if (Requests.Any())
+{
+    <MudTable Items="@Requests" Filter="new Func<Foreman.Shared.Data.Identity.InstitutionRequest,bool>(FilterFunc1)">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Pending requests</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Username</MudTh>
+        <MudTh>Requested date</MudTh>
+        <MudTh></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Username">@context.User.Email</MudTd>
+        <MudTd DataLabel="Requested date">@context.RequestDate</MudTd>
+        <MudTd>
+            <MudIconButton Disabled="buttonsDisabled" OnClick="@(async () => await HandleAccept(context))" ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Success" Size="Size.Medium" Icon="@Icons.Filled.Check"></MudIconButton>
+            <MudIconButton Disabled="buttonsDisabled" OnClick="@(async () => await HandleRefuse(context))" ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" Size="Size.Medium" Icon="@Icons.Filled.DoNotDisturb"></MudIconButton>
+            <MudButton Disabled="buttonsDisabled" OnClick="@(() => navManager.NavigateTo($"/institution/manage/requestdetails/{context.InstitutionId}/{context.UserId}"))" ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium">Details</MudButton>
+        </MudTd>
+    </RowTemplate>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+}
+
+
+@code {
+    [Parameter]
+    public int InstitutionId { get; set; }
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    HttpClient httpClient;
+    List<Foreman.Shared.Data.Identity.InstitutionRequest> Requests = new List<Foreman.Shared.Data.Identity.InstitutionRequest>();
+    string searchString = "";
+    bool buttonsDisabled = false;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        httpClient = httpClientFactory.CreateClient("Foreman.ServerAPI");
+
+        var result = await httpClient.GetAsync($"/Institution/GetRequests/{InstitutionId}");
+        if (!result.IsSuccessStatusCode)
+        {
+            //TODO Obsluga bledu
+            return;
+        }
+        Requests = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Foreman.Shared.Data.Identity.InstitutionRequest>>(await result.Content.ReadAsStringAsync())
+        .Where(r => !r.IsAccepted.HasValue)
+        .ToList();
+    }
+    private async Task HandleAccept(Foreman.Shared.Data.Identity.InstitutionRequest item)
+    {
+        buttonsDisabled = true;
+        var result = await httpClient.PostAsJsonAsync($"/Institution/AcceptRequest", new { userId = item.UserId, institutionId = item.InstitutionId });
+
+        if (!result.IsSuccessStatusCode)
+        {
+            Snackbar.Add($"Error occured while accepting request for user: {item.User.UserName}.");
+            buttonsDisabled = false;
+            return;            
+        }
+        Snackbar.Add($"User {item.User.UserName} successfully accepted.");
+        Requests.Remove(item);
+        buttonsDisabled = false;
+
+    }
+    private async Task HandleRefuse(Foreman.Shared.Data.Identity.InstitutionRequest item)
+    {
+        buttonsDisabled = true;
+        var result = await httpClient.PostAsJsonAsync($"/Institution/RefuseRequest", new { userId = item.UserId, institutionId = item.InstitutionId });
+
+        if (!result.IsSuccessStatusCode)
+        {
+            Snackbar.Add($"Error occured while refusing request for user: {item.User.UserName}.");
+            buttonsDisabled = false;
+            return;            
+        }
+
+        Snackbar.Add($"User {item.User.UserName} successfully refused.");
+        Requests.Remove(item);
+        buttonsDisabled = false;
+    }
+    private bool CheckIsOwner(int id)
+    {
+        var authState = authenticationStateTask.GetAwaiter().GetResult();
+        return authState.User.HasClaim("InstitutionManager", id.ToString()) && authState.User.HasClaim("Institution", id.ToString());
+    }
+    private bool FilterFunc1(Foreman.Shared.Data.Identity.InstitutionRequest item) => FilterFunc(item, searchString);
+    private bool FilterFunc(Foreman.Shared.Data.Identity.InstitutionRequest item, string search)
+    {
+        if (string.IsNullOrEmpty(search))
+            return true;
+        if (item.User.UserName.Contains(search))
+            return true;
+        return false;
+    }
+}

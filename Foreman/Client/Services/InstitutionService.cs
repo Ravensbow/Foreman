@@ -20,7 +20,13 @@ namespace Foreman.Client.Services
 
         public async Task<HttpResponseMessage> GetInstitutionForManager(int userId)
         {
-            var apiResult = await _httpClient.PostAsJsonAsync<int>($"Institution/GetInstitutionForManager", userId);
+            var apiResult = await _httpClient.GetAsync($"Institution/GetInstitutionForManager/{userId}");
+            return apiResult;
+        }
+
+        public async Task<HttpResponseMessage> GetInstitution(int institutionId)
+        {
+            var apiResult = await _httpClient.GetAsync($"Institution/GetInstitution/{institutionId}");
             return apiResult;
         }
 
