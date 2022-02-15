@@ -2,12 +2,13 @@
 @inject Foreman.Client.Services.InstitutionService institutionService
 @inject NavigationManager navManager
 @inject ISnackbar Snackbar
+@inject IHttpClientFactory httpClientFactory
 
 @if (Requests.Any())
 {
     <MudTable Items="@Requests" Filter="new Func<UserProfile,bool>(FilterFunc1)">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Pending requests</MudText>
+        <MudText Typo="Typo.h6">Assigned Users</MudText>
         <MudSpacer />
         <MudTextField @bind-Value="searchString" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0"></MudTextField>
     </ToolBarContent>
@@ -18,8 +19,8 @@
     <RowTemplate>
         <MudTd DataLabel="Username">@context.Email</MudTd>
         <MudTd>
-            <MudIconButton Disabled="buttonsDisabled" OnClick="@(async () => await HandleRefuse(context))" ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" Size="Size.Medium" Icon="@Icons.Filled.DoNotDisturb"></MudIconButton>
-            <MudButton Disabled="buttonsDisabled" OnClick="@(() => navManager.NavigateTo($"/institution/manage/userdetails/{context.InstitutionId}/{context.UserId}"))" ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium">Details</MudButton>
+            <MudIconButton Disabled="buttonsDisabled" OnClick="@(async () => await HandleKick(context))" ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Error" Size="Size.Medium" Icon="@Icons.Filled.DoNotDisturb"></MudIconButton>
+            <MudButton Disabled="buttonsDisabled" OnClick="@(() => navManager.NavigateTo($"/institution/manage/userdetails/{context.InstitutionId}/{context.Id}"))" ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Medium">Details</MudButton>
         </MudTd>
     </RowTemplate>
     <PagerContent>
@@ -30,26 +31,32 @@
 
 
 @code {
-    [Parameter]
+    [CascadingParameter]
     public int? InstitutionId { get; set; }
-
-    [Parameter]
-    public Institution? Institution { get; set; }
-
-    [Parameter]
-    public List<Foreman.Shared.Data.Identity.UserProfile>? DataList { get; set; }
 
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    [Parameter]
+    public Institution Institution { get; set; }
+
+    [Parameter]
+    public List<Foreman.Shared.Data.Identity.UserProfile> DataList { get; set; }
 
     HttpClient httpClient;
     List<Foreman.Shared.Data.Identity.UserProfile> Requests = new List<Foreman.Shared.Data.Identity.UserProfile>();
     string searchString = "";
     bool buttonsDisabled = false;
+    int institutionId;
+
+    protected override void OnInitialized()
+    {
+       httpClient = httpClientFactory.CreateClient("Foreman.ServerAPI");
+    }
 
     protected override async Task OnParametersSetAsync()
     {
-        if (!InstitutionId.HasValue && Institution == null && DataList == null)
+        if (!InstitutionId.HasValue)
             throw new ArgumentNullException();
         if (DataList != null)
         {
@@ -74,7 +81,18 @@
     }
     private async Task HandleKick(UserProfile item)
     {
-        
+        buttonsDisabled = true;
+        var result = await httpClient.PostAsJsonAsync($"/Institution/KickUser", new { userId = item.Id, institutionId = item.InstitutionId });
+
+        if (!result.IsSuccessStatusCode)
+        {
+            Snackbar.Add($"Error occured while deleteing user from institution: {item.UserName}.");
+            buttonsDisabled = false;
+            return;            
+        }
+        Snackbar.Add($"User {item.UserName} successfully deleted from the institution.");
+        Requests.Remove(item);
+        buttonsDisabled = false;
     }
 
     private bool CheckIsOwner(int id)

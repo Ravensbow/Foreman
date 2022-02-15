@@ -54,6 +54,7 @@ namespace Foreman.Server.Controllers
                     return Forbid();
                 var item = _context.Institutions
                     .Include(i => i.Members)
+                    .Include(i => i.InstitutionRequests)
                     .Single(i => i.Id == institutionId);
                 return Ok(JsonConvert.SerializeObject(item, new JsonSerializerSettings
                 {
@@ -106,6 +107,27 @@ namespace Foreman.Server.Controllers
 
                 DataTool.Update(user, _context);
                 DataTool.Update(request, _context);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult KickUser(int userId, int institutionId)
+        {
+            try
+            {
+                if (!_authorizeService.CanEditInstitution(institutionId))
+                    return Forbid();
+                var user = _context.Users.Where(u => u.Id == userId && u.InstitutionId == institutionId).Single();
+
+                user.InstitutionId = null;
+
+                DataTool.Update(user, _context);
 
                 return Ok();
             }

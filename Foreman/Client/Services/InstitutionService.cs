@@ -35,5 +35,11 @@ namespace Foreman.Client.Services
             var apiResult = await _httpClient.PostAsync("Institution/CreateInstitution", new StringContent(JsonConvert.SerializeObject(model), System.Text.Encoding.UTF8, "application/json"));
             return apiResult;
         }
+
+        public async Task<HttpResponseMessage> EditInstitution(Institution model)
+        {
+            var apiResult = await _httpClient.PostAsync("Institution/UpdateInstitution", new StringContent(JsonConvert.SerializeObject(model), System.Text.Encoding.UTF8, "application/json"));
+            return apiResult;
+        }
     }
 }
