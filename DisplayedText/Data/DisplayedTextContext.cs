@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,10 +10,10 @@ namespace DisplayedText.Data
 {
     public class DisplayedTextContext : DbContext
     {
-        public DisplayedTextContext(DbContextOptions options)
+        public DisplayedTextContext(
+            DbContextOptions<DisplayedTextContext> options)
             : base(options)
         {
-
         }
         public DbSet<Text> Texts { get; set; }
 

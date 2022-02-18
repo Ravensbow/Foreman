@@ -7,11 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DisplayedText
+namespace FilePlugin
 {
-    public class DisplayedText : Foreman.PluginManager.IPlugin
+    public class FilePlugin : Foreman.PluginManager.IPlugin
     {
-        public string GetPluginName() => Config.pluginName;
+        public string GetPluginName() => Config.FilePlugin;
 
         public string GetPluginDescription() => Config.pluginDescription;
 
@@ -19,15 +19,15 @@ namespace DisplayedText
 
         public void Initialize(IServiceCollection services, IConfiguration configuration)
         {
-            services.AddSingleton<Services.DisplayedTextService>();
-            services.AddDbContext<Data.DisplayedTextContext>(opt =>
+            services.AddSingleton<Services.FilePluginService>();
+            services.AddDbContext<Data.FilePluginContext>(opt =>
                 opt.UseSqlServer(configuration.GetConnectionString("SqlServer")));
         }
 
         public void Migrate(IServiceCollection services)
         {
-            using (Data.DisplayedTextContext db = services.BuildServiceProvider()
-                    .GetService<Data.DisplayedTextContext>())
+            using (Data.FilePluginContext db = services.BuildServiceProvider()
+                    .GetService<Data.FilePluginContext>())
             {
                 var test = db.Database.GenerateCreateScript().Replace("GO", "");
                 db.Database.ExecuteSqlRaw(test);
@@ -36,8 +36,8 @@ namespace DisplayedText
 
         public List<string?> GetPluginDbTables(IServiceCollection services)
         {
-            using (Data.DisplayedTextContext db = services.BuildServiceProvider()
-                    .GetService<Data.DisplayedTextContext>())
+            using (Data.FilePluginContext db = services.BuildServiceProvider()
+                    .GetService<Data.FilePluginContext>())
             {
                 return db.Model.GetEntityTypes()
                 .Select(t => t.GetTableName())
