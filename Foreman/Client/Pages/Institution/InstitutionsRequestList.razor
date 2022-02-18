@@ -1,6 +1,7 @@
 ﻿@inject IHttpClientFactory httpClientFactory
 @inject NavigationManager navManager
 @inject ISnackbar Snackbar
+@using Foreman.Shared.Data.Identity
 
 @if (Requests.Any())
 {
@@ -32,20 +33,46 @@
 
 
 @code {
-    [Parameter]
-    public int InstitutionId { get; set; }
+    [CascadingParameter]
+    public int? InstitutionId { get; set; }
 
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    [Parameter]
+    public Institution Institution { get; set; }
+
+    [Parameter]
+    public List<Foreman.Shared.Data.Identity.InstitutionRequest> DataList { get; set; }
 
     HttpClient httpClient;
     List<Foreman.Shared.Data.Identity.InstitutionRequest> Requests = new List<Foreman.Shared.Data.Identity.InstitutionRequest>();
     string searchString = "";
     bool buttonsDisabled = false;
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnInitialized()
     {
         httpClient = httpClientFactory.CreateClient("Foreman.ServerAPI");
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if(!InstitutionId.HasValue)
+        {
+            throw new ArgumentNullException();
+        }
+
+        if(DataList != null)
+        {
+            Requests = DataList;
+            return;
+        }
+
+        if(Institution != null)
+        {
+            Requests = Institution.InstitutionRequests.ToList();
+            return;
+        }
 
         var result = await httpClient.GetAsync($"/Institution/GetRequests/{InstitutionId}");
         if (!result.IsSuccessStatusCode)

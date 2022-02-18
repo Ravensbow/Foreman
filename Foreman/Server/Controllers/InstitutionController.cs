@@ -1,6 +1,7 @@
 ﻿using Foreman.Server.Data;
 using Foreman.Server.Services;
 using Foreman.Shared.Data.Identity;
+using Foreman.Shared.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -15,9 +16,9 @@ namespace Foreman.Server.Controllers
     {
 
         private readonly ApplicationContext _context;
-        private readonly AuthorizeService _authorizeService;
+        private readonly IAuthorizeService _authorizeService;
 
-        public InstitutionController(ApplicationContext db, AuthorizeService authorizeService)
+        public InstitutionController(ApplicationContext db, IAuthorizeService authorizeService)
         {
             _context = db;
             _authorizeService = authorizeService;
@@ -54,6 +55,7 @@ namespace Foreman.Server.Controllers
                     return Forbid();
                 var item = _context.Institutions
                     .Include(i => i.Members)
+                    .Include(i => i.InstitutionRequests)
                     .Single(i => i.Id == institutionId);
                 return Ok(JsonConvert.SerializeObject(item, new JsonSerializerSettings
                 {
@@ -106,6 +108,27 @@ namespace Foreman.Server.Controllers
 
                 DataTool.Update(user, _context);
                 DataTool.Update(request, _context);
+
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public IActionResult KickUser(int userId, int institutionId)
+        {
+            try
+            {
+                if (!_authorizeService.CanEditInstitution(institutionId))
+                    return Forbid();
+                var user = _context.Users.Where(u => u.Id == userId && u.InstitutionId == institutionId).Single();
+
+                user.InstitutionId = null;
+
+                DataTool.Update(user, _context);
 
                 return Ok();
             }
@@ -189,7 +212,7 @@ namespace Foreman.Server.Controllers
         {
             try
             {
-                if (!_authorizeService.CanDeleteInstitution(institution.Id))
+                if (!_authorizeService.CanAddInstitution())
                     return Forbid();
                 _context.Institutions.Remove(institution);
                 _context.SaveChanges();

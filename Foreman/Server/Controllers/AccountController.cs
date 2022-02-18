@@ -79,7 +79,7 @@ namespace Foreman.Server.Controllers
                     pageHandler: null,
                     values: new { area = "Identity", userId = userId, code = code, returnUrl = returnUrl },
                     protocol: Request.Scheme);
-
+                await ConfirmEmail(int.Parse(userId), code);
                 await _emailSender.SendEmailAsync(registerModel.Email, "Confirm your email",
                     $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
                 return Ok( new { code, userId});

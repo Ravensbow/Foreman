@@ -18,6 +18,9 @@ using Foreman.Server.Utility;
 using Foreman.Server.Authorization;
 using Foreman.Shared.Services;
 using Foreman.Server.Services;
+using System.IdentityModel.Tokens.Jwt;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 
 namespace Foreman.Server
 {
@@ -58,7 +61,10 @@ namespace Foreman.Server
                     options.ApiResources.Single().UserClaims.Add("CategoryManager");
                 })
                 /*.AddDeveloperSigningCredential()*/;
-            
+
+            // Need to do this as it maps "role" to ClaimTypes.Role and causes issues
+            JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Remove("role");
+
             services.AddAuthentication()
                 .AddIdentityServerJwt();
             services.AddHttpContextAccessor();
@@ -71,7 +77,7 @@ namespace Foreman.Server
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -101,6 +107,51 @@ namespace Foreman.Server
                 endpoints.MapControllers();
                 endpoints.MapFallbackToFile("index.html");
             });
+
+            CreateRolesAndPowerUser(serviceProvider).GetAwaiter().GetResult();
+        }
+
+        private async Task CreateRolesAndPowerUser(IServiceProvider serviceProvider)
+        {
+            //initializing custom roles 
+            var RoleManager = serviceProvider.GetRequiredService<RoleManager<Role>>();
+            var UserManager = serviceProvider.GetRequiredService<UserManager<UserProfile>>();
+            string[] roleNames = { "Admin", "Manager", "Member" };
+            IdentityResult roleResult;
+
+            foreach (var roleName in roleNames)
+            {
+                var roleExist = await RoleManager.RoleExistsAsync(roleName);
+                if (!roleExist)
+                {
+                    //create the roles and seed them to the database: Question 1
+                    roleResult = await RoleManager.CreateAsync(new Role(roleName));
+                }
+            }
+            //Here you could create a super user who will maintain the web app
+            var poweruser = new UserProfile
+            {
+
+                UserName = Configuration.GetSection("PowerUserCredentials").GetValue<string>("Username"),
+                Email = Configuration.GetSection("PowerUserCredentials").GetValue<string>("Email"),
+            };
+            //Ensure you have these values in your appsettings.json file
+            string userPWD = Configuration.GetSection("PowerUserCredentials").GetValue<string>("Password");
+            var _user = await UserManager.FindByEmailAsync(poweruser.Email);
+
+            if (_user == null)
+            {
+                var createPowerUser = await UserManager.CreateAsync(poweruser, userPWD);
+                if (createPowerUser.Succeeded)
+                {
+                    //here we tie the new user to the role
+                    await UserManager.AddToRoleAsync(poweruser, "Admin");
+
+                    var token = await UserManager.GenerateEmailConfirmationTokenAsync(poweruser);
+                    await UserManager.ConfirmEmailAsync(poweruser, token);
+
+                }
+            }
         }
     }
 }

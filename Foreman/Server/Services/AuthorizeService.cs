@@ -82,21 +82,6 @@ namespace Foreman.Server.Services
             return httpContext.User.IsInRole("Admin");
         }
 
-        public bool CanDeleteInstitution(int institutionid)
-        {
-            var institution = db.Institutions.Find(institutionid);
-
-            if (institution == null)
-                return false;
-
-            return httpContext.User.IsInRole("Admin")
-                ||
-                (
-                    httpContext.User.HasClaim("Institution", institutionid.ToString())
-                    && httpContext.User.HasClaim("InstitutionManager", institutionid.ToString())
-                );
-        }
-
         public bool CanEditInstitution(int institutionId)
         {
             var institution = db.Institutions.Find(institutionId);

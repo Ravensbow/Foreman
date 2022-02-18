@@ -17,7 +17,7 @@
                     {
                         foreach (var item in Institutions)
                         {
-                            <MudListItem Class="mud-list-item-clickable" OnClick="@((e) => navManager.NavigateTo($"/institution/show/{item.Id}"))">
+                            <MudListItem Class="mud-list-item-clickable" OnClick="@((e) => navManager.NavigateTo($"/institution/manage/{item.Id}"))">
                                 <div class="d-flex flex-row">
                                     <MudAvatar Class="mud-elevation-25">
                                         <MudIcon Icon="@Icons.Filled.School" Class="mx-4" />
@@ -29,7 +29,7 @@
                                     @if (true == true)
                                     {
                                         <MudMenu Size="Size.Small" Icon="@Icons.Material.Filled.Settings" Class="mud-avatar mud-avatar-small ml-auto mud-elevation-25" Style="align-self: start;">
-                                            <MudMenuItem Link="@($"/institution/edit/{item.Id}")">Edit</MudMenuItem>
+                                            <MudMenuItem Link="@($"/institution/manage/{item.Id}")">Edit</MudMenuItem>
                                         </MudMenu>
                                     }
                                 </div>
