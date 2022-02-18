@@ -1,9 +1,14 @@
 ﻿@inject Foreman.Client.Services.InstitutionService institutionService
 
-<MudTextField Label="Name" @bind-Value="Institution.Name" For="@(() => Institution.Name)" />
-<MudTextField Label="Description" @bind-Value="Institution.Name" For="@(() => Institution.Description)" />
-
+@if (ContentLoading.HasValue && ContentLoading == true)
+{
+    <MudText>Loading data ...</MudText><MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+}
+    <MudTextField Label="Name" @bind-Value="Institution.Name" For="@(() => Institution.Name)" />
+    <MudTextField Label="Description" @bind-Value="Institution.Description" For="@(() => Institution.Description)" />
 @code {
     [Parameter]
     public Foreman.Shared.Data.Identity.Institution Institution { get; set; }
+    [CascadingParameter]
+    public bool? ContentLoading { get; set; }
 }

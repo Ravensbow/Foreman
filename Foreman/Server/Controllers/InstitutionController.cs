@@ -1,6 +1,7 @@
 ﻿using Foreman.Server.Data;
 using Foreman.Server.Services;
 using Foreman.Shared.Data.Identity;
+using Foreman.Shared.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -15,9 +16,9 @@ namespace Foreman.Server.Controllers
     {
 
         private readonly ApplicationContext _context;
-        private readonly AuthorizeService _authorizeService;
+        private readonly IAuthorizeService _authorizeService;
 
-        public InstitutionController(ApplicationContext db, AuthorizeService authorizeService)
+        public InstitutionController(ApplicationContext db, IAuthorizeService authorizeService)
         {
             _context = db;
             _authorizeService = authorizeService;
@@ -211,7 +212,7 @@ namespace Foreman.Server.Controllers
         {
             try
             {
-                if (!_authorizeService.CanDeleteInstitution(institution.Id))
+                if (!_authorizeService.CanAddInstitution())
                     return Forbid();
                 _context.Institutions.Remove(institution);
                 _context.SaveChanges();

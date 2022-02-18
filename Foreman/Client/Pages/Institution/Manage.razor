@@ -6,16 +6,7 @@
 @inject InstitutionService institutionService;
 @inject ISnackbar Snackbar
 
-if(institution == null)
-{
-    <span>Loading...</span>
-}
-else if (!string.IsNullOrEmpty(errString))
-{
-    <span>Exception: @errString</span>
-}
-else
-{
+
     <MudGrid>
         <MudItem xs="12">
             <MudCard>
@@ -25,9 +16,11 @@ else
                     </CardHeaderContent>
                 </MudCardHeader>
                 <MudCardContent>
-                    <EditForm Model="Institution" OnValidSubmit="OnValidSubmit">
+                    <EditForm Model="@Institution" OnValidSubmit="OnValidSubmit">
                         <DataAnnotationsValidator />
-                        <AddEditPartial Institution="Institution"></AddEditPartial>
+                        <CascadingValue Value="@contentLoading">
+                            <AddEditPartial Institution="Institution"></AddEditPartial>
+                        </CascadingValue>
                         <MudPaper Class="pa-4 mt-4">
                             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
                         </MudPaper>
@@ -41,17 +34,18 @@ else
             <InstitutionUserList    Institution="Institution"></InstitutionUserList>
     </CascadingValue>
 
-}
 
 @code {
     [Parameter]
     public int InstitutionId { get; set; }
 
-    public Institution Institution { get; set; }
+    public Institution Institution = new Institution();
+    bool? contentLoading = null;
 
     string errString = "";
     protected override async Task OnInitializedAsync()
     {
+        contentLoading = true;
         var result = await institutionService.GetInstitution(InstitutionId);
 
         if (!result.IsSuccessStatusCode)
@@ -62,6 +56,7 @@ else
         }
 
         Institution = Newtonsoft.Json.JsonConvert.DeserializeObject<Institution>(await result.Content.ReadAsStringAsync());
+        contentLoading = false;
     }
 
     private async Task OnValidSubmit()
