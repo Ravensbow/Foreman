@@ -1,0 +1,15 @@
+﻿@if (IsContentLoading.HasValue && IsContentLoading == true)
+{
+    <MudGrid>
+        <MudItem xs="12">
+            <MudItem Class="d-flex justify-center py-2 px-1 mt-6">
+                    <MudText Class="mr-2">Loading data ...</MudText><MudProgressCircular Color="Color.Primary" Indeterminate="true"/>
+            </MudItem>
+        </MudItem>
+    </MudGrid>
+}
+
+@code {
+    [Parameter]
+    public bool? IsContentLoading { get; set; }
+}

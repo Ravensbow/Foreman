@@ -34,6 +34,9 @@
     <MudNavGroup Title="Utility" Icon="@Icons.Material.Outlined.Assignment" HideExpandIcon="true">
         <MudNavLink Href="pages/utility/faq" Icon="@Icons.Material.Outlined.InsertDriveFile">Faq</MudNavLink>
     </MudNavGroup>
+    <AuthorizeView Roles="Admin">
+        <MudNavLink Href="institution/institutionList" Icon="@Icons.Material.Outlined.CorporateFare">Institution List</MudNavLink>
+    </AuthorizeView>
 </MudNavMenu>
 
 @code {

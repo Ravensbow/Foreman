@@ -36,6 +36,8 @@
                             </MudListItem>
                         }   
                     }
+                    <ContenLoadingComponent IsContentLoading="@(!Institutions.Any())"></ContenLoadingComponent>
+
                         <MudListItem>
                             @if (true)
                             {
