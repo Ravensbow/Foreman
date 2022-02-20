@@ -32,5 +32,14 @@ namespace Foreman.Client.Services
         {
             return await _httpClient.GetFromJsonAsync<bool>($"Authorize/CanAddCourse?categoryId={categoryId}");
         }
+        public async Task<bool> CanAddInstitution()
+        {
+
+            return await _httpClient.GetFromJsonAsync<bool>($"Authorize/CanAddInstitution");
+        }
+        public async Task<bool> CanEditInstitution(int? institutionId)
+        {
+            return await _httpClient.GetFromJsonAsync<bool>($"Authorize/CanEditInstitution?institutionId={institutionId}");
+        }
     }
 }

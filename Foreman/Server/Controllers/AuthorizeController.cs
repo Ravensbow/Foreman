@@ -29,5 +29,13 @@ namespace Foreman.Server.Controllers
         {
             return AuthorizeService.CanAddCourse(categoryId);
         }
+        public bool CanAddInstituion()
+        {
+            return AuthorizeService.CanAddInstitution();
+        }
+        public bool CanEditInstitution(int institutionId)
+        {
+            return AuthorizeService.CanEditInstitution(institutionId);
+        }
     }
 }

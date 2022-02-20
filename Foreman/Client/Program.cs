@@ -90,6 +90,28 @@ namespace Foreman.Client
                         return false;
                     })
                 );
+                options.AddPolicy("CanAddInstitution", policy => policy.RequireRole("Admin"));
+                options.AddPolicy("CanEditInstitution", policy => policy.RequireAssertion(async context =>
+                {
+                    if (context.Resource is RouteData rd)
+                    {
+                        var routeValue = rd.RouteValues.TryGetValue("institutionId", out var value);
+                        int? id = value == null ? null : Convert.ToInt32(value);
+                        //var test = builder.Services.BuildServiceProvider().GetService<IHttpClientFactory>().CreateClient("Foreman.ServerAPI");
+                        //var r = test.GetFromJsonAsync<bool>($"Authorize/CanEditCourse?courseId={id}");
+                        AuthorizeService authService = builder.Services.BuildServiceProvider()
+                            .GetService<AuthorizeService>();
+                        try
+                        {
+                            return await authService.CanEditInstitution(id);
+                        }
+                        catch (AccessTokenNotAvailableException ex)
+                        {
+                            ex.Redirect();
+                        }
+                    }
+                    return false;
+                }));
             });
 
             PluginService ps = builder.Services.BuildServiceProvider()
