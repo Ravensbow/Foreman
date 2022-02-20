@@ -12,7 +12,8 @@
     <MudThemeManager Open="_themeManagerOpen" OpenChanged="OpenThemeManager" Theme="_themeManager" ThemeChanged="UpdateTheme" />
     <MudAppBar Elevation="_themeManager.AppBarElevation">
         <MudHidden Breakpoint="Breakpoint.SmAndDown">
-            <MudIcon Icon="@Icons.Custom.Brands.MudBlazor" Size="Size.Large" />
+@*            <MudIcon Icon="@Icons.Custom.Brands.MudBlazor" Size="Size.Large" />*@
+            <MudImage Src="images/ForemanBlack.png" Width="50" Height="50" />
         </MudHidden>
         <MudHidden Breakpoint="Breakpoint.MdAndUp">
             <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
