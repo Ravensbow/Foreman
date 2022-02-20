@@ -5,13 +5,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Plugins\DisplayedText\DisplayedText.dll" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Plugins\DisplayedText\DisplayedText.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <Compile Remove="Plugins\**" />
+    <Content Remove="Plugins\**" />
+    <EmbeddedResource Remove="Plugins\**" />
+    <None Remove="Plugins\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -41,21 +38,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Plugins\DisplayedText\DisplayedText.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Update="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Plugins\FilePlugin\FilePlugin.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 

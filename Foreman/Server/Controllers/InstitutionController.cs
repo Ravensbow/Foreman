@@ -117,8 +117,8 @@ namespace Foreman.Server.Controllers
             }
         }
 
-        [HttpPost]
-        public IActionResult KickUser(int userId, int institutionId)
+        [HttpPost("{userId}")]
+        public IActionResult KickUser([FromRoute] int userId, [FromBody] int institutionId)
         {
             try
             {

@@ -4,7 +4,7 @@
 @inject ISnackbar Snackbar
 @inject IHttpClientFactory httpClientFactory
 
-@if (Requests.Any())
+@if (Requests != null)
 {
     <MudTable Items="@Requests" Filter="new Func<UserProfile,bool>(FilterFunc1)">
     <ToolBarContent>
@@ -65,7 +65,7 @@
         }
         if (Institution != null)
         {
-            Requests = Institution.Members.ToList();
+            Requests = Institution?.Members?.ToList();
             return;
         }
         if (InstitutionId.HasValue)
@@ -76,13 +76,13 @@
                 //TODO Obsluga bledu
                 return;
             }
-            Requests = Newtonsoft.Json.JsonConvert.DeserializeObject<Institution>(await result.Content.ReadAsStringAsync()).Members.ToList();
+            Requests = Newtonsoft.Json.JsonConvert.DeserializeObject<Institution>(await result.Content.ReadAsStringAsync())?.Members?.ToList();
         }
     }
     private async Task HandleKick(UserProfile item)
     {
         buttonsDisabled = true;
-        var result = await httpClient.PostAsJsonAsync($"/Institution/KickUser", new { userId = item.Id, institutionId = item.InstitutionId });
+        var result = await httpClient.PostAsJsonAsync($"/Institution/KickUser/{item.Id}", item.InstitutionId);
 
         if (!result.IsSuccessStatusCode)
         {

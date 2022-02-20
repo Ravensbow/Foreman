@@ -3,7 +3,7 @@
 @inject ISnackbar Snackbar
 @using Foreman.Shared.Data.Identity
 
-@if (Requests.Any())
+@if (Requests!=null)
 {
     <MudTable Items="@Requests" Filter="new Func<Foreman.Shared.Data.Identity.InstitutionRequest,bool>(FilterFunc1)">
     <ToolBarContent>
@@ -70,7 +70,7 @@
 
         if(Institution != null)
         {
-            Requests = Institution.InstitutionRequests.ToList();
+            Requests = Institution?.InstitutionRequests?.ToList();
             return;
         }
 
