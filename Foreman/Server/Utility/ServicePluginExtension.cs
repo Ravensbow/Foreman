@@ -25,7 +25,8 @@ namespace Foreman.Server.Utility
                     Assembly assembly = Assembly.LoadFrom(AppDomain.CurrentDomain.BaseDirectory + @"\Plugins\" + p + @"\" + p + ".dll");
                     var part = new AssemblyPart(assembly);
                     services.AddControllers().PartManager.ApplicationParts.Add(part);
-
+                    PluginActionDescriptorChangeProvider.Instance.HasChanged = true;
+                    PluginActionDescriptorChangeProvider.Instance?.TokenSource?.Cancel();
                     var atypes = assembly.GetTypes();
                     var pluginClass = atypes.SingleOrDefault(t => t.GetInterface(nameof(IPlugin)) != null);
 

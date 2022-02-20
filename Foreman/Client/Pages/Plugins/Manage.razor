@@ -1,6 +1,7 @@
-﻿@page "/plugins/manage"
+﻿
 @inject IHttpClientFactory httpClientFactory
-
+@inject ISnackbar Snackbar
+@inject Services.PluginService pluginService;
 <MudGrid>
     <MudItem xs="12" sm="12" md="12">
         <MudCard Style="height:100%;">
@@ -25,7 +26,7 @@
                                 @if (true == true)
                                 {
                                     <MudMenu Size="Size.Small" Icon="@Icons.Material.Filled.Settings" Class="mud-avatar mud-avatar-small ml-auto mud-elevation-25" Style="align-self: start;">
-                                        <MudMenuItem>Delete</MudMenuItem>
+                                        <MudMenuItem OnClick="@(async ()=> await DeletePlugin(item.Id))">Delete</MudMenuItem>
                                     </MudMenu>
                                 }
                             </div>
@@ -116,6 +117,9 @@
 
     protected override async Task OnParametersSetAsync()
     {
+        Snackbar.Configuration.SnackbarVariant = Variant.Text;
+        Snackbar.Configuration.MaxDisplayedSnackbars = 2;
+
         httpClient = httpClientFactory.CreateClient("Foreman.ServerAPI");
 
         var result = await httpClient.GetAsync($"/Plugin/GetPlugins");
@@ -134,20 +138,69 @@
 
     string _dragEnterStyle;
     IList<string> fileNames = new List<string>();
+    IBrowserFile pluginFile;
     void OnInputFileChanged(InputFileChangeEventArgs e)
     {
         var files = e.GetMultipleFiles();
         fileNames = files.Select(f => f.Name).ToList();
+        pluginFile = files.FirstOrDefault();
     }
-    void Upload()
+    async Task Upload()
     {
         //Upload the files here
+
+        long maxFileSize = 1024 * 1024 * 15;
+        using var content = new MultipartFormDataContent();
+        var upload = false;
         Snackbar.Configuration.PositionClass = Defaults.Classes.Position.TopCenter;
-        Snackbar.Add("TODO: Upload your files!", Severity.Normal);
+        try
+        {
+            var fileContent = new StreamContent(pluginFile.OpenReadStream(maxFileSize));
+            fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(pluginFile.ContentType);
+            content.Add(
+                content: fileContent,
+                name: "\"file\"",
+                fileName: pluginFile.Name);
+            upload = true;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add("Error "+ ex.Message, Severity.Error);
+        }
+        if (upload)
+        {
+            var result = await pluginService.Install(content);
+
+            if (result.IsSuccessStatusCode)
+            {
+                fileNames = new List<string>();
+                pluginFile = null;
+                int newid = Convert.ToInt32(await result.Content.ReadAsStringAsync());
+                var resultPlugin = await pluginService.GetPlugin(newid);
+                if (resultPlugin.IsSuccessStatusCode)
+                {
+                    var newPlugin = Newtonsoft.Json.JsonConvert.DeserializeObject<Foreman.Shared.Data.Plugin.Plugin>(await resultPlugin.Content.ReadAsStringAsync());
+                    Plugins.Add(newPlugin);
+                    Snackbar.Add($"Success, plugin {newPlugin.Name} installed", Severity.Success);
+                }
+            }
+            else
+            {
+                Snackbar.Add("Error 2", Severity.Error);
+            }
+        }
     }
 
     async Task DeletePlugin(int id)
     {
-        return;
+        var result = await pluginService.Uninstall(id);
+        if (!result.IsSuccessStatusCode)
+        {
+            //TODO obsluga bledu
+            Snackbar.Add($"Error", Severity.Error);
+            return;
+        }
+        Snackbar.Add($"Success", Severity.Success);
+        Plugins.Remove(Plugins.SingleOrDefault(x => x.Id == id));
     }
 }

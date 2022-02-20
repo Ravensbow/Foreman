@@ -66,8 +66,12 @@ namespace Foreman.Server
             services.AddScoped<ICourseService, CourseService>();
             services.AddScoped<IAuthorizeService, AuthorizeService>();
             services.AddScoped<IPluginService, PluginService>();
+            services.AddSingleton<Microsoft.AspNetCore.Mvc.Infrastructure.IActionDescriptorChangeProvider>(PluginActionDescriptorChangeProvider.Instance);
+            services.AddSingleton(PluginActionDescriptorChangeProvider.Instance);
             services.LoadPlugins(Configuration);
             services.AddSingleton(services);
+            services.AddSingleton(Configuration);
+            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

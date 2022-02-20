@@ -30,6 +30,28 @@
             </MudCard>
         </MudItem>
     }
+    <MudItem md="6" lg="3" Style="width:100%;position: relative;">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudSkeleton Animation="Animation.Wave" Height="2rem" Width="40%" />
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                           
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="250px" />
+                <MudCardContent Style="height:120px !important;">
+                    <MudSkeleton Animation="Animation.Wave" Width="100%" />
+                </MudCardContent>
+                <MudCardActions Class="justify-end">
+                    <MudSkeleton Width="100%" Height="40px" Class="ml-3" />
+                </MudCardActions>
+                <div style="position: absolute;bottom: 50%;left: 0;right: 0;margin-left: auto;margin-right: auto;" class="d-flex flex-row justify-center">
+                    <MudFab Link="@($"/category/add/{CategoryId}")" Color="Color.Primary" StartIcon="@Icons.Filled.Add" Label="Add" Size="Size.Large" />
+                </div>
+            </MudCard>
+        </MudItem>
 </MudGrid>
 @code {
     [Parameter]

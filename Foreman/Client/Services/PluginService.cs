@@ -26,5 +26,17 @@ namespace Foreman.Client.Services
         {
             return await _httpClient.GetFromJsonAsync<Foreman.Shared.Data.Plugin.Plugin[]>($"Plugin/GetPlugins");
         }
+        public async Task<HttpResponseMessage> Uninstall(int id)
+        {
+            return await _httpClient.GetAsync($"Plugin/Delete/{id}");
+        }
+        public async Task<HttpResponseMessage> Install(HttpContent file)
+        {
+            return await _httpClient.PostAsync($"Plugin/Install", file);
+        }
+        public async Task<HttpResponseMessage> GetPlugin(int id)
+        {
+            return await _httpClient.GetAsync($"Plugin/GetById/{id}");
+        }
     }
 }

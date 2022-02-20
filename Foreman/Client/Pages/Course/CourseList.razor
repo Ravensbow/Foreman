@@ -1,52 +1,58 @@
 ﻿@inject IHttpClientFactory httpClientFactory
 @inject NavigationManager navManager
 
-@if (Courses.Count > 0)
-{
-    <MudGrid>
-        <MudItem xs="12" sm="12" md="12">
-            <MudCard Style="height:100%;">
-                <MudCardHeader>
-                    <CardHeaderContent>
-                        <MudText Typo="Typo.h6">Kursy</MudText>
-                    </CardHeaderContent>
-                </MudCardHeader>
-                <MudCardContent Class="px-0">
-                    <MudList Clickable="false">
-                        @foreach (var item in Courses)
-                        {
-                            <MudListItem Class="mud-list-item-clickable" OnClick="@((e) => navManager.NavigateTo($"/course/show/{item.Id}"))">
-                                <div class="d-flex flex-row">
-                                    <MudAvatar Class="mud-elevation-25">
-                                        <MudIcon Icon="@Icons.Filled.School" Class="mx-4" />
-                                    </MudAvatar>
-                                    <div class="ml-6">
-                                        <MudText Typo="Typo.subtitle1">@item.FullName</MudText>
-                                        <MudText Typo="Typo.body2">@item.Description</MudText>
-                                    </div>
-                                    @if (true == true)
-                                    {
-                                        <MudMenu Size="Size.Small" Icon="@Icons.Material.Filled.Settings" Class="mud-avatar mud-avatar-small ml-auto mud-elevation-25" Style="align-self: start;">
-                                            <MudMenuItem Link="@($"/course/edit/{item.Id}")">Edit</MudMenuItem>
-                                        </MudMenu>
-                                    }
+<MudGrid>
+    <MudItem xs="12" sm="12" md="12">
+        <MudCard Style="height:100%;">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Kursy</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent Class="px-0">
+                <MudList Clickable="false">
+                    @foreach (var item in Courses)
+                    {
+                        <MudListItem Class="mud-list-item-clickable" OnClick="@((e) => navManager.NavigateTo($"/course/show/{item.Id}"))">
+                            <div class="d-flex flex-row">
+                                <MudAvatar Class="mud-elevation-25">
+                                    <MudIcon Icon="@Icons.Filled.School" Class="mx-4" />
+                                </MudAvatar>
+                                <div class="ml-6">
+                                    <MudText Typo="Typo.subtitle1">@item.FullName</MudText>
+                                    <MudText Typo="Typo.body2">@item.Description</MudText>
                                 </div>
-                            </MudListItem>
-                        }
-                        <MudListItem>
-                            @if (true)
-                            {
-                                <div class="d-flex flex-row justify-center">
-                                    <MudFab Link="@($"/course/add/{CategoryId}")" Color="Color.Primary" StartIcon="@Icons.Filled.Add" Label="Add" />
-                                </div>
-                            }
+                                @if (true == true)
+                                {
+                                    <MudMenu Size="Size.Small" Icon="@Icons.Material.Filled.Settings" Class="mud-avatar mud-avatar-small ml-auto mud-elevation-25" Style="align-self: start;">
+                                        <MudMenuItem Link="@($"/course/edit/{item.Id}")">Edit</MudMenuItem>
+                                    </MudMenu>
+                                }
+                            </div>
                         </MudListItem>
-                    </MudList>
-                </MudCardContent>
-            </MudCard>
-        </MudItem>
-    </MudGrid>
-}
+                    }
+                    @if (true == true)
+                    {
+                        <MudListItem Style="position:relative;">
+                            <div class="d-flex flex-row">
+                                <MudAvatar Class="mud-elevation-25">
+                                    <MudSkeleton SkeletonType="SkeletonType.Circle" Animation="Animation.Wave" Height="40px" Width="40px" />
+                                </MudAvatar>
+                                <div class="ml-6" style="width:100%;">
+                                    <MudSkeleton Animation="Animation.Wave" Width="40%" />
+                                    <MudSkeleton Animation="Animation.Wave" Width="60%" />
+                                </div>
+                            </div>
+                            <div style="position: absolute;bottom: 25%;left: 0;right: 0;margin-left: auto;margin-right: auto;" class="d-flex flex-row justify-center">
+                                <MudFab Link="@($"/course/add/{CategoryId}")" Color="Color.Primary" StartIcon="@Icons.Filled.Add" Label="Add" Size="Size.Small" />
+                            </div>
+                        </MudListItem>
+                    }
+                </MudList>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
 
 @code {
     [Parameter]

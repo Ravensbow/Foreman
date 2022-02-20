@@ -33,7 +33,9 @@
             <MudMenuItem Link="https://mudblazor.com/">MudBlazor</MudMenuItem>
             <MudMenuItem Link="https://github.com/Garderoben/Foremans">Source Code</MudMenuItem>
         </MudMenu>
-        <MudSwitch @bind-Checked="@_isDarkMode" Color="Color.Primary" Class="ma-4" T="bool" Label="Toggle Light/Dark Mode"/>
+        <MudToggleIconButton @bind-Toggled="@_isDarkMode"
+                     Icon="@Icons.Filled.DarkMode" Title="Off"
+                     ToggledIcon="@Icons.Filled.LightMode" ToggledTitle="On"/>
         <MudMenu Direction="Direction.Left" OffsetX="true" Dense="true" Class="mt-1 ml-4">
             <ActivatorContent>
                 <MudAvatar Image="images/avatar_jonny.jpg" />
