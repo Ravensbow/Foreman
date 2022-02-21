@@ -67,7 +67,7 @@ namespace Foreman.Server.Services
                     {
                         MimeType = file.MimeType,
                         PathNameHash = HashToString(HashFunction($"/{file.ContextId}/{file.Component}/{file.Filename}")),
-                        ContentHash = HashToString(byteArr),
+                        ContentHash = HashToString(hasBytes),
                         CreateTime = DateTime.Now,
                         Filename = file.Filename,
                         Component = file.Component,
@@ -94,8 +94,8 @@ namespace Foreman.Server.Services
 
             if (file == null)
                return Result.Fail<byte[]>("File does not exist.");
-            if (CheckIfFileIsCorrupted(fileHash, file))
-                return Result.Fail<byte[]>("File is corrupted");
+            //if (CheckIfFileIsCorrupted(fileHash, file))
+            //    return Result.Fail<byte[]>("File is corrupted");
 
             return Result.Ok<byte[]>(file);
         }
@@ -110,6 +110,18 @@ namespace Foreman.Server.Services
             catch (Exception ex)
             {
                 return Result.Fail<byte[]>(ex.Message);
+            }
+        }
+
+        public ForemanFile GetFileInfo(string hash, int contextId, string component)
+        {
+            try
+            {
+                return _context.Files.SingleOrDefault(x => x.ContentHash == hash && x.ContextId == contextId && x.Component == component);
+            }
+            catch (Exception ex)
+            {
+                return null;
             }
         }
 
@@ -128,7 +140,7 @@ namespace Foreman.Server.Services
             return BitConverter.ToString(hashByteArr).Replace("-",string.Empty);
         }
 
-        private byte[] HashFunction(string source)
+        public byte[] HashFunction(string source)
         {
             var hash = SHA1.Create();
             byte[] sourceByteArr = Encoding.UTF8.GetBytes(source);
@@ -136,7 +148,7 @@ namespace Foreman.Server.Services
 
         }
 
-        private byte[] HashFunction(byte[] source)
+        public byte[] HashFunction(byte[] source)
         {
             var hash = SHA1.Create();
             return hash.ComputeHash(source);

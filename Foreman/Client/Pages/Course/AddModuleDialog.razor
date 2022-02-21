@@ -12,12 +12,12 @@
                             <MudCardContent>
                                 <div class="d-flex flex-grow-1 flex-wrap justify-center align-center">
                                     <MudAvatar Class="mud-elevation-25 justify-center">
-                                        <MudIcon Icon="@Icons.Filled.TextFields" Class="mx-4" />
+                                        <MudIcon Icon="@((plugin.Icon==null)?Icons.Filled.Extension:plugin.Icon)" Class="mx-4" />
                                     </MudAvatar>
                                 </div>
                                 <MudText Typo="Typo.h5" Align="Align.Center">@plugin.Name</MudText>
                                 <MudText Typo="Typo.overline" Align="Align.Center">@plugin.Version</MudText>
-                                <MudText Typo="Typo.body2">Opis wtyczki trzeba dodac pole do bazy</MudText>
+                                <MudText Typo="Typo.body2">@plugin.Description</MudText>
                             </MudCardContent>
                             <MudCardActions Class="justify-center">
                                 <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Link="@($"/plugin/{plugin.Name}/add/{CourseId}/{SectionId}")">Add</MudButton>

@@ -20,5 +20,8 @@ namespace Foreman.Shared.Services
         public void EnsureStorageDirectoryExists();
 
         string HashToString(byte[] hashByteArr);
+        Data.Courses.ForemanFile GetFileInfo(string hash, int contextId, string component);
+        public byte[] HashFunction(string source);
+        public byte[] HashFunction(byte[] source);
     }
 }

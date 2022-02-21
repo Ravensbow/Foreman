@@ -1,20 +1,25 @@
 ﻿@inject IHttpClientFactory http
 
-@if(instance != null)
+@if(instance != null && file != null)
 {
-    <Foreman.PluginManager.Components.InstanceComponent CourseId="instance.CourseId" MenuOptions="menu">
+    <Foreman.PluginManager.Components.InstanceComponent CourseId="instance.CourseId" MenuOptions="menu" Icon="@Config.pluginIcon" DeleteMethod="async ()=> await Delete()">
         <MudText Typo="Typo.subtitle1">@instance?.Name</MudText>
+        <a href="@($"FilePlugin/management/GetFile/{InstanceId}")">
+            <MudChip Icon="@FileMIMEIcons.Get(file.MimeType)" Color="Color.Dark">@file.Filename</MudChip>
+        </a>
     </Foreman.PluginManager.Components.InstanceComponent>
 }
 
 @code {
     [Parameter]
     public int InstanceId { get; set; }
+    [Parameter]
+    public EventCallback<Tuple<int,int?>> OnDeleted { get; set; }
 
     List<Tuple<string, string>> menu = new List<Tuple<string, string>> { new Tuple<string, string>("Edit", ""), new Tuple<string, string>("Delete", "") };
     HttpClient? httpClient;
     Data.FilePluginInstance? instance;
-
+    Foreman.Shared.Data.Courses.ForemanFile file;
     protected override async Task OnInitializedAsync()
     {
         httpClient = http.CreateClient("Foreman.ServerAPI");
@@ -27,5 +32,18 @@
             return;
         }
         instance = await result.Content.ReadFromJsonAsync<Data.FilePluginInstance>();
+
+        var result2 = await httpClient.GetAsync($"FilePlugin/management/GetFileInfo/{InstanceId}");
+        if (!result2.IsSuccessStatusCode)
+        {
+            //TODO: Komunikat
+            return;
+        }
+        file = await result2.Content.ReadFromJsonAsync<Foreman.Shared.Data.Courses.ForemanFile>();
+    }
+
+    public async Task Delete()
+    {
+        await OnDeleted.InvokeAsync(new Tuple<int,int?>(2023,null));
     }
 }

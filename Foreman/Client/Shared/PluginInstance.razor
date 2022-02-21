@@ -12,6 +12,8 @@
     public int PluginId { get; set; }
     [Parameter]
     public int InstanceId { get; set; }
+    [Parameter]
+    public EventCallback<Tuple<int,int?>> OnDeleted { get; set; }
 
     string componentName;
     HttpClient httpClient;
@@ -42,6 +44,16 @@
             builder.AddAttribute(i+1,attribute.Key,attribute.Value);
         }
         builder.AddAttribute(component.Parameters.Count, "InstanceId", InstanceId);
+        var callback = EventCallback.Factory.Create<Tuple<int,int?>>(this, Delete);
+        builder.AddAttribute(component.Parameters.Count+1, "OnDeleted", callback);
         builder.CloseComponent();
     };
+
+    void Delete(Tuple<int,int?> ids)
+    {
+        Console.WriteLine("elo:" + ids.Item1);
+        OnDeleted.InvokeAsync(ids);
+    }
+
+
 }
