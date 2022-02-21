@@ -2,6 +2,7 @@
 using Foreman.Server.Services;
 using Foreman.Shared.Data.Identity;
 using Foreman.Shared.Services;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -17,12 +18,35 @@ namespace Foreman.Server.Controllers
 
         private readonly ApplicationContext _context;
         private readonly IAuthorizeService _authorizeService;
+        private readonly UserManager<UserProfile> _userManager;
 
-        public InstitutionController(ApplicationContext db, IAuthorizeService authorizeService)
+        public InstitutionController(ApplicationContext db, IAuthorizeService authorizeService, UserManager<UserProfile> manager)
         {
             _context = db;
             _authorizeService = authorizeService;
+            _userManager = manager;
 
+        }
+
+        [HttpGet]
+        public IActionResult GetPotentialInstitutionManagers()
+        {
+            try
+            {
+                var adminsList = _userManager.GetUsersInRoleAsync("Admin")
+                    .GetAwaiter()
+                    .GetResult()
+                    .Select(x => x.Id);
+
+                var itemList = _context.Users
+                    .Where(u => u.InstitutionId == null && u.OwnedInstitutionId == null && !adminsList.Contains(u.Id))
+                    .ToList();
+                return Ok(JsonConvert.SerializeObject(itemList));
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            }
         }
 
         [HttpGet("{userId:int}")]
@@ -31,6 +55,7 @@ namespace Foreman.Server.Controllers
             try
             {
                 var item = _context.Institutions
+                    .AsNoTracking()
                     .Include(i => i.Members)
                     .Single(i => i.OwnerId == userId);
 
@@ -54,6 +79,8 @@ namespace Foreman.Server.Controllers
                 if (!_authorizeService.CanAddInstitution())
                     return Forbid();
                 var item = _context.Institutions
+                    .AsNoTracking()
+                    .Include(i => i.Owner)
                     .Include(i => i.Members)
                     .Include(i => i.InstitutionRequests)
                     .Single(i => i.Id == institutionId);
@@ -77,7 +104,10 @@ namespace Foreman.Server.Controllers
                 if (!_authorizeService.CanEditInstitution(institutionid))
                     return Forbid();
 
-                var itemList = _context.InstitutionRequests.Include(ir => ir.User)
+                var itemList = _context.InstitutionRequests
+                .AsNoTracking()
+                .Include(ir => ir.Institution)
+                .Include(ir => ir.User)
                 .OrderBy(ir => ir.RequestDate)
                 .ToList();
 
@@ -168,6 +198,7 @@ namespace Foreman.Server.Controllers
                     return Forbid();
 
                 var itemList = _context.Institutions
+                    .AsNoTracking()
                     .Include(i => i.Owner)
                     .Include(i => i.InstitutionRequests)
                     .ThenInclude(ir => ir.User)
@@ -234,8 +265,17 @@ namespace Foreman.Server.Controllers
                 {
                     return Forbid();
                 }
-
+                institution.OwnerId = institution.Owner.Id;
                 var updated = DataTool.Update<Institution>(institution, _context);
+
+                if (institution.Owner != null)
+                {
+                    var user = _context.Users.FirstOrDefault(u => u.Id == institution.OwnerId);
+                    user.InstitutionId = institution.Id;
+                    user.OwnedInstitutionId = institution.Id;
+
+                    DataTool.Update<UserProfile>(user, _context);
+                }
 
                 return Ok(institution.Id);
             }

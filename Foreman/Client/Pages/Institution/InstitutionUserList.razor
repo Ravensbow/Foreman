@@ -68,7 +68,7 @@
             Requests = Institution?.Members?.ToList();
             return;
         }
-        if (InstitutionId.HasValue)
+        if (InstitutionId.HasValue && DataList == null && Institution == null)
         {
             var result = await institutionService.GetInstitution((int)InstitutionId);
             if (!result.IsSuccessStatusCode)

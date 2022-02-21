@@ -3,51 +3,46 @@
 @inject NavigationManager navManager
 @inject IHttpClientFactory httpClientFactory
 
-    <MudGrid>
-        <MudItem xs="12" sm="12" md="12">
-            <MudCard Style="height:100%;">
+<MudGrid Spacing="5" Justify="Justify.FlexStart" Class="mt-5">
+    @foreach (var item in Institutions)
+    {
+        <MudItem md="6" lg="3" Style="width:100%;">
+            <MudCard>
                 <MudCardHeader>
                     <CardHeaderContent>
-                        <MudText Typo="Typo.h6">Institutions</MudText>
+                        <MudText Typo="Typo.h5">@item.Name</MudText>
                     </CardHeaderContent>
                 </MudCardHeader>
-                <MudCardContent Class="px-0">
-                    <MudList Clickable="false">
-                    @if (Institutions.Any())
-                    {
-                        foreach (var item in Institutions)
-                        {
-                            <MudListItem Class="mud-list-item-clickable" OnClick="@((e) => navManager.NavigateTo($"/institution/manage/{item.Id}"))">
-                                <div class="d-flex flex-row">
-                                    <MudAvatar Class="mud-elevation-25">
-                                        <MudIcon Icon="@Icons.Filled.School" Class="mx-4" />
-                                    </MudAvatar>
-                                    <div class="ml-6">
-                                        <MudText Typo="Typo.subtitle1">@item.Name</MudText>
-                                        <MudText Typo="Typo.body2">@item.Description</MudText>
-                                    </div>
-                                    @if (true == true)
-                                    {
-                                        <MudMenu Size="Size.Small" Icon="@Icons.Material.Filled.Settings" Class="mud-avatar mud-avatar-small ml-auto mud-elevation-25" Style="align-self: start;">
-                                            <MudMenuItem Link="@($"/institution/manage/{item.Id}")">Edit</MudMenuItem>
-                                        </MudMenu>
-                                    }
-                                </div>
-                            </MudListItem>
-                        }   
-                    }
-                    <ContenLoadingComponent IsContentLoading="@(!Institutions.Any())"></ContenLoadingComponent>
-
-                        <MudListItem>
-                            @if (true)
-                            {
-                                <div class="d-flex flex-row justify-center">
-                                    <MudFab Link="@($"/institution/add")" Color="Color.Primary" StartIcon="@Icons.Filled.Add" Label="Add" />
-                                </div>
-                            }
-                        </MudListItem>
-                    </MudList>
+                <MudCardMedia Image="https://mudblazor.com/_content/MudBlazor.Docs/images/pilars.jpg" Height="250" />
+                <MudCardContent Style="height:120px !important;">
+                    <MudText Typo="Typo.body2">@item.Description</MudText>
                 </MudCardContent>
+                <MudCardActions Class="justify-end">
+                    <MudButton FullWidth="true" Link="@($"/institution/manage/{item.Id}")" Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Send" Color="Color.Primary" Size="Size.Large">Show</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </MudItem>
+    }
+        <MudItem md="6" lg="3" Style="width:100%;position: relative;">
+            <MudCard>
+                <MudCardHeader>
+                    <CardHeaderContent>
+                        <MudSkeleton Animation="Animation.Wave" Height="2rem" Width="40%" />
+                    </CardHeaderContent>
+                    <CardHeaderActions>
+                           
+                    </CardHeaderActions>
+                </MudCardHeader>
+                <MudSkeleton SkeletonType="SkeletonType.Rectangle" Animation="Animation.Wave" Height="250px" />
+                <MudCardContent Style="height:120px !important;">
+                    <MudSkeleton Animation="Animation.Wave" Width="100%" />
+                </MudCardContent>
+                <MudCardActions Class="justify-end">
+                    <MudSkeleton Width="100%" Height="40px" Class="ml-3" />
+                </MudCardActions>
+                <div style="position: absolute;bottom: 50%;left: 0;right: 0;margin-left: auto;margin-right: auto;" class="d-flex flex-row justify-center">
+                    <MudFab Link="@($"/institution/add")" Color="Color.Primary" StartIcon="@Icons.Filled.Add" Label="Add" Size="Size.Large" />
+                </div>
             </MudCard>
         </MudItem>
     </MudGrid>
