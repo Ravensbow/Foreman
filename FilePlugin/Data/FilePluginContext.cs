@@ -14,7 +14,7 @@ namespace FilePlugin.Data
         {
 
         }
-        public DbSet<FilePluginInstance> Texts { get; set; }
+        public DbSet<FilePluginInstance> Files { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -1,8 +1,54 @@
 ﻿@inject HttpClient http
 <Foreman.PluginManager.Components.AddPage Model="model">
-
+    <MudTextField Label="Nazwa" HelperText="Nazwa wyswietlana jako nagłówek modułu"
+                  @bind-Value="model.Name" For="@(() => model.Name)" />
+    <InputFile id="fileInput" OnChange="UploadFiles" hidden />
+    <MudFab HtmlTag="label"
+            Color="Color.Success"
+            Icon="@Icons.Filled.AttachFile"
+            for="fileInput" />
+    @if (model.File != null)
+    {
+        <MudText Typo="@Typo.h6">File:</MudText>
+        <MudList>
+            <MudListItem Icon="@Icons.Filled.AttachFile">
+                @model.File.Filename <code>@model.File.FileData.Length bytes</code>
+            </MudListItem>
+        </MudList>
+    }
 </Foreman.PluginManager.Components.AddPage>
 
-@code{
-    public Data.FilePluginInstance model = new Data.FilePluginInstance();
-}    
+@code {
+    public Models.FileInstanceModel model = new Models.FileInstanceModel();
+
+    private async Task UploadFiles(InputFileChangeEventArgs e)
+    {
+        Console.WriteLine("zmieniono plik");
+        var browserFile = e.File;
+        Console.WriteLine("zmieniono plik2");
+        if (browserFile != null)
+        {
+            Console.WriteLine("zmieniono plik3");
+            var file = new Foreman.Shared.Models.Category.ForemanFileModel
+            {
+                Filename = browserFile?.Name,
+                MimeType = browserFile?.ContentType
+            };
+            using(MemoryStream ms = new MemoryStream())
+            {
+                using (Stream s = browserFile.OpenReadStream())
+                {
+                    int read;
+                    byte[] buffer = new byte[browserFile.Size];
+                    while ((read = await s.ReadAsync(buffer, 0, buffer.Length)) > 0)
+                    {
+                        await ms.WriteAsync(buffer, 0, read);
+                    }
+                }
+                file.FileData = ms.ToArray();
+                model.File = file;
+            }  
+        }
+
+    }
+}

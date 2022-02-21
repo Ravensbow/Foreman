@@ -1,7 +1,7 @@
 ﻿using Foreman.Server.Utility;
 using Foreman.Shared.Models.Category;
 
-namespace Foreman.Server.Services
+namespace Foreman.Shared.Services
 {
     public interface IFileService
     {
@@ -18,5 +18,7 @@ namespace Foreman.Server.Services
         public bool CheckIfStorageDirectoryExists();
 
         public void EnsureStorageDirectoryExists();
+
+        string HashToString(byte[] hashByteArr);
     }
 }

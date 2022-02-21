@@ -123,6 +123,7 @@ namespace Foreman.Server.Controllers
         }
 
         [HttpPost("Install")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Install([FromForm] IFormFile file)
         {
             var maxAllowedFiles = 1;

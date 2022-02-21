@@ -47,7 +47,6 @@ namespace DisplayedText.Controllers
         {  
             if (!AuthorizeService.CanEditCourse(model.CourseId))
                 return Forbid("Brak uprawnień do edycji tego kursu");
-            System.Diagnostics.Debug.WriteLine("SEKCJA: "+sectionId);
             int? pluginId = PluginService.GetPluginId(Config.pluginName);
             if (pluginId == null)
                 return NotFound();

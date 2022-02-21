@@ -11,12 +11,11 @@ namespace FilePlugin.Data
     public class FilePluginInstance : Foreman.PluginManager.IModuleInstance
     {
         public int Id { get; set; }
-        [Required]
-        public string? Content { get; set; }
         public int CourseId { get; set; }
         public string? Name { get; set; }
         public DateTime CreatedDate { get; set; }
         public DateTime? ModifiedDate { get; set; }
         public int? UserCreatorId { get; set; }
+        public string? FileHash { get; set; }
     }
 }

@@ -10,6 +10,7 @@ using Foreman.Server.Utility;
 using System.Threading.Tasks;
 using Foreman.Shared.Data.Courses;
 using Foreman.Shared.Models.Category;
+using Foreman.Shared.Services;
 
 namespace Foreman.Server.Services
 {
@@ -58,9 +59,9 @@ namespace Foreman.Server.Services
                     var byteArr = file.FileData;
                     var hasBytes = this.HashFunction(byteArr);
 
-                    if (!File.Exists(Path.Combine(StoragePath, hasBytes.ToString())))
+                    if (!File.Exists(Path.Combine(StoragePath, HashToString(hasBytes))))
                     {
-                        File.WriteAllBytes(Path.Combine(StoragePath, hasBytes.ToString()), byteArr);
+                        File.WriteAllBytes(Path.Combine(StoragePath, HashToString(hasBytes)), byteArr);
                     }
                     _context.Files.Add(new ForemanFile()
                     {
@@ -74,6 +75,7 @@ namespace Foreman.Server.Services
                         UserId = file.UserId,
                         ContextId = file.ContextId
                     });
+                    _context.SaveChanges();
                 }
 
                 return Result.Ok();
@@ -121,7 +123,7 @@ namespace Foreman.Server.Services
             Directory.CreateDirectory(StoragePath);
         }
 
-        private string HashToString(byte[] hashByteArr)
+        public string HashToString(byte[] hashByteArr)
         {
             return BitConverter.ToString(hashByteArr).Replace("-",string.Empty);
         }
