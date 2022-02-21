@@ -1,4 +1,5 @@
-﻿@inject Foreman.Client.Services.InstitutionService institutionService
+﻿@using Foreman.Shared.Data.Identity
+@inject Foreman.Client.Services.InstitutionService institutionService
 
 
 <ContenLoadingComponent IsContentLoading="ContentLoading"></ContenLoadingComponent>
@@ -6,12 +7,34 @@
 {
     <MudTextField Label="Name" @bind-Value="Institution.Name" For="@(() => Institution.Name)" />
     <MudTextField Label="Description" @bind-Value="Institution.Description" For="@(() => Institution.Description)" />
+    <MudAutocomplete Label="Owner"  @bind-Value="Institution.Owner" T="Foreman.Shared.Data.Identity.UserProfile"
+                 SearchFunc="@SearchOwner" Immediate="true" CoerceValue="false" ResetValueOnEmptyText="true"
+                 AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
+                 ToStringFunc="@(e=> e==null?null : e.Email)"
+                 For="@(() => Institution.Owner)"/>
 }
 
 
 @code {
     [Parameter]
     public Foreman.Shared.Data.Identity.Institution Institution { get; set; }
+    [Parameter]
+    public List<UserProfile> PotentialOwners { get; set; }
     [CascadingParameter]
     public bool? ContentLoading { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+    }
+
+    private async Task<IEnumerable<UserProfile>> SearchOwner(string searchString)
+    {
+        if(string.IsNullOrEmpty(searchString))
+        {
+            return PotentialOwners;
+        }
+
+        return PotentialOwners.Where(x => x.Email.Contains(searchString)).ToList();
+    }
 }

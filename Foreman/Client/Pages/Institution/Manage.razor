@@ -19,7 +19,7 @@
                     <EditForm Model="@Institution" OnValidSubmit="OnValidSubmit">
                         <DataAnnotationsValidator />
                         <CascadingValue Value="@contentLoading">
-                            <AddEditPartial Institution="Institution"></AddEditPartial>
+                            <AddEditPartial Institution="Institution" PotentialOwners="UsersList"></AddEditPartial>
                         </CascadingValue>
                         <MudItem Class="pa-4 mt-4">
                             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Submit</MudButton>
@@ -40,22 +40,29 @@
     public int InstitutionId { get; set; }
 
     public Institution Institution = new Institution();
+    public List<UserProfile> UsersList = new List<UserProfile>();
     bool? contentLoading = null;
 
-    string errString = "";
     protected override async Task OnInitializedAsync()
     {
         contentLoading = true;
         var result = await institutionService.GetInstitution(InstitutionId);
+        var result2 = await institutionService.GetPotentialInstitutionManagers();
 
         if (!result.IsSuccessStatusCode)
         {
             Snackbar.Add("Error occured while receiving institution data.", Severity.Error);
-            errString = result.ReasonPhrase;
+            return;
+        }
+
+        if (!result2.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Error occured while receiving users data.", Severity.Error);
             return;
         }
 
         Institution = Newtonsoft.Json.JsonConvert.DeserializeObject<Institution>(await result.Content.ReadAsStringAsync());
+        UsersList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<UserProfile>>(await result2.Content.ReadAsStringAsync());
         contentLoading = false;
     }
 
@@ -69,14 +76,7 @@
             return;
         }
 
-         result = await institutionService.GetInstitution(InstitutionId);
-
-        if (!result.IsSuccessStatusCode)
-        {
-            Snackbar.Add("Error.", Severity.Error);
-            return;
-        }
-
-        Institution = Newtonsoft.Json.JsonConvert.DeserializeObject<Institution>(await result.Content.ReadAsStringAsync());
+        Snackbar.Add("Successfuly edited entity!", Severity.Success);
+        navManager.NavigateTo("/institution/institutionList");
     }
 }

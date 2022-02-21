@@ -58,9 +58,9 @@ namespace Foreman.Server.Services
                     var byteArr = file.FileData;
                     var hasBytes = this.HashFunction(byteArr);
 
-                    if (!File.Exists(Path.Combine(StoragePath, hasBytes.ToString())))
+                    if (!File.Exists(Path.Combine(StoragePath, HashToString(hasBytes))))
                     {
-                        File.WriteAllBytes(Path.Combine(StoragePath, hasBytes.ToString()), byteArr);
+                        File.WriteAllBytes(Path.Combine(StoragePath, HashToString(hasBytes)), byteArr);
                     }
                     _context.Files.Add(new ForemanFile()
                     {

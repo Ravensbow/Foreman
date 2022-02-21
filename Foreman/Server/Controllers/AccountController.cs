@@ -131,12 +131,5 @@ namespace Foreman.Server.Controllers
             }
             return (IUserEmailStore<UserProfile>)_userStore;
         }
-        //[HttpPost]
-        //public IActionResult ChangePassword()
-        //{
-        //    return View();
-        //}
-
-
     }
 }

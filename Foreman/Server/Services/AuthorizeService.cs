@@ -18,7 +18,7 @@ namespace Foreman.Server.Services
         public bool CanAddCourse(int? categoryId)
         {
             if (categoryId.HasValue)
-                return httpContext.User.HasClaim("CategoryManager", categoryId.Value.ToString());
+                return httpContext.User.IsInRole("Admin") || httpContext.User.HasClaim("CategoryManager", categoryId.Value.ToString());
             else
                 return httpContext.User.IsInRole("Admin");
         }
@@ -57,13 +57,13 @@ namespace Foreman.Server.Services
         public bool CanEditCourse(int courseId)
         {
             int? categoryId = db.Courses.Find(courseId)?.CourseCategoryId;
-            return (httpContext.User.HasClaim("CourseManager", courseId.ToString()) || (categoryId.HasValue && httpContext.User.HasClaim("CategoryManager", categoryId.ToString())));
+            return httpContext.User.IsInRole("Admin") || (httpContext.User.HasClaim("CourseManager", courseId.ToString()) || (categoryId.HasValue && httpContext.User.HasClaim("CategoryManager", categoryId.ToString())));
         }
 
         public bool CanViewCategory(int categoryId)
         {
             int? institution = db.CourseCategories.Find(categoryId)?.InstitutionId;
-            if (!institution.HasValue || httpContext.User.HasClaim("Institution", institution.Value.ToString()))
+            if (httpContext.User.IsInRole("Admin") || !institution.HasValue || httpContext.User.HasClaim("Institution", institution.Value.ToString()))
                 return true;
             return false;
         }
@@ -71,7 +71,7 @@ namespace Foreman.Server.Services
         public bool CanViewCourse(int courseId)
         {
             int? institution = db.Courses.Find(courseId)?.InstitutionId;
-            if (!institution.HasValue || httpContext.User.HasClaim("Institution", institution.Value.ToString()))
+            if (httpContext.User.IsInRole("Admin") || !institution.HasValue || httpContext.User.HasClaim("Institution", institution.Value.ToString()))
                 return true;
             return false;
         }
@@ -84,9 +84,9 @@ namespace Foreman.Server.Services
 
         public bool CanEditInstitution(int institutionId)
         {
-            var institution = db.Institutions.Find(institutionId);
+            bool institution = db.Institutions.Any(x => x.Id == institutionId);
 
-            if (institution == null)
+            if (!institution)
                 return false;
 
             return httpContext.User.IsInRole("Admin")

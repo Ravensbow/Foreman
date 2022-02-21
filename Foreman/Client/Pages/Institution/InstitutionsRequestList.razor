@@ -73,16 +73,19 @@
             Requests = Institution?.InstitutionRequests?.ToList();
             return;
         }
-
-        var result = await httpClient.GetAsync($"/Institution/GetRequests/{InstitutionId}");
-        if (!result.IsSuccessStatusCode)
+        if(InstitutionId.HasValue && DataList == null && Institution == null)
         {
-            //TODO Obsluga bledu
-            return;
+            var result = await httpClient.GetAsync($"/Institution/GetRequests/{InstitutionId}");
+            if (!result.IsSuccessStatusCode)
+            {
+                //TODO Obsluga bledu
+                return;
+            }
+            Requests = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Foreman.Shared.Data.Identity.InstitutionRequest>>(await result.Content.ReadAsStringAsync())
+            .Where(r => !r.IsAccepted.HasValue)
+            .ToList();
         }
-        Requests = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Foreman.Shared.Data.Identity.InstitutionRequest>>(await result.Content.ReadAsStringAsync())
-        .Where(r => !r.IsAccepted.HasValue)
-        .ToList();
+
     }
     private async Task HandleAccept(Foreman.Shared.Data.Identity.InstitutionRequest item)
     {
