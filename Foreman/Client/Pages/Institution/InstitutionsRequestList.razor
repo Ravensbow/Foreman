@@ -5,6 +5,7 @@
 
 @if (Requests!=null)
 {
+<MudItem Class="mt-4 mb-4">
     <MudTable Items="@Requests" Filter="new Func<Foreman.Shared.Data.Identity.InstitutionRequest,bool>(FilterFunc1)">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Pending requests</MudText>
@@ -29,6 +30,7 @@
         <MudTablePager />
     </PagerContent>
 </MudTable>
+</MudItem>
 }
 
 
@@ -90,7 +92,7 @@
     private async Task HandleAccept(Foreman.Shared.Data.Identity.InstitutionRequest item)
     {
         buttonsDisabled = true;
-        var result = await httpClient.PostAsJsonAsync($"/Institution/AcceptRequest", new { userId = item.UserId, institutionId = item.InstitutionId });
+        var result = await httpClient.PostAsJsonAsync($"/Institution/AcceptRequest/{item.UserId}", item.InstitutionId);
 
         if (!result.IsSuccessStatusCode)
         {
@@ -106,7 +108,7 @@
     private async Task HandleRefuse(Foreman.Shared.Data.Identity.InstitutionRequest item)
     {
         buttonsDisabled = true;
-        var result = await httpClient.PostAsJsonAsync($"/Institution/RefuseRequest", new { userId = item.UserId, institutionId = item.InstitutionId });
+        var result = await httpClient.PostAsJsonAsync($"/Institution/RefuseRequest/{item.UserId}", item.InstitutionId);
 
         if (!result.IsSuccessStatusCode)
         {

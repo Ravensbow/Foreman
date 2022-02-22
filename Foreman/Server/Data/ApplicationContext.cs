@@ -156,9 +156,6 @@ namespace Foreman.Server.Data
                 .WithOne(ua => ua.UserProfile);
             modelBuilder.Entity<UserProfile>().HasMany(up => up.CategoryAssigments)
                 .WithOne(ua => ua.UserProfile);
-            modelBuilder.Entity<UserProfile>().HasOne(up => up.OwnedInstitution)
-                .WithOne(i => i.Owner)
-                .HasForeignKey<UserProfile>(up=>up.OwnedInstitutionId);
         }
         protected void InstitutionFluentApi(ModelBuilder modelBuilder)
         {

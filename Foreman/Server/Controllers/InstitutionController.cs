@@ -39,7 +39,7 @@ namespace Foreman.Server.Controllers
                     .Select(x => x.Id);
 
                 var itemList = _context.Users
-                    .Where(u => u.InstitutionId == null && u.OwnedInstitutionId == null && !adminsList.Contains(u.Id))
+                    .Where(u => u.OwnedInstitution == null && !adminsList.Contains(u.Id))
                     .ToList();
                 return Ok(JsonConvert.SerializeObject(itemList));
             }
@@ -117,27 +117,30 @@ namespace Foreman.Server.Controllers
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects
                 }));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return Problem(ex.Message);
             }
         }
 
-        [HttpPost]
-        public IActionResult AcceptRequest(int userId, int institutionId)
+        [HttpPost("{userId}")]
+        public IActionResult AcceptRequest([FromRoute] int userId, [FromBody] int institutionId)
         {
             try
             {
                 if (!_authorizeService.CanEditInstitution(institutionId))
                     return Forbid();
-                var user = _context.Users.Where(u => u.Id == userId).Single();
-                var request = _context.InstitutionRequests.Where(ir => ir.UserId == userId && ir.InstitutionId == institutionId).Single();
 
-                user.InstitutionId = institutionId;
+                var request = _context.InstitutionRequests
+                    .Include(r => r.Institution)
+                    .Include(r => r.User)
+                    .Single(r => r.UserId == userId && r.InstitutionId == institutionId);
+
+                request.User.InstitutionId = institutionId;
                 request.IsAccepted = true;
+                request.AnswerDate = DateTime.Now;
 
-                DataTool.Update(user, _context);
-                DataTool.Update(request, _context);
+                _context.SaveChanges();
 
                 return Ok();
             }
@@ -154,11 +157,16 @@ namespace Foreman.Server.Controllers
             {
                 if (!_authorizeService.CanEditInstitution(institutionId))
                     return Forbid();
-                var user = _context.Users.Where(u => u.Id == userId && u.InstitutionId == institutionId).Single();
+                var institution = _context.Institutions
+                    .Include(i => i.Members)
+                    .Include(i => i.Owner)
+                    .Single(i => i.Id == institutionId);
+                institution.Members.Remove(institution.Members.Single(u => u.Id == userId));
+                if (institution.OwnerId == userId)
+                    institution.Owner = null;
 
-                user.InstitutionId = null;
+                _context.SaveChanges();
 
-                DataTool.Update(user, _context);
 
                 return Ok();
             }
@@ -168,8 +176,8 @@ namespace Foreman.Server.Controllers
             }
         }
 
-        [HttpPost]
-        public IActionResult RefuseRequest(int userId, int institutionId)
+        [HttpPost("{userId}")]
+        public IActionResult RefuseRequest([FromRoute] int userId, [FromBody] int institutionId)
         {
             try
             {
@@ -178,8 +186,9 @@ namespace Foreman.Server.Controllers
                 var request = _context.InstitutionRequests.Where(ir => ir.UserId == userId && ir.InstitutionId == institutionId).Single();
 
                 request.IsAccepted = false;
+                request.AnswerDate = DateTime.Now;
 
-                DataTool.Update(request, _context);
+                _context.SaveChanges();
 
                 return Ok();
             }
@@ -265,18 +274,20 @@ namespace Foreman.Server.Controllers
                 {
                     return Forbid();
                 }
-                institution.OwnerId = institution.Owner.Id;
-                var updated = DataTool.Update<Institution>(institution, _context);
+                var model = _context.Institutions
+                    .Include(i => i.Members)
+                    .Include(i => i.Owner)
+                    .Single(i => i.Id == institution.Id);
 
-                if (institution.Owner != null)
-                {
-                    var user = _context.Users.FirstOrDefault(u => u.Id == institution.OwnerId);
-                    user.InstitutionId = institution.Id;
-                    user.OwnedInstitutionId = institution.Id;
-
-                    DataTool.Update<UserProfile>(user, _context);
-                }
-
+                model.Name = institution.Name;
+                model.Owner = institution.Owner;
+                model.Description = institution.Description;
+                model.ModifiedDate = DateTime.Now;
+                if(institution.Owner != null && !model.Members.Contains(institution.Owner))
+                    model.Members.Add(institution.Owner);
+                _context.Update(model);
+                _context.SaveChanges();
+              
                 return Ok(institution.Id);
             }
             catch (Exception ex)
