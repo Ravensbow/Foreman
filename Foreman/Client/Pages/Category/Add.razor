@@ -31,9 +31,6 @@
     [Inject]
     Services.CourseService CourseService { get; set; }
 
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationStateTask { get; set; }
-
     Foreman.Shared.Models.Category.CategoryModel categoryModel = new Foreman.Shared.Models.Category.CategoryModel();
     public List<Foreman.Shared.Data.Courses.CourseCategory> ParentCategoryList { get; set; }
 

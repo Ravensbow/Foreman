@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using Foreman.Shared.Data.Identity;
 
 namespace Foreman.Shared.Models.Account
 {
@@ -21,6 +22,7 @@ namespace Foreman.Shared.Models.Account
         [Required]
         [Compare(nameof(Password))]
         public string ConfirmPassword { get; set; }
+        public Institution Institution { get; set; }
 
     }
 }

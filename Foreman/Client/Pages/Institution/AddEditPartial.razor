@@ -12,6 +12,12 @@
                  AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary"
                  ToStringFunc="@(e=> e==null?null : e.Email)"
                  For="@(() => Institution.Owner)"/>
+    <InputFile id="fileInput" OnChange="UploadImage" hidden/>
+    <MudFab HtmlTag="label"
+        Color="Color.Primary"
+        Icon="@Icons.Filled.Image"
+        Label="Load picture"
+        for="fileInput" />
 }
 
 

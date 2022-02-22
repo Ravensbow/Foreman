@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
+using Foreman.Server.Data;
 
 namespace Foreman.Server.Controllers
 {
@@ -25,8 +26,9 @@ namespace Foreman.Server.Controllers
         private readonly IUserStore<UserProfile> _userStore;
         private readonly IUserEmailStore<UserProfile> _emailStore;
         private readonly IEmailSender _emailSender;
+        private readonly ApplicationContext _context;
 
-        public AccountController(SignInManager<UserProfile> signInManager, ILogger<LoginModel> logger, IUserStore<UserProfile> userStore, UserManager<UserProfile> userManager, IEmailSender emailSender)
+        public AccountController(ApplicationContext context, SignInManager<UserProfile> signInManager, ILogger<LoginModel> logger, IUserStore<UserProfile> userStore, UserManager<UserProfile> userManager, IEmailSender emailSender)
         {
             _signInManager = signInManager;
             _userStore = userStore;
@@ -34,6 +36,7 @@ namespace Foreman.Server.Controllers
             _emailStore = GetEmailStore();
             _emailSender = emailSender;
             _logger = logger;
+            _context = context;
         }
 
         [HttpPost]
@@ -71,8 +74,18 @@ namespace Foreman.Server.Controllers
 
                 var userId = await _userManager.GetUserIdAsync(user);
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                var institutionClaim = new Claim("Institution", "1");
-                await _userManager.AddClaimAsync(user, institutionClaim);
+                if (registerModel.Institution != null)
+                {
+                    _context.InstitutionRequests.Add(new InstitutionRequest 
+                    {
+                        UserId = int.Parse(userId), 
+                        InstitutionId = registerModel.Institution.Id,
+                        RequestDate = DateTime.Now
+                    });
+                    _context.SaveChanges();
+                }
+                //var institutionClaim = new Claim("Institution", "1");
+                //await _userManager.AddClaimAsync(user, institutionClaim);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                 var callbackUrl = Url.Page(
                     "/Account/ConfirmEmail",

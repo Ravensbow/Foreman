@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
 using System.Linq;
+using System.Security.Claims;
 
 namespace Foreman.Server.Controllers
 {
@@ -139,6 +140,8 @@ namespace Foreman.Server.Controllers
                 request.User.InstitutionId = institutionId;
                 request.IsAccepted = true;
                 request.AnswerDate = DateTime.Now;
+                var institutionClaim = new Claim("Institution", request.InstitutionId.ToString());
+                _userManager.AddClaimAsync(request.User, institutionClaim).GetAwaiter().GetResult();
 
                 _context.SaveChanges();
 
@@ -161,9 +164,12 @@ namespace Foreman.Server.Controllers
                     .Include(i => i.Members)
                     .Include(i => i.Owner)
                     .Single(i => i.Id == institutionId);
-                institution.Members.Remove(institution.Members.Single(u => u.Id == userId));
-                if (institution.OwnerId == userId)
+                var user = institution.Members.Single(u => u.Id == userId);
+                institution.Members.Remove(user);
+                if (institution.OwnerId == user.Id)
                     institution.Owner = null;
+
+                _userManager.RemoveClaimAsync(user, new Claim("Institution", institution.Id.ToString()));
 
                 _context.SaveChanges();
 
@@ -207,7 +213,6 @@ namespace Foreman.Server.Controllers
                     return Forbid();
 
                 var itemList = _context.Institutions
-                    .AsNoTracking()
                     .Include(i => i.Owner)
                     .Include(i => i.InstitutionRequests)
                     .ThenInclude(ir => ir.User)

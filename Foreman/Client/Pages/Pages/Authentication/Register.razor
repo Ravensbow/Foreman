@@ -3,6 +3,7 @@
 
 @inject HttpClient Http
 @inject NavigationManager NavMenager
+@using Foreman.Shared.Data.Identity;
 
 <EditForm Model="registerModel" OnValidSubmit="RegisterUser">
     <DataAnnotationsValidator />
@@ -22,6 +23,14 @@
     <MudTextField @bind-Value="@registerModel.Password" For="@(() => registerModel.Password)" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" Class="mt-4"/>
 
     <MudTextField @bind-Value="@registerModel.ConfirmPassword" For="@(() => registerModel.ConfirmPassword)" Label="Confirm Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" Class="mt-4"/>
+    <MudSelect T="Foreman.Shared.Data.Identity.Institution" Label="Institution" @bind-Value="@registerModel.Institution" Class="mt-4" AnchorOrigin="Origin.BottomCenter">
+        <MudSelectItem Value="@((Institution)null)">None</MudSelectItem>
+        @foreach(var item in Institutions)
+        {
+            <MudSelectItem Value="item">@item.Name</MudSelectItem> 
+
+        }
+    </MudSelect>
 
     <MudCheckBox @bind-Checked="@AgreeToTerms" Label="I agree to the terms and privacy" Color="Color.Primary" Class="ml-n1 my-3"></MudCheckBox>
 
@@ -30,6 +39,8 @@
 @code {
     [Inject]
     public Services.AccountService AccountService { get; set; }
+    [Inject]
+    public Services.InstitutionService InstitutionService { get; set; }
 
     public bool AgreeToTerms { get; set; }
     HttpResponseMessage apiResponse;
@@ -38,6 +49,21 @@
     bool PasswordVisibility;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
+    List<Institution> Institutions { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var result = InstitutionService.GetInstitutions()
+        .GetAwaiter()
+        .GetResult();
+
+        if (!result.IsSuccessStatusCode)
+        {
+            return;
+        }
+
+        Institutions = result.Content.ReadFromJsonAsync<List<Institution>>().GetAwaiter().GetResult();
+    }
 
     void TogglePasswordVisibility()
     {

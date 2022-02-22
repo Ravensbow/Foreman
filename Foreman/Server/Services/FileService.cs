@@ -27,6 +27,8 @@ namespace Foreman.Server.Services
             StorageDirectory = _configuration.GetSection("ForemanStorage")
                 .GetValue<string>("DirectoryName");
             StoragePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, StorageDirectory);
+
+            this.EnsureStorageDirectoryExists();
         }
 
         public Result DeleteFile(int dbFileId)
