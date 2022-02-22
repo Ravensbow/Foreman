@@ -42,39 +42,76 @@ namespace FilePlugin.Controllers
         {
             return Config.version;
         }
+        
+        [HttpPost("Delete/{instanceId:int}")]
+        public IActionResult Delete(int instanceId)
+        {
+            var instance = _context.Files.Find(instanceId);
+            if (instance == null)
+                return NotFound();
+
+            if (!AuthorizeService.CanEditCourse(instance.CourseId))
+                return Forbid("Brak uprawnień do edycji tego kursu");
+            var fileId = _fileService.GetFileInfo(instance.FileHash, instanceId, Config.FilePlugin).Id;
+            _fileService.DeleteFile(fileId);
+            _context.Files.Remove(instance);
+            _context.SaveChanges();
+            return Ok();
+        }
 
         [HttpPost("Add/{sectionId:int?}")]
         public IActionResult Add(Models.FileInstanceModel model, [FromRoute]int? sectionId)
         {
-            System.Diagnostics.Debug.WriteLine("FILEPLUGIN_1");
             if (!AuthorizeService.CanEditCourse(model.CourseId))
                 return Forbid("Brak uprawnień do edycji tego kursu");
             int? pluginId = PluginService.GetPluginId(Config.FilePlugin);
             if (pluginId == null)
                 return NotFound();
-            System.Diagnostics.Debug.WriteLine("FILEPLUGIN_2");
             model.CreatedDate = DateTime.Now;
             model.UserCreatorId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
             model.File.UserId = Convert.ToInt32(User.FindFirstValue(ClaimTypes.NameIdentifier));
             model.File.Component = Config.FilePlugin;
-            model.FileHash = _fileService.HashToString(model.File.FileData);
-            System.Diagnostics.Debug.WriteLine("FILEPLUGIN_3");
+            model.FileHash = _fileService.HashToString(_fileService.HashFunction(model.File.FileData));
             _context.Add(model as Data.FilePluginInstance);
             _context.SaveChanges();
-            System.Diagnostics.Debug.WriteLine("FILEPLUGIN_4");
             model.File.ContextId = model.Id;
             _fileService.StoreFile(model.File);
-            System.Diagnostics.Debug.WriteLine("FILEPLUGIN_5");
             var courseModule = new CourseModule { CourseId = model.CourseId, InstanceId = model.Id, IsVisible = true, PluginId = pluginId, CourseSectionId = sectionId };
             PluginService.AddPluginInstance(courseModule);
-            System.Diagnostics.Debug.WriteLine("FILEPLUGIN_6");
             return Ok(courseModule.Id);
         }
 
         [HttpGet("{id}")]
         public FilePluginInstance? Get(int id)
         {
-            throw new NotImplementedException();
+            return _context.Files.Find(id);
+        }
+        [HttpGet("GetFileInfo/{contextId}")]
+        public IActionResult GetFileInfo(int contextId)
+        {
+            var instance = _context.Files.Find(contextId);
+            if (instance == null)
+                return NotFound();
+            var file = _fileService.GetFileInfo(instance.FileHash, contextId, Config.FilePlugin);
+            if (file == null)
+                return NotFound();
+            return Ok(file);
+        }
+        [HttpGet("GetFile/{contextId}")]
+        public IActionResult GetFile(int contextId)
+        {
+            var instance = _context.Files.Find(contextId);
+            if (instance == null)
+                return NoContent();
+            var file = _fileService.GetFileInfo(instance.FileHash, contextId, Config.FilePlugin);
+            var f = _fileService.GetFile(instance.FileHash);
+            if (f.IsFailure || file == null)
+                return this.NoContent();
+            return new FileContentResult(f.Value, file.MimeType)
+            {
+                FileDownloadName = file.Filename
+            };
+
         }
     }
 }

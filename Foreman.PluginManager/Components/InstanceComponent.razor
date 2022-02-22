@@ -2,7 +2,7 @@
 
 <div class="d-flex flex-row">
     <MudAvatar Class="mud-elevation-25">
-        <MudIcon Icon="@Icons.Filled.TextFields" Class="mx-4" />
+        <MudIcon Icon="@((Icon==null)?Icons.Filled.Extension:Icon)" Class="mx-4" />
     </MudAvatar>
     <div class="ml-6">
         @ChildContent
@@ -14,6 +14,7 @@
             {
                 <MudMenuItem>@item.Item1</MudMenuItem>
             }
+            <MudMenuItem OnClick="Delete">Delete</MudMenuItem>
         </MudMenu>
     }
 </div>
@@ -24,7 +25,11 @@
     [Parameter]
     public List<Tuple<string,string>> MenuOptions { get; set; }
     [Parameter]
+    public string? Icon { get; set; }
+    [Parameter]
     public RenderFragment? ChildContent { get; set; }
+    [Parameter] 
+    public Action? DeleteMethod { get; set; }
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
 
@@ -37,5 +42,10 @@
         var authState = await authenticationStateTask;
         isCourseManager = authState.User.HasClaim("CourseManager", CourseId.ToString());
         StateHasChanged();
+    }
+
+    public void Delete()
+    {
+        DeleteMethod?.Invoke();
     }
 }

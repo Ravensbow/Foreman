@@ -17,11 +17,11 @@
                         <MudListItem>
                             <div class="d-flex flex-row">
                                 <MudAvatar Class="mud-elevation-25">
-                                    <MudIcon Icon="@Icons.Filled.School" Class="mx-4" />
+                                    <MudIcon Icon="@((item.Icon==null)?Icons.Filled.Extension:item.Icon)" Class="mx-4" />
                                 </MudAvatar>
                                 <div class="ml-6">
                                     <MudText Typo="Typo.subtitle1">@item.Name<MudText Class="ml-3" Typo="Typo.overline">@item.Version</MudText></MudText>
-                                    <MudText Typo="Typo.body2">Tu powinien być opis ale nie ma pola w bazie</MudText>
+                                    <MudText Typo="Typo.body2">@item.Description</MudText>
                                 </div>
                                 @if (true == true)
                                 {

@@ -37,6 +37,8 @@ namespace Foreman.Server.Utility
                         var obj = Activator.CreateInstance(pluginClass);
                         var pluginName = (string)pluginClass.GetMethod(nameof(IPlugin.GetPluginName)).Invoke(obj, null);
                         var pluginVersion = (string)pluginClass.GetMethod(nameof(IPlugin.GetPluginVersion)).Invoke(obj, null);
+                        var pluginIcon = (string)pluginClass.GetMethod(nameof(IPlugin.GetPluginIcon)).Invoke(obj, null);
+                        var pluginDescription = (string)pluginClass.GetMethod(nameof(IPlugin.GetPluginDescription)).Invoke(obj, null);
 
                         //context.Add(new Shared.Data.Plugin.Plugin() { Name = pluginName, Version = pluginVersion });
                         //context.SaveChanges();
@@ -46,7 +48,7 @@ namespace Foreman.Server.Utility
 
                         if (dbp == null)
                         {
-                            db.Add(new Plugin() { Name = pluginName, Version = pluginVersion});
+                            db.Add(new Plugin() { Name = pluginName, Version = pluginVersion, Icon= pluginIcon, Description = pluginDescription});
                             migrationMethod.Invoke(obj, new object[] { services });
                         }
                         else if(dbp.Version != pluginVersion)

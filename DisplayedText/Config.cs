@@ -11,5 +11,6 @@ namespace DisplayedText
         public static readonly string version = "2022011501";
         public static readonly string pluginName = "DisplayedText";
         public static readonly string pluginDescription = "Wyswietla zwykly tekst";
+        public static readonly string pluginIcon = MudBlazor.Icons.Filled.TextFields;
     }
 }

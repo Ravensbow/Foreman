@@ -2,7 +2,7 @@
 
 @if(instance != null)
 {
-    <Foreman.PluginManager.Components.InstanceComponent CourseId="instance.CourseId" MenuOptions="menu">
+    <Foreman.PluginManager.Components.InstanceComponent CourseId="instance.CourseId" MenuOptions="menu" Icon="@Config.pluginIcon">
         <MudText Typo="Typo.subtitle1">@instance?.Name</MudText>
         <MudText Typo="Typo.body2">@instance?.Content</MudText>
     </Foreman.PluginManager.Components.InstanceComponent>

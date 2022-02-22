@@ -35,7 +35,7 @@ else
                         @foreach (var module in course.CourseModules.Where(x => x.CourseSectionId == null))
                         {
                             <MudListItem>
-                                <PluginInstance PluginId="module.PluginId.Value" InstanceId="module.InstanceId"></PluginInstance>
+                                <PluginInstance PluginId="module.PluginId.Value" InstanceId="module.InstanceId" OnDeleted="Delete"></PluginInstance>
                             </MudListItem>
                         }
                         <MudListItem>
@@ -99,5 +99,12 @@ else
         parameters.Add("SectionId", sectionId);
         var options = new DialogOptions { CloseOnEscapeKey = true, DisableBackdropClick = true, MaxWidth = MaxWidth.ExtraLarge, FullWidth = true };
         Dialog.Show<AddModuleDialog>("Add module", parameters, options);
+    }
+    public void Delete(Tuple<int,int?> ids)
+    {
+        if (ids.Item2 == null)
+            course.CourseModules.Remove(course.CourseModules.SingleOrDefault(x => x.Id == ids.Item1));
+        else
+            course.CourseSections.SingleOrDefault(x => x.Id == ids.Item2)?.CourseModules.Remove(course.CourseSections.SingleOrDefault(x => x.Id == ids.Item2)?.CourseModules?.SingleOrDefault(x => x.Id == ids.Item1));
     }
 }

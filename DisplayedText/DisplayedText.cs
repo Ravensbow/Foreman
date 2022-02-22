@@ -16,6 +16,7 @@ namespace DisplayedText
         public string GetPluginDescription() => Config.pluginDescription;
 
         public string GetPluginVersion() => Config.version;
+        public string GetPluginIcon() => Config.pluginIcon;
 
         public void Initialize(IServiceCollection services, IConfiguration configuration)
         {
