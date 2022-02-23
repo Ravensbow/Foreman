@@ -1,15 +1,19 @@
 ﻿@page "/institution/add"
+@using Foreman.Shared.Data.Identity
 @attribute [Authorize(Policy="CanAddInstitution")]
 @inject NavigationManager navManager
 @inject Services.AppStateService AppState
 @inject Foreman.Client.Services.InstitutionService institutionService
+@inject ISnackbar Snackbar
 
 <MudGrid Justify="Justify.Center">
     <MudItem xs="12" sm="7">
         <EditForm Model="@model" OnValidSubmit="OnValidSubmit">
             <MudPaper Class="pa-4">
                 <DataAnnotationsValidator />
-                <AddEditPartial Institution="model"></AddEditPartial>
+                <CascadingValue Value="contentLoading">
+                    <AddEditPartial Institution="model" PotentialOwners="UsersList"></AddEditPartial>
+                </CascadingValue>
             </MudPaper>
             <MudPaper Class="pa-4 mt-4">
                 <MudButton ButtonType="ButtonType.Button" Variant="Variant.Filled" Color="Color.Default" Class="ml-auto mr-5" Link="@($"/institution/institutionList")">Cancel</MudButton>
@@ -22,6 +26,22 @@
 @code {
 
     Foreman.Shared.Data.Identity.Institution model = new Foreman.Shared.Data.Identity.Institution();
+    public List<UserProfile> UsersList = new List<UserProfile>();
+    bool? contentLoading = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        contentLoading = true;
+        var result2 = await institutionService.GetPotentialInstitutionManagers();
+
+        if (!result2.IsSuccessStatusCode)
+        {
+            Snackbar.Add("Error occured while receiving users data.", Severity.Error);
+            return;
+        }
+        UsersList = Newtonsoft.Json.JsonConvert.DeserializeObject<List<UserProfile>>(await result2.Content.ReadAsStringAsync());
+        contentLoading = false;
+    }
 
     private async Task OnValidSubmit(EditContext context)
     {

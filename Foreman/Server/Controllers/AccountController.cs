@@ -57,12 +57,55 @@ namespace Foreman.Server.Controllers
                 return this.Problem("Invalid login attempt");
             }
         }
+        [HttpPost]
+        public async Task<IActionResult> EditProfile(EditModel model)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return this.Problem("User is not authenticated.");
+
+            var user = await _userManager.FindByNameAsync(HttpContext.User.Identity.Name);
+
+            if (user == null)
+                return this.Problem("Unknow problem encountered by the server.");
+            if(user.Email != model.Email)
+            {
+                string token = await _userManager.GenerateChangeEmailTokenAsync(user, model.Email);
+                bool success = (await _userManager.ChangeEmailAsync(user, model.Email, token)).Succeeded;
+
+                if (!success)
+                    return Problem("Unknow problem encountered by the server.");
+            }
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            _context.Users.Update(user);
+            _context.SaveChanges();
+            return Ok();
+        }
+        [HttpPost]
+        public async Task<IActionResult> ChangePassword(ChangePasswordModel model)
+        {
+            if (!User.Identity.IsAuthenticated)
+                return this.Problem("User is not authenticated.");
+
+            var user = await _userManager.FindByNameAsync(HttpContext.User.Identity.Name);
+
+            if (user == null)
+                return this.Problem("Unknow problem encountered by the server.");
+
+            var result = await _userManager.ChangePasswordAsync(user, model.OldPassword, model.Password);
+            if(result.Succeeded)
+                return Ok(result);
+
+            return Problem("Uknown problem encountered by the server");
+        }
 
         [HttpPost]
         public async Task<IActionResult> Register(RegisterModel registerModel, string returnUrl = null)
         {
             returnUrl ??= Url.Content("~/");
             var user = CreateUser();
+            user.FirstName = registerModel.FirstName;
+            user.LastName = registerModel.LastName;
 
             await _userStore.SetUserNameAsync(user, registerModel.Email, CancellationToken.None);
             await _emailStore.SetEmailAsync(user, registerModel.Email, CancellationToken.None);

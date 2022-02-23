@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 
@@ -84,6 +85,7 @@ namespace Foreman.Server.Controllers
                     .Include(i => i.Owner)
                     .Include(i => i.Members)
                     .Include(i => i.InstitutionRequests)
+                    .ThenInclude(ir => ir.User)
                     .Single(i => i.Id == institutionId);
                 return Ok(JsonConvert.SerializeObject(item, new JsonSerializerSettings
                 {
@@ -241,7 +243,13 @@ namespace Foreman.Server.Controllers
                 if (!_authorizeService.CanAddInstitution())
                     return Forbid();
 
-                _context.Institutions.Add(institution);
+                _context.Institutions.Update(institution);
+                if(institution.Owner != null)
+                {
+                    var navigationProp = new List<UserProfile>();
+                    navigationProp.Add(institution.Owner);
+                    institution.Members = navigationProp;
+                }
                 _context.SaveChanges();
 
                 return Ok();

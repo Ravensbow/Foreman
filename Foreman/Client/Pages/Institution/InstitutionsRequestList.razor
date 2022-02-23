@@ -66,13 +66,17 @@
 
         if(DataList != null)
         {
-            Requests = DataList;
+            Requests = DataList
+                        .Where(r => !r.IsAccepted.HasValue)
+                        .ToList();
             return;
         }
 
         if(Institution != null)
         {
-            Requests = Institution?.InstitutionRequests?.ToList();
+            Requests = Institution?.InstitutionRequests?
+            .Where(r => !r.IsAccepted.HasValue)
+            .ToList();
             return;
         }
         if(InstitutionId.HasValue && DataList == null && Institution == null)

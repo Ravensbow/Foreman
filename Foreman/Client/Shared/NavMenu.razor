@@ -8,9 +8,10 @@
             <MudNavLink Href="/personal/account" Icon="@Icons.Material.Outlined.Person">Account</MudNavLink>
 
             <MudText Typo="Typo.subtitle2" Color="Color.Inherit" Class="ml-4 my-3">App</MudText>
-            @if(!context.User.IsInRole("Admin"))
+            @if(context.User.IsInRole("Admin"))
             {
                 <MudNavLink Href="/admin/panel" Icon="@Icons.Filled.AdminPanelSettings">Admin panel</MudNavLink>
+                <MudNavLink Href="/institution/institutionList" Icon="@Icons.Filled.AssuredWorkload">Institutions List</MudNavLink>
             }
             <MudNavLink Href="/category/show" Icon="@Icons.Filled.School">All courses</MudNavLink>
         </Authorized>

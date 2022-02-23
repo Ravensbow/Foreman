@@ -31,5 +31,17 @@ namespace Foreman.Client.Services
             var apiResponse = await _httpClient.GetAsync($"Account/Register/"+userid+"/"+code);
             return apiResponse;
         }
+
+        public async Task<HttpResponseMessage> ChangePassword(ChangePasswordModel model)
+        {
+            var apiResponse = await _httpClient.PostAsync($"Account/ChangePassword", new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
+            return apiResponse;
+        }
+
+        public async Task<HttpResponseMessage> EditProfile(EditModel model)
+        {
+            var apiResponse = await _httpClient.PostAsync($"Account/EditProfile", new StringContent(JsonConvert.SerializeObject(model), Encoding.UTF8, "application/json"));
+            return apiResponse;
+        }
     }
 }

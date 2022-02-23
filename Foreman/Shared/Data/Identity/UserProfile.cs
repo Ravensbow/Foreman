@@ -11,6 +11,8 @@ namespace Foreman.Shared.Data.Identity
 {
     public class UserProfile : IdentityUser<int>
     {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         public int? InstitutionId { get; set; }
         public Institution Institution { get; set; }
         public Institution OwnedInstitution { get; set; }

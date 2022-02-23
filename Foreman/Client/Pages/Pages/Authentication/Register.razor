@@ -5,7 +5,13 @@
 @inject NavigationManager NavMenager
 @using Foreman.Shared.Data.Identity;
 
-<EditForm Model="registerModel" OnValidSubmit="RegisterUser">
+@if(Loading.HasValue && Loading == true)
+{
+    <ContenLoadingComponent IsContentLoading="Loading"></ContenLoadingComponent>
+}
+else
+{
+    <EditForm Model="registerModel" OnValidSubmit="RegisterUser">
     <DataAnnotationsValidator />
     <MudText Typo="Typo.h4" GutterBottom="true">Sign Up</MudText>
     @if( apiResponse != null && !apiResponse.IsSuccessStatusCode)
@@ -23,7 +29,7 @@
     <MudTextField @bind-Value="@registerModel.Password" For="@(() => registerModel.Password)" Label="Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" AdornmentIcon="@PasswordInputIcon" OnAdornmentClick="TogglePasswordVisibility" Class="mt-4"/>
 
     <MudTextField @bind-Value="@registerModel.ConfirmPassword" For="@(() => registerModel.ConfirmPassword)" Label="Confirm Password" Variant="Variant.Outlined" InputType="@PasswordInput" Adornment="Adornment.End" Class="mt-4"/>
-    <MudSelect T="Foreman.Shared.Data.Identity.Institution" Label="Institution" @bind-Value="@registerModel.Institution" Class="mt-4" AnchorOrigin="Origin.BottomCenter">
+    <MudSelect T="Foreman.Shared.Data.Identity.Institution" Label="Institution" @bind-Value="@registerModel.Institution" Class="mt-4" Variant="Variant.Outlined" AnchorOrigin="Origin.BottomCenter">
         <MudSelectItem Value="@((Institution)null)">None</MudSelectItem>
         @foreach(var item in Institutions)
         {
@@ -36,6 +42,8 @@
 
     <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Disabled="@(!AgreeToTerms)" Size="Size.Large" FullWidth="true">Register</MudButton>
 </EditForm>
+}
+
 @code {
     [Inject]
     public Services.AccountService AccountService { get; set; }
@@ -47,15 +55,15 @@
 
     Foreman.Shared.Models.Account.RegisterModel registerModel = new Foreman.Shared.Models.Account.RegisterModel();
     bool PasswordVisibility;
+    bool? Loading = true;
     InputType PasswordInput = InputType.Password;
     string PasswordInputIcon = Icons.Material.Filled.VisibilityOff;
     List<Institution> Institutions { get; set; }
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        var result = InstitutionService.GetInstitutions()
-        .GetAwaiter()
-        .GetResult();
+
+        var result = await InstitutionService.GetInstitutions();
 
         if (!result.IsSuccessStatusCode)
         {
@@ -63,6 +71,7 @@
         }
 
         Institutions = result.Content.ReadFromJsonAsync<List<Institution>>().GetAwaiter().GetResult();
+        Loading = false;
     }
 
     void TogglePasswordVisibility()
@@ -85,6 +94,6 @@
     {
         apiResponse = await AccountService.Register(registerModel);
         if (apiResponse.IsSuccessStatusCode)
-            NavMenager.NavigateTo("/pages/authentication/confirm-register/elo", true);
+            NavMenager.NavigateTo("/pages/authentication/login", true);
     }
 }
