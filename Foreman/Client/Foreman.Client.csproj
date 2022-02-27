@@ -26,4 +26,8 @@
     <ProjectReference Include="..\Shared\Foreman.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Pages\Pages\Category\" />
+  </ItemGroup>
+
 </Project>
