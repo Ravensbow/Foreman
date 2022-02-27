@@ -68,7 +68,7 @@
                             <MudPaper @ondragenter="@(()=>_dragEnterStyle="drag-enter")"
                                   @ondragleave="@(()=>_dragEnterStyle=null)"
                                   @ondragend="@(()=>_dragEnterStyle=null)"
-                                  Class=@("drag-drop-zone "+ _dragEnterStyle +" mud-theme-default")>
+                                  Class=@("drag-drop-zone "+ _dragEnterStyle +" mud-theme-default") Elevation="4">
 
                                 <InputFile OnChange="OnInputFileChanged" class="drag-drop-input" />
 
