@@ -25,15 +25,6 @@
             <MudText Typo="Typo.subtitle2">Foreman</MudText>
         </MudHidden>
         <MudSpacer />
-        <MudMenu Icon="@Icons.Material.Outlined.Translate" Color="Color.Inherit" Direction="Direction.Bottom" OffsetY="true" Dense="true">
-            <MudMenuItem>English</MudMenuItem>
-            <MudMenuItem>Swedish</MudMenuItem>
-            <MudMenuItem>Old Norse</MudMenuItem>
-        </MudMenu>
-        <MudMenu Icon="@Icons.Material.Outlined.Widgets" Color="Color.Inherit" Direction="Direction.Bottom" OffsetY="true" Dense="true">
-            <MudMenuItem Link="https://mudblazor.com/">MudBlazor</MudMenuItem>
-            <MudMenuItem Link="https://github.com/Garderoben/Foremans">Source Code</MudMenuItem>
-        </MudMenu>
         <MudToggleIconButton @bind-Toggled="@_isDarkMode"
                      Icon="@Icons.Filled.DarkMode" Title="Off"
                      ToggledIcon="@Icons.Filled.LightMode" ToggledTitle="On"/>
@@ -57,9 +48,6 @@
             <MudToolBar DisableGutters="true">
                 <MudIconButton Icon="@Icons.Material.Outlined.Menu" Color="Color.Inherit" OnClick="@((e) => DrawerToggle())" Class="ml-3" />
                 <MudBreadcrumbs Items="AppState.Breadcrumbs"></MudBreadcrumbs>
-                <MudSpacer />
-                <MudButton Variant="Variant.Text" Link="https://mudblazor.com/" Style="color:#594AE2;">MudBlazor</MudButton>
-                <MudButton Variant="Variant.Text" Link="https://github.com/Garderoben/Foremans" Style="color:#424242;" Class="mr-3">Source Code</MudButton>
             </MudToolBar>
         </MudHidden>
         <MudContainer MaxWidth="MaxWidth.False" Class="mt-4">

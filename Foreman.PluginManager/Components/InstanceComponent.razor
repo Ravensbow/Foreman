@@ -40,7 +40,7 @@
     {
         httpClient = http.CreateClient("Foreman.ServerAPI");
         var authState = await authenticationStateTask;
-        isCourseManager = authState.User.HasClaim("CourseManager", CourseId.ToString());
+        isCourseManager = authState.User.HasClaim("CourseManager", CourseId.ToString()) || authState.User.IsInRole("Admin");
         StateHasChanged();
     }
 

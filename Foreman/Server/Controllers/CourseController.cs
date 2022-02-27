@@ -28,8 +28,9 @@ namespace Foreman.Server.Controllers
         [HttpGet("GetCourseById/{id}")]
         public IActionResult GetCourseById(int id)
         {
+            bool isAdmin = User.IsInRole("Admin");
             var course = _context.Courses.Include(x=>x.Category).Include(x => x.CourseModules).Include(x => x.CourseSections).ThenInclude(s => s.CourseModules).SingleOrDefault(x => x.Id == id);
-            if (course.InstitutionId != null && !User.HasClaim("Institution", course.InstitutionId.ToString()))
+            if (!isAdmin && course.InstitutionId != null && !User.HasClaim("Institution", course.InstitutionId.ToString()))
                 return Forbid();
             return Ok(course);
         }
@@ -40,9 +41,10 @@ namespace Foreman.Server.Controllers
             try
             {
                 string[] institutions = User.Claims.Where(c => c.Type == "Institution").Select(c => c.Value).ToArray();
+                bool isAdmin = User.IsInRole("Admin");
 
                 var category = _context.CourseCategories
-                .SingleOrDefault(x => x.Id == categoryId && (x.InstitutionId == null || institutions.Contains(x.InstitutionId.Value.ToString())));
+                .SingleOrDefault(x => x.Id == categoryId && (x.InstitutionId == null || isAdmin==true || institutions.Contains(x.InstitutionId.Value.ToString())));
 
 
                 return Ok(category);
@@ -57,15 +59,17 @@ namespace Foreman.Server.Controllers
         [HttpGet("GetCategorys/{id?}")]
         public IActionResult GetCategorys(int? id)
         {
+            bool isAdmin = User.IsInRole("Admin");
             try
             {
                 string[] institutions = User.Claims.Where(c => c.Type == "Institution").Select(c => c.Value).ToArray();
+                
                 if (id == null)
                 {
                     var temp = _context.CourseCategories.Include(x => x.Courses).Where(x =>
                             x.ParentCategoryId == null
                             && x.IsVisible == true
-                            && (x.InstitutionId == null || institutions.Contains(x.InstitutionId.Value.ToString())))
+                            && (x.InstitutionId == null || institutions.Contains(x.InstitutionId.Value.ToString())|| isAdmin==true))
                         .OrderBy(x => (x.InstitutionId == null) ? 0 : 1).ThenBy(x => x.Name).ToList();
                     return Ok(JsonConvert.SerializeObject(temp, new JsonSerializerSettings
                     {
@@ -78,7 +82,7 @@ namespace Foreman.Server.Controllers
                     var temp = _context.CourseCategories.Include(x => x.Courses).Where(x =>
                               x.ParentCategoryId == id.Value
                               && x.IsVisible == true
-                              && (x.InstitutionId == null || institutions.Contains(x.InstitutionId.Value.ToString())))
+                              && (x.InstitutionId == null || isAdmin==true || institutions.Contains(x.InstitutionId.Value.ToString())))
                         .OrderBy(x => (x.InstitutionId == null) ? 0 : 1).ThenBy(x => x.Name).ToList();
                     return Ok(JsonConvert.SerializeObject(temp, new JsonSerializerSettings
                     {
@@ -96,13 +100,14 @@ namespace Foreman.Server.Controllers
         [HttpGet("GetCourses/{categoryId}")]
         public IActionResult GetCourses(int categoryId)
         {
+            bool isAdmin = User.IsInRole("Admin");
             try
             {
                 string[] institutions = User.Claims.Where(c => c.Type == "Institution").Select(c => c.Value).ToArray();
                 var temp = _context.Courses.Include(x => x.Category).Where(x =>
                           x.CourseCategoryId == categoryId
                           && x.IsVisible == true
-                          && (x.InstitutionId == null || institutions.Contains(x.InstitutionId.Value.ToString())))
+                          && (x.InstitutionId == null || isAdmin==true || institutions.Contains(x.InstitutionId.Value.ToString())))
                     .OrderBy(x => (x.InstitutionId == null) ? 0 : 1).ThenBy(x => x.FullName).ToList();
                 return Ok(JsonConvert.SerializeObject(temp, new JsonSerializerSettings
                 {

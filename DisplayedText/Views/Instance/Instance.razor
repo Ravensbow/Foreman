@@ -11,6 +11,8 @@
 @code {
     [Parameter]
     public int InstanceId { get; set; }
+    [Parameter]
+    public EventCallback<Tuple<int,int?>> OnDeleted { get; set; }
 
     List<Tuple<string, string>> menu = new List<Tuple<string, string>> { new Tuple<string, string>("Edit", ""), new Tuple<string, string>("Delete", "") };
     HttpClient? httpClient;

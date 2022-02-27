@@ -1,0 +1,258 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Foreman.Server.Services.PluginService">
+    <Position X="0.75" Y="2.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAAAAQAAAAAAAAAAAAAAAAAAAAAgAAgAAACAA=</HashCode>
+      <FileName>Services\PluginService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Foreman.Server.Services.AuthorizeService" BaseTypeListCollapsed="true">
+    <Position X="5.25" Y="2.25" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>IAAAAAAAAIAQAAAAAAABAAAAABCAgAAAFAAAAAgAAAA=</HashCode>
+      <FileName>Services\AuthorizeService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Foreman.Server.Services.CourseService" BaseTypeListCollapsed="true">
+    <Position X="7.25" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAA=</HashCode>
+      <FileName>Services\CourseService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" Collapsed="true" />
+  </Class>
+  <Class Name="Foreman.Server.Services.FileService" BaseTypeListCollapsed="true">
+    <Position X="2.75" Y="2.25" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAAAAAABAAAAAAIKECACAAEAAABABEEAAABAAA=</HashCode>
+      <FileName>Services\FileService.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.1" Collapsed="true" />
+  </Class>
+  <Class Name="Foreman.Server.Data.ApplicationContext">
+    <Position X="0.75" Y="9.75" Width="3.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABQAAAAAEACQAAAgAEAEBAAEAgIAgEIABABAKA=</HashCode>
+      <FileName>Data\ApplicationContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Foreman.Server.Data.DataTool">
+    <Position X="4.75" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Data\DataTool.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Foreman.Server.Data.KeyApiAuthorizationDbContext&lt;TUser, TRole, TKey&gt;">
+    <Position X="0.75" Y="6.75" Width="3.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQIAAAAAACAAAAAQAGAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Data\KeyApiAuthorizationDbContext.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Foreman.Server.Data.ApiAuthorizationDbContext&lt;TUser&gt;">
+    <Position X="4" Y="9.75" Width="3.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Data\KeyApiAuthorizationDbContext.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Foreman.Server.Data.UploadResult">
+    <Position X="6.5" Y="6.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAQAAAAAAAAAAAAAAAAAgAAAAAAAAAAQBAAAA=</HashCode>
+      <FileName>Data\UploadResult.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Foreman.Server.Controllers.AccountController">
+    <Position X="0.75" Y="15" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAADAAAAwAAhAAAAABAAAAAIgCBAIQgAAAQAAAAAAA=</HashCode>
+      <FileName>Controllers\AccountController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Foreman.Server.Controllers.AuthorizeController">
+    <Position X="2.75" Y="15" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAACAAAAAAAAABBCAAAAAFAAAAAgAAAA=</HashCode>
+      <FileName>Controllers\AuthorizeController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Foreman.Server.Controllers.CourseController">
+    <Position X="4.75" Y="15" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAISRAAAAIAAIAKQAAAAgQAAAAAAAAAABAA=</HashCode>
+      <FileName>Controllers\CourseController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Foreman.Server.Controllers.InstitutionController">
+    <Position X="11.75" Y="15" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AQAABAAAAEAABACAAAIAAAAAAQQAAAAAAAQBAAAAQAA=</HashCode>
+      <FileName>Controllers\InstitutionController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Foreman.Server.Controllers.OidcConfigurationController">
+    <Position X="9" Y="15" Width="2.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAQAAAAAAAAAAAAAAAAAAAYAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Controllers\OidcConfigurationController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Foreman.Server.Controllers.PluginController">
+    <Position X="6.5" Y="15" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAABgAQAACEACQAAAAgBAGAAAAAAgAAAIAAAAg=</HashCode>
+      <FileName>Controllers\PluginController.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Foreman.Server.Program">
+    <Position X="0.75" Y="19.5" Width="1.75" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAAA=</HashCode>
+      <FileName>Program.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Foreman.Server.Startup">
+    <Position X="2.75" Y="19.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAABAAAAAAAAAAAAAgAAACAgAAAA=</HashCode>
+      <FileName>Startup.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Foreman.Shared.Data.Courses.Assigment">
+    <Position X="2.5" Y="21.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Shared.Data.Courses.CategoryAssigment">
+    <Position X="4.25" Y="21.75" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Shared.Data.Courses.Course">
+    <Position X="6.25" Y="21.75" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Shared.Data.Courses.CourseCategory">
+    <Position X="11.75" Y="21.75" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Shared.Data.Courses.CourseModule">
+    <Position X="10" Y="21.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Shared.Data.Courses.CourseSection">
+    <Position X="8.25" Y="21.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Shared.Data.Courses.ForemanFile">
+    <Position X="0.75" Y="21.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Shared.Data.Identity.Institution">
+    <Position X="0.75" Y="26.25" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Shared.Data.Identity.InstitutionRequest">
+    <Position X="2.75" Y="26.25" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Shared.Data.Identity.UserAssigment">
+    <Position X="8.75" Y="26.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Shared.Data.Identity.UserProfile">
+    <Position X="6.75" Y="26.25" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Shared.Data.Identity.Role">
+    <Position X="4.75" Y="26.25" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Shared.Data.Plugin.Plugin">
+    <Position X="13.75" Y="21.75" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Shared.Models.Account.RegisterModel">
+    <Position X="0.75" Y="30" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Shared.Models.Account.LoginModel">
+    <Position X="2.75" Y="30" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Shared.Models.Category.CategoryModel">
+    <Position X="4.5" Y="30" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Shared.Models.Category.ForemanFileModel">
+    <Position X="6.25" Y="30" Width="1.75" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Foreman.Server.Utility.Result">
+    <Position X="8.25" Y="30" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Server.Utility.Result&lt;T&gt;">
+    <Position X="10.25" Y="30" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Client.Utilites.ComponentService">
+    <Position X="3" Y="36.75" Width="2" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Foreman.Client.Services.AccountService">
+    <Position X="0.75" Y="39" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Client.Services.AppStateService">
+    <Position X="2.25" Y="39" Width="2.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Client.Services.AuthorizeService">
+    <Position X="5" Y="39" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Client.Services.CourseService">
+    <Position X="6.75" Y="39" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Client.Services.InstitutionService">
+    <Position X="8.25" Y="39" Width="2.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="Foreman.Client.Services.PluginService">
+    <Position X="10.75" Y="39" Width="1.75" />
+    <TypeIdentifier />
+  </Class>
+  <Interface Name="Foreman.Shared.Services.IAuthorizeService">
+    <Position X="0.75" Y="33" Width="1.75" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Foreman.Shared.Services.ICourseService">
+    <Position X="2.5" Y="33" Width="1.5" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Foreman.Shared.Services.IFileService">
+    <Position X="4" Y="33" Width="2.25" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Foreman.Shared.Services.IPluginService">
+    <Position X="6.25" Y="33" Width="1.75" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Foreman.Shared.Models.Category.IForemanFileModel">
+    <Position X="8" Y="33" Width="1.75" />
+    <TypeIdentifier />
+  </Interface>
+  <Interface Name="Foreman.Client.Utilites.IComponentService">
+    <Position X="0.75" Y="36.75" Width="2" />
+    <TypeIdentifier />
+  </Interface>
+  <Font Name="Arial" Size="9" />
+</ClassDiagram>

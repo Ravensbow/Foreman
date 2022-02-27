@@ -2,6 +2,7 @@
 using Foreman.Server.Services;
 using Foreman.Shared.Data.Identity;
 using Foreman.Shared.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -207,12 +208,13 @@ namespace Foreman.Server.Controllers
         }
 
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult GetInstitutions()
         {
             try
             {
-                if (!_authorizeService.CanAddInstitution())
-                    return Forbid();
+                //if (!_authorizeService.CanAddInstitution())
+                //    return Forbid();
 
                 var itemList = _context.Institutions
                     .Include(i => i.Owner)

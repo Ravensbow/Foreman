@@ -13,9 +13,12 @@ namespace Foreman.Client.Services
     public class InstitutionService
     {
         private HttpClient _httpClient;
+
+        private HttpClient _httpClientPublic;
         public InstitutionService(IHttpClientFactory httpClientFactory)
         {
             _httpClient = httpClientFactory.CreateClient("Foreman.ServerAPI");
+            _httpClientPublic = httpClientFactory.CreateClient("Foreman.ServerAPI.Public");
         }
 
         public async Task<HttpResponseMessage> GetPotentialInstitutionManagers()
@@ -38,7 +41,7 @@ namespace Foreman.Client.Services
 
         public async Task<HttpResponseMessage> GetInstitutions()
         {
-            var apiResult = await _httpClient.GetAsync($"Institution/GetInstitutions");
+            var apiResult = await _httpClientPublic.GetAsync($"Institution/GetInstitutions");
             return apiResult;
         }
 
