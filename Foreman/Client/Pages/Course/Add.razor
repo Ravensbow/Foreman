@@ -55,6 +55,6 @@
         }
         int newcourseId = Convert.ToInt32(await result.Content.ReadAsStringAsync());
 
-        navManager.NavigateTo($"/category/show/{newcourseId}");
+        navManager.NavigateTo($"/course/show/{newcourseId}");
     }
 }

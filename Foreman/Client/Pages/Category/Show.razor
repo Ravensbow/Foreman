@@ -26,7 +26,7 @@
                 //TODO Obsluga bledu
                 return;
             }
-            category = await result.Content.ReadFromJsonAsync<Foreman.Shared.Data.Courses.CourseCategory>();
+            category = Newtonsoft.Json.JsonConvert.DeserializeObject<Foreman.Shared.Data.Courses.CourseCategory>(await result.Content.ReadAsStringAsync());
 
         }
         else

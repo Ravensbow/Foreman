@@ -1,5 +1,6 @@
 ﻿@inject IHttpClientFactory httpClientFactory
 @inject NavigationManager navManager
+@inject Services.AuthorizeService AuthorizeService
 
 <MudGrid>
     <MudItem xs="12" sm="12" md="12">
@@ -31,7 +32,7 @@
                             </div>
                         </MudListItem>
                     }
-                    @if (true == true)
+                    @if (canAddCourse == true)
                     {
                         <MudListItem Style="position:relative;">
                             <div class="d-flex flex-row">
@@ -64,6 +65,8 @@
     HttpClient httpClient;
     List<Foreman.Shared.Data.Courses.Course> Courses = new List<Foreman.Shared.Data.Courses.Course>();
 
+    bool? canAddCourse = false;
+
     protected override async Task OnParametersSetAsync()
     {
         httpClient = httpClientFactory.CreateClient("Foreman.ServerAPI");
@@ -75,6 +78,7 @@
             return;
         }
         Courses = Newtonsoft.Json.JsonConvert.DeserializeObject<List<Foreman.Shared.Data.Courses.Course>>(await result.Content.ReadAsStringAsync());
+        canAddCourse =  await AuthorizeService.CanAddCourse(CategoryId);
     }
     private bool CheckIsManager(int id)
     {

@@ -1,4 +1,4 @@
-﻿@page "/category/add"
+﻿@page "/category/add/{categoryId:int?}"
 @using Microsoft.AspNetCore.Http
 @using System.Security.Claims
 @inject HttpClient httpClient
@@ -30,6 +30,8 @@
 @code{
     [Inject]
     Services.CourseService CourseService { get; set; }
+    [Parameter]
+    public int? categoryId { get; set; }
 
     Foreman.Shared.Models.Category.CategoryModel categoryModel = new Foreman.Shared.Models.Category.CategoryModel();
     public List<Foreman.Shared.Data.Courses.CourseCategory> ParentCategoryList { get; set; }

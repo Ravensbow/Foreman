@@ -1,5 +1,5 @@
 ﻿@inject IHttpClientFactory httpClientFactory
-
+@inject Services.AuthorizeService AuthorizeService
 <MudGrid Spacing="5" Justify="Justify.FlexStart" Class="mt-5">
     @foreach (var item in Categorys)
     {
@@ -30,7 +30,9 @@
             </MudCard>
         </MudItem>
     }
-    <MudItem md="6" lg="3" Style="width:100%;position: relative;">
+    @if(canAddCategory == true)
+    {
+        <MudItem md="6" lg="3" Style="width:100%;position: relative;">
             <MudCard>
                 <MudCardHeader>
                     <CardHeaderContent>
@@ -52,6 +54,8 @@
                 </div>
             </MudCard>
         </MudItem>
+    }
+    
 </MudGrid>
 @code {
     [Parameter]
@@ -62,7 +66,7 @@
 
     HttpClient httpClient;
     List<Foreman.Shared.Data.Courses.CourseCategory> Categorys = new List<Foreman.Shared.Data.Courses.CourseCategory>();
-
+    bool? canAddCategory = false;
     protected override async Task OnParametersSetAsync()
     {
         httpClient = httpClientFactory.CreateClient("Foreman.ServerAPI");
@@ -75,6 +79,7 @@
         }
         var temp = await result.Content.ReadAsStringAsync();
         Categorys = await result.Content.ReadFromJsonAsync<List<Foreman.Shared.Data.Courses.CourseCategory>>();
+        canAddCategory =  await AuthorizeService.CanAddCourse(CategoryId);
     }
     private bool CheckIsManager(int id)
     {

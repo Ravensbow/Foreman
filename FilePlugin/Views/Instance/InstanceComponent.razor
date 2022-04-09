@@ -16,7 +16,7 @@
     [Parameter]
     public EventCallback<Tuple<int,int?>> OnDeleted { get; set; }
 
-    List<Tuple<string, string>> menu = new List<Tuple<string, string>> { new Tuple<string, string>("Edit", ""), new Tuple<string, string>("Delete", "") };
+    List<Tuple<string, string>> menu = new List<Tuple<string, string>> { new Tuple<string, string>("Edit", "")};
     HttpClient? httpClient;
     Data.FilePluginInstance? instance;
     Foreman.Shared.Data.Courses.ForemanFile file;
@@ -44,6 +44,14 @@
 
     public async Task Delete()
     {
-        await OnDeleted.InvokeAsync(new Tuple<int,int?>(2023,null));
+        var result = await httpClient.GetAsync($"/Course/GetModuleInfo/{Config.FilePlugin}/{InstanceId}");
+        if(!result.IsSuccessStatusCode)
+        {
+            return; //Info o bledzie
+        }
+        var module = Newtonsoft.Json.JsonConvert.DeserializeObject<Foreman.Shared.Data.Courses.CourseModule>(await result.Content.ReadAsStringAsync());
+        
+
+        await OnDeleted.InvokeAsync(new Tuple<int,int?>(module.Id,module.CourseSectionId));
     }
 }

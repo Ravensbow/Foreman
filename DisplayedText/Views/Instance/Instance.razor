@@ -2,7 +2,7 @@
 
 @if(instance != null)
 {
-    <Foreman.PluginManager.Components.InstanceComponent CourseId="instance.CourseId" MenuOptions="menu" Icon="@Config.pluginIcon">
+    <Foreman.PluginManager.Components.InstanceComponent CourseId="instance.CourseId" MenuOptions="menu" Icon="@Config.pluginIcon" DeleteMethod="async ()=> await Delete()">
         <MudText Typo="Typo.subtitle1">@instance?.Name</MudText>
         <MudText Typo="Typo.body2">@instance?.Content</MudText>
     </Foreman.PluginManager.Components.InstanceComponent>
@@ -14,7 +14,7 @@
     [Parameter]
     public EventCallback<Tuple<int,int?>> OnDeleted { get; set; }
 
-    List<Tuple<string, string>> menu = new List<Tuple<string, string>> { new Tuple<string, string>("Edit", ""), new Tuple<string, string>("Delete", "") };
+    List<Tuple<string, string>> menu = new List<Tuple<string, string>> { new Tuple<string, string>("Edit", "") };
     HttpClient? httpClient;
     Data.Text? instance;
 
@@ -30,5 +30,18 @@
             return;
         }
         instance = await result.Content.ReadFromJsonAsync<Data.Text>();
+    }
+
+    public async Task Delete()
+    {
+        var result = await httpClient.GetAsync($"/Course/GetModuleInfo/{Config.pluginName}/{InstanceId}");
+        if(!result.IsSuccessStatusCode)
+        {
+            return; //Info o bledzie
+        }
+        var module = Newtonsoft.Json.JsonConvert.DeserializeObject<Foreman.Shared.Data.Courses.CourseModule>(await result.Content.ReadAsStringAsync());
+        
+
+        await OnDeleted.InvokeAsync(new Tuple<int,int?>(module.Id,module.CourseSectionId));
     }
 }

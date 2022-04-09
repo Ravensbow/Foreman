@@ -3,6 +3,8 @@
 @inject HttpClient Http
 @inject Services.AppStateService AppState
 @inject IDialogService Dialog
+@inject Services.CourseService CourseService
+@inject Services.AuthorizeService AuthorizeService
 
 @if (course == null)
 {
@@ -39,9 +41,12 @@ else
                             </MudListItem>
                         }
                         <MudListItem>
-                            <div class="d-flex flex-row justify-center">
-                                <MudFab @onclick="@((e)=>OpenAddDialog(null))" Color="Color.Primary" StartIcon="@Icons.Filled.Add" Label="Add" />
-                            </div>
+                            @if (canEditCourse == true)
+                            {
+                                <div class="d-flex flex-row justify-center">
+                                    <MudFab @onclick="@((e)=>OpenAddDialog(null))" Color="Color.Primary" StartIcon="@Icons.Filled.Add" Label="Add" />
+                                </div>
+                            }
                         </MudListItem>
                     </MudList>
                 </MudCardContent>
@@ -64,11 +69,15 @@ else
                                     <PluginInstance PluginId="module.PluginId.Value" InstanceId="module.InstanceId"></PluginInstance>
                                 </MudListItem>
                             }
-                            <MudListItem>
-                                <div class="d-flex flex-row justify-center">
-                                    <MudFab @onclick="@((e)=>OpenAddDialog(sec.Id))" Color="Color.Primary" StartIcon="@Icons.Filled.Add" Label="Add" />
-                                </div>
-                            </MudListItem>
+                            @if(canEditCourse== true)
+                            {
+                                <MudListItem>
+                                    <div class="d-flex flex-row justify-center">
+                                        <MudFab @onclick="@((e)=>OpenAddDialog(sec.Id))" Color="Color.Primary" StartIcon="@Icons.Filled.Add" Label="Add" />
+                                    </div>
+                                </MudListItem>
+                            }
+                            
                         </MudList>
                     </MudCardContent>
                 </MudCard>
@@ -82,7 +91,7 @@ else
     [Parameter]
     public int CourseId { get; set; }
     Foreman.Shared.Data.Courses.Course course;
-
+    bool? canEditCourse = false;
     protected override async Task OnInitializedAsync()
     {
         var result = await Http.GetAsync("/course/GetCourseById/" + CourseId);
@@ -91,6 +100,7 @@ else
             course = Newtonsoft.Json.JsonConvert.DeserializeObject<Course>(await result.Content.ReadAsStringAsync());
         }
         await AppState.SetBreadcrumbsByCourseCategory(course.Id, true);
+        canEditCourse =  await AuthorizeService.CanEditCourse(CourseId);
     }
     private void OpenAddDialog(int? sectionId)
     {
@@ -100,11 +110,23 @@ else
         var options = new DialogOptions { CloseOnEscapeKey = true, DisableBackdropClick = true, MaxWidth = MaxWidth.ExtraLarge, FullWidth = true };
         Dialog.Show<AddModuleDialog>("Add module", parameters, options);
     }
-    public void Delete(Tuple<int,int?> ids)
+    public async Task Delete(Tuple<int,int?> ids)
     {
         if (ids.Item2 == null)
+        {
+            var result = await CourseService.RemoveModule(ids.Item1);
+            if (!result.IsSuccessStatusCode)
+            {
+                return; //Dodac info o bledzie
+            }
             course.CourseModules.Remove(course.CourseModules.SingleOrDefault(x => x.Id == ids.Item1));
+            StateHasChanged();
+
+        }
+
         else
+        {
             course.CourseSections.SingleOrDefault(x => x.Id == ids.Item2)?.CourseModules.Remove(course.CourseSections.SingleOrDefault(x => x.Id == ids.Item2)?.CourseModules?.SingleOrDefault(x => x.Id == ids.Item1));
+        }
     }
 }

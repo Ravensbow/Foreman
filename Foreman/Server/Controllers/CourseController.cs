@@ -291,18 +291,19 @@ namespace Foreman.Server.Controllers
             List<CourseCategory> categories;
             string[] institutions = User.Claims.Where(c => c.Type == "Institution").Select(c => c.Value).ToArray();
             string[] categoryManager = User.Claims.Where(c => c.Type == "CategoryManager").Select(c => c.Value).ToArray();
+            bool isAdmin = User.IsInRole("Admin");
             if (string.IsNullOrEmpty(search))
             {
                 categories =_context.CourseCategories
                 .Where(x => x.IsVisible == true && 
-                    categoryManager.Contains(x.Id.ToString()))
+                    categoryManager.Contains(x.Id.ToString()) || isAdmin)
                 .ToList();
             }
             else
             {
                 categories =_context.CourseCategories
                     .Where(x => x.IsVisible == true && x.Name.StartsWith(search) &&
-                        categoryManager.Contains(x.Id.ToString()))
+                        (categoryManager.Contains(x.Id.ToString()) || isAdmin))
                     .ToList();
             }
 
@@ -312,6 +313,34 @@ namespace Foreman.Server.Controllers
                 PreserveReferencesHandling = PreserveReferencesHandling.Objects
             }));
 
+        }
+
+        [HttpGet("GetModuleInfo/{pluginname}/{id}")]
+        public IActionResult GetModuleInfo(string pluginname, int id)
+        {
+            int? pluginid = _context.Plugins.SingleOrDefault(x => x.Name == pluginname)?.Id;
+            if (pluginid == null)
+                return Problem("Nie ma plugina");
+            var module = _context.CourseModules.SingleOrDefault(x => x.PluginId == pluginid.Value && x.InstanceId == id);
+            
+            if (module == null)
+                return NotFound();
+
+            return Ok(module);
+        }
+        [HttpGet("RemoveModule/{id}")]
+        public IActionResult RemoveModule(int id)
+        {
+            try
+            {
+                var module = _context.CourseModules.Find(id);
+                _context.CourseModules.Remove(module);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return Problem(ex.Message);
+            } 
         }
     }
 }

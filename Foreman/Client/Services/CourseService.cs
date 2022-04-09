@@ -64,6 +64,10 @@ namespace Foreman.Client.Services
             var temp = await apiResult.Content.ReadAsStringAsync();
             return apiResult;
         }
-        
+        public async Task<HttpResponseMessage> RemoveModule(int id)
+        {
+            var apiResult = await _httpClient.GetAsync($"Course/RemoveModule/{id}");
+            return apiResult;
+        }
     }
 }    
