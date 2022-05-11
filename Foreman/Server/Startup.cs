@@ -47,7 +47,9 @@ namespace Foreman.Server
             services.AddDefaultIdentity<UserProfile>(opts => opts.SignIn.RequireConfirmedAccount = true)
                 .AddRoles<Role>()
                 .AddEntityFrameworkStores<ApplicationContext>();
-            services.AddIdentityServer()
+            services.AddIdentityServer(/*options => { 
+                    options.IssuerUri = "http://192.168.16.1:5000";
+                }*/)
                 .AddApiAuthorization<UserProfile, ApplicationContext>(options => {
                     options.IdentityResources["openid"].UserClaims.Add("name");
                     options.ApiResources.Single().UserClaims.Add("name");
@@ -105,7 +107,7 @@ namespace Foreman.Server
             app.UseIdentityServer();
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = Microsoft.AspNetCore.Http.SameSiteMode.Lax });
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();

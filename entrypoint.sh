@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-run_cmd="dotnet run --project ./Foreman/Server --server.urls http://+:5000;https://+:5001"
+run_cmd="dotnet run --project ./Foreman/Server"
 
 until dotnet ef database update --project ./Foreman/Server; do
 >&2 echo "SQL Server is starting up"
