@@ -209,7 +209,7 @@ namespace Foreman.Server.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult GetInstitutions()
+        public IActionResult GetInstitutions(string term = null)
         {
             try
             {
@@ -221,6 +221,7 @@ namespace Foreman.Server.Controllers
                     .Include(i => i.InstitutionRequests)
                     .ThenInclude(ir => ir.User)
                     .Include(i => i.Members)
+                    .Where(x=> term == null || x.Name.Contains(term))
                     .OrderBy(i => i.Id)
                     .ToList();
 

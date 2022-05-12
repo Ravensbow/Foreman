@@ -44,7 +44,7 @@ namespace Foreman.Server.Controllers
         [HttpGet("GetByName/{name}")]
         public byte[] GetByName(string name)
         {
-            string path = AppDomain.CurrentDomain.BaseDirectory + $"Plugins\\{name}\\{name}.dll";
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins",name,name+".dll");
             var dll = System.IO.File.ReadAllBytes(path);
             var test = User.HasClaim("Institution", "1");
             return dll;
@@ -102,7 +102,7 @@ namespace Foreman.Server.Controllers
             }
 
             //Usunąć tabele wtyczki
-            Assembly assembly = Assembly.LoadFrom(AppDomain.CurrentDomain.BaseDirectory + @"\Plugins\" + plugin.Name + @"\" + plugin.Name + ".dll");
+            Assembly assembly = Assembly.LoadFrom(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins" , plugin.Name ,plugin.Name + ".dll"));
             var part = new AssemblyPart(assembly);
             var atypes = assembly.GetTypes();
             var pluginClass = atypes.SingleOrDefault(t => t.GetInterface(nameof(IPlugin)) != null);
@@ -117,8 +117,7 @@ namespace Foreman.Server.Controllers
             }
 
             //Usunąć plik wtyczki z folderem z folderu Plugins
-            Directory.Delete(AppDomain.CurrentDomain.BaseDirectory + @"Plugins\" + plugin.Name, true);
-
+            Directory.Delete(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,@"Plugins",plugin.Name), true);
             return Ok();
         }
 
@@ -153,7 +152,7 @@ namespace Foreman.Server.Controllers
                 {
                     trustedFileNameForFileStorage = Path.GetRandomFileName();
                     var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"Plugins",file.FileName[..file.FileName.LastIndexOf('.')], file.FileName);
-                    Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory+ "Plugins/"+ file.FileName[..file.FileName.LastIndexOf('.')]);
+                    Directory.CreateDirectory(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins", file.FileName[..file.FileName.LastIndexOf('.')]));
                     await using FileStream fs = new(path, FileMode.Create);
                     await file.CopyToAsync(fs);
                     fs.Close();

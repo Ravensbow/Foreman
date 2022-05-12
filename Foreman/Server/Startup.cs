@@ -77,7 +77,7 @@ namespace Foreman.Server
             services.AddScoped<IFileService, FileService>();
             services.AddSingleton<Microsoft.AspNetCore.Mvc.Infrastructure.IActionDescriptorChangeProvider>(PluginActionDescriptorChangeProvider.Instance);
             services.AddSingleton(PluginActionDescriptorChangeProvider.Instance);
-            //services.LoadPlugins(Configuration);
+            services.LoadPlugins(Configuration);
             services.AddSingleton(services);
             services.AddSingleton(Configuration);
             
@@ -114,7 +114,7 @@ namespace Foreman.Server
                 endpoints.MapControllers();
                 endpoints.MapFallbackToFile("index.html");
             });
-
+            
             CreateRolesAndPowerUser(serviceProvider).GetAwaiter().GetResult();
         }
 

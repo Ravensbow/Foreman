@@ -39,9 +39,9 @@ namespace Foreman.Client.Services
             return apiResult;
         }
 
-        public async Task<HttpResponseMessage> GetInstitutions()
+        public async Task<HttpResponseMessage> GetInstitutions(string term = null)
         {
-            var apiResult = await _httpClientPublic.GetAsync($"Institution/GetInstitutions");
+            var apiResult = await _httpClientPublic.GetAsync($"Institution/GetInstitutions"+(string.IsNullOrEmpty(term)?"":"?term="+term));
             return apiResult;
         }
 

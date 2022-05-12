@@ -43,9 +43,9 @@ namespace Foreman.Client.Services
             return apiResult;
         }
 
-        public async Task<HttpResponseMessage> CreateCategory(CategoryModel categoryModel)
+        public async Task<HttpResponseMessage> CreateCategory(Foreman.Shared.Data.Courses.CourseCategory categoryModel)
         {
-            var apiResult = await _httpClient.PostAsJsonAsync<CategoryModel>($"Course/CreateCategory", categoryModel);
+            var apiResult = await _httpClient.PostAsJsonAsync<Foreman.Shared.Data.Courses.CourseCategory>($"Course/CreateCategory", categoryModel);
             return apiResult;
         }
         public async Task<HttpResponseMessage> EditCategory(CategoryModel categoryModel)

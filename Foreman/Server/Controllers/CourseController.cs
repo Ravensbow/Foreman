@@ -223,7 +223,8 @@ namespace Foreman.Server.Controllers
             {
                 if(!authorizeService.CanCreateCategory(model.ParentCategoryId))
                     return Forbid();
-                
+                _context.Attach(model.Institution);
+                _context.Attach(model.ParentCategory);
                 _context.CourseCategories.Add(model);
                 _context.SaveChanges();
                 return Ok();

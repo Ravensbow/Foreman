@@ -3,6 +3,7 @@
 @using System.Security.Claims
 @inject HttpClient httpClient
 @inject NavigationManager NavMenager
+@inject Services.CourseService courseService
 
 <EditForm Model="categoryModel" OnValidSubmit="HandleAdd">
     <DataAnnotationsValidator/>
@@ -11,17 +12,16 @@
     <MudTextField @bind-Value="categoryModel.Name" Label="Name" Class="mt-4" For="@(() => categoryModel.Name)"></MudTextField>
     <MudTextField T="string" Lines="5"  @bind-Value="categoryModel.Description" Label="Description" Class="mt-4" For="@(() => categoryModel.Description)"></MudTextField>
     <MudCheckBox @bind-Checked="categoryModel.IsVisible" Label="Visibility" Class="mt-4"></MudCheckBox>
-    @if(ParentCategoryList != null && ParentCategoryList.Count > 0)
-    {
-        <MudSelect T="int?" Label="Parent category" @bind-Value="categoryModel.Id" Class="mt-4" AnchorOrigin="Origin.BottomCenter">
-            <MudSelectItem Value="@((int?)null)">None</MudSelectItem>
-            @foreach(var category in ParentCategoryList)
-            {
-                <MudSelectItem Value="(int?)category.Id">@category.Name</MudSelectItem> 
-
-            }
-        </MudSelect>
-    }
+    <MudAutocomplete Label="Category"  @bind-Value="categoryModel.ParentCategory" T="Foreman.Shared.Data.Courses.CourseCategory"
+             SearchFunc="@SearchAsync" Immediate="true" CoerceValue="false" ResetValueOnEmptyText="true"
+             AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" Clearable="true"
+             ToStringFunc="@(e=> e==null?null : e.Name)"
+             For="@(() => categoryModel.ParentCategory)"/>
+    <MudAutocomplete Label="Institution" @bind-Value="categoryModel.Institution" T="Foreman.Shared.Data.Identity.Institution"
+            SearchFunc="@SearchIns" Immediate="true" CoerceValue="false" ResetValueOnEmptyText="true"
+            AdornmentIcon="@Icons.Material.Filled.Search" AdornmentColor="Color.Primary" Clearable="true"
+             ToStringFunc="@(e=> e==null?null : e.Name)"
+             For="@(() => categoryModel.Institution)"/>
     <MudItem>
             <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Class="mt-4" EndIcon="@Icons.Filled.Check" Color="Color.Primary" Size="Size.Large">Add</MudButton>
     </MudItem>
@@ -30,10 +30,12 @@
 @code{
     [Inject]
     Services.CourseService CourseService { get; set; }
+    [Inject]
+    public Services.InstitutionService InstitutionService { get; set; }
     [Parameter]
     public int? categoryId { get; set; }
 
-    Foreman.Shared.Models.Category.CategoryModel categoryModel = new Foreman.Shared.Models.Category.CategoryModel();
+    Foreman.Shared.Data.Courses.CourseCategory categoryModel = new Foreman.Shared.Data.Courses.CourseCategory();
     public List<Foreman.Shared.Data.Courses.CourseCategory> ParentCategoryList { get; set; }
 
     protected override async Task OnInitializedAsync()
@@ -59,5 +61,25 @@
         var apiResult = await CourseService.CreateCategory(categoryModel);
         if (apiResult.IsSuccessStatusCode)
             NavMenager.NavigateTo("/personal/dashboard");
+    }
+    private async Task<IEnumerable<Foreman.Shared.Data.Courses.CourseCategory>> SearchAsync(string value)
+    {
+        var result = await courseService.SearchCategory(value);
+
+        if(!result.IsSuccessStatusCode)
+        {
+            //TODO: Obsługa błedu
+        }
+        return Newtonsoft.Json.JsonConvert.DeserializeObject<List<Foreman.Shared.Data.Courses.CourseCategory>>(await result.Content.ReadAsStringAsync());
+    }
+    private async Task<IEnumerable<Foreman.Shared.Data.Identity.Institution>> SearchIns(string value)
+    {
+        var result = await InstitutionService.GetInstitutions();
+
+        if(!result.IsSuccessStatusCode)
+        {
+            //TODO: Obsługa błedu
+        }
+        return Newtonsoft.Json.JsonConvert.DeserializeObject<List<Foreman.Shared.Data.Identity.Institution>>(await result.Content.ReadAsStringAsync());
     }
 }

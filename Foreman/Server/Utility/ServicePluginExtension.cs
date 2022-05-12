@@ -22,7 +22,7 @@ namespace Foreman.Server.Utility
             {
                 foreach (string p in GetPluginDirectories())
                 {
-                    Assembly assembly = Assembly.LoadFrom(AppDomain.CurrentDomain.BaseDirectory + @"\Plugins\" + p + @"\" + p + ".dll");
+                    Assembly assembly = Assembly.LoadFrom(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins", p, p + ".dll"));
                     var part = new AssemblyPart(assembly);
                     services.AddControllers().PartManager.ApplicationParts.Add(part);
                     PluginActionDescriptorChangeProvider.Instance.HasChanged = true;
@@ -44,19 +44,21 @@ namespace Foreman.Server.Utility
                         //context.SaveChanges();
                         initMethod.Invoke(obj, new object[] { services, configuration });
                         
-                        var dbp = db.Plugins.FirstOrDefault(x => x.Name == pluginName);
-
-                        if (dbp == null)
+                        if(db.Database.CanConnect())
                         {
-                            db.Add(new Plugin() { Name = pluginName, Version = pluginVersion, Icon= pluginIcon, Description = pluginDescription});
-                            migrationMethod.Invoke(obj, new object[] { services });
-                        }
-                        else if(dbp.Version != pluginVersion)
-                        {
-                            dbp.Version = pluginVersion;
-                            db.Update(dbp);
-                        }
+                            var dbp = db.Plugins.FirstOrDefault(x => x.Name == pluginName);
 
+                            if (dbp == null)
+                            {
+                                db.Add(new Plugin() { Name = pluginName, Version = pluginVersion, Icon = pluginIcon, Description = pluginDescription });
+                                migrationMethod.Invoke(obj, new object[] { services });
+                            }
+                            else if (dbp.Version != pluginVersion)
+                            {
+                                dbp.Version = pluginVersion;
+                                db.Update(dbp);
+                            }
+                        }
                     }
 
                 }
@@ -68,7 +70,7 @@ namespace Foreman.Server.Utility
         public static string[] GetPluginDirectories()
         {
             //return Directory.GetDirectories(AppDomain.CurrentDomain.BaseDirectory + @"\Plugins").ToList().Select(x=> Path.GetFileName(Path.GetDirectoryName(x))).ToArray();
-            return System.IO.Directory.GetDirectories(AppDomain.CurrentDomain.BaseDirectory + @"\Plugins", "*", System.IO.SearchOption.AllDirectories).ToList().Select(x=> x.Substring(x.LastIndexOf('\\')+1)).ToArray();
+            return System.IO.Directory.GetDirectories(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Plugins"), "*", System.IO.SearchOption.AllDirectories).ToList().Select(x=> x.Substring(x.LastIndexOf(Path.DirectorySeparatorChar)+1)).ToArray();
         }
 
 
